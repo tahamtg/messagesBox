@@ -74,11 +74,8 @@ def Delete_Massage(request, pk):
 @api_view(['POST'])
 def Sign_Up(request):
 
- 
     get_user = Authenticate_User(data=request.data)
     
-    return Response({'exist' : isAlready})
-    if get_user.is_valid(raise_exception=True):
-         get_user.save()
-    else:
-         Response(get_user.errors, status= status.HTTP_400_BAD_REQUEST)
+    get_user.is_valid(raise_exception=True)
+    get_user.save()
+    return Response(get_user.data, status=status.HTTP_201_CREATED)

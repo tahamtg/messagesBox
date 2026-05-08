@@ -44,10 +44,11 @@ const Sign  = () =>{
 
         event.preventDefault()
 
-        submit_Form()
+        const isvalid = submit_Form()
+        if(!isvalid){return}
         
         try{
-               const res = await axios.post<api_sign>("http://127.0.0.1:8000/massage/sign-up",
+               const res = await axios.post<api_sign>("http://127.0.0.1:8000/massage/sign-up/",
                 {
                 username : context?.form?.username,
                 password : context?.form?.password
@@ -62,10 +63,7 @@ const Sign  = () =>{
             res.data && navigate("/");
         }catch(e){
             if (axios.isAxiosError(e)){
-                if(e.response?.data?.username){
-                    console.error("username is already!")
-                    setError(`نام کاربری ${context?.form.username} قبلا استفاده شده!`)
-                }
+             
             }
             console.error(e, "Error at sending username")
             setError("خطا در ارسال نام کاربری یا رمز عبور")
@@ -76,10 +74,11 @@ const Sign  = () =>{
 return(
     <>
         <div>
-            <form onSubmit={add_user} action="">
+            {error && <div><span style={{ color: 'red' }}>{error}</span></div>}
+            <form action="" onSubmit={add_user}>
                 <input type="text" placeholder='نام کاربری' value={context?.form?.username} onChange={(e)=> {context?.setForm({...context?.form, username: e.target.value})}} />
                 <input  type="password" placeholder='رمز عبور' value={context?.form?.password} onChange={(e)=> {context?.setForm({...context?.form, password: e.target.value})}} />
-                <button type="submit" value={'ارسال'}/>
+                <button type="submit" value="ارسال"/>
             </form>
         </div>
     </>

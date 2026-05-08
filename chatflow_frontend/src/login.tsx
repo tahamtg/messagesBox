@@ -3,12 +3,13 @@ import axios, {type AxiosResponse, AxiosError, isAxiosError} from "axios";
 import {AuthProvider, authContext} from "./authprovider";
 import { useContext } from "react";
 
-const auth = useContext(authContext)
+
 
 const Login = ()=>{
-
+    const auth = useContext(authContext)
     const [username, setUsername] = useState<string>("")
     const [password, setPassword] = useState<string>("")
+    
 
     const toLogin = async ()=>{
         try{

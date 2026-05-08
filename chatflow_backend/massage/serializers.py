@@ -9,13 +9,14 @@ class MassageBoxSerializers (serializers.ModelSerializer):
 class Authenticate_User (serializers.ModelSerializer):
     class Meta:
         model = User_Account
-        fields = '__all__'
+        fields = ["username", "password"]
+        extra_kwargs = {
+            "password": {"write_only": True}
+        }
 
     def create(self, validated_data):
-        user = User_Account.object.create_user(
+        user = User_Account.objects.create_user(
             username= validated_data['username'],
             password= validated_data['password']
         )
         return user
-    
-

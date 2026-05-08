@@ -17,14 +17,15 @@ interface apigetmassage{
      payam: string,
 }
 
-const context = useContext(Usecontext)
-const auth = useContext(authContext)
+
 
 const Massage : React.FC = () =>{
 
- const [error, setError] = useState<string | null>(null)
-    const [massage, setMassage] = useState<apigetmassage[]>([])
-    const [newMassage, setNewMassage] = useState<string>("")
+const context = useContext(Usecontext)
+const auth = useContext(authContext)
+const [error, setError] = useState<string | null>(null)
+const [massage, setMassage] = useState<apigetmassage[]>([])
+const [newMassage, setNewMassage] = useState<string>("")
 
 
 

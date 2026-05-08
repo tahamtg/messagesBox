@@ -2,7 +2,7 @@ from django.contrib.auth.models import BaseUserManager
 
 class Username_Manager(BaseUserManager):
 
-    def create_user (self, username, password):
+    def create_user (self, username, password=None):
         if not username:
             raise ValueError("username is required!")
         user = self.model(username=username)
@@ -10,7 +10,7 @@ class Username_Manager(BaseUserManager):
         user.save(using= self._db)
         return user
 
-    def create_superuser(self, username, password):
+    def create_superuser(self, username, password=None):
        
         superuser = self.create_user(username=username, password=password)
 

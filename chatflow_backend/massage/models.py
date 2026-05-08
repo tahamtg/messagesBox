@@ -12,7 +12,7 @@ class User_Account (AbstractBaseUser, PermissionsMixin):
     objects  = Username_Manager()
 
 class Massage (models.Model):
-    user = models.ForeignKey(User_Account, on_delete=models.CASCADE)
+    user = models.ForeignKey(User_Account, on_delete=models.CASCADE, null=True, blank=False)
     payam = models.TextField()
     publish_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
