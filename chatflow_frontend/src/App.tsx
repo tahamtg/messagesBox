@@ -5,6 +5,7 @@ import {Usecontext} from './context'
 import { AuthProvider } from './authprovider'
 import ProtectedRoute from './ProtectedRoute'
 import React, { useState } from 'react'
+import Login from './login'
 
 interface api_sign {
   username: string
@@ -19,9 +20,8 @@ const App: React.FC = () => {
   })
 
   return (
-   
+   <Usecontext.Provider value={{form, setForm}}>
     <AuthProvider>
-    <Usecontext.Provider value={{form, setForm}}>
       <Routes>
          
         <Route path="/" element={
@@ -31,12 +31,17 @@ const App: React.FC = () => {
           } />
         
         <Route
-          path="sign/"
+          path="sign"
           element={<Sign />}
         />
+          <Route
+          path="login"
+          element={<Login />}
+        />
       </Routes>
-    </Usecontext.Provider>
+    
     </AuthProvider>
+    </Usecontext.Provider>
   )
 }
 

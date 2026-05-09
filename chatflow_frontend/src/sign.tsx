@@ -4,6 +4,7 @@ import axios, {type AxiosResponse, type AxiosError, isAxiosError} from "axios";
 import { Usecontext } from './context';
 import * as yup from "yup";
 import { authContext } from './authprovider';
+import { Navigate } from 'react-router-dom';
 
 
 
@@ -15,9 +16,10 @@ interface api_sign{
 
 const Sign  = () =>{
 
-    const context = useContext(Usecontext)
-
+    const {form, setForm} = useContext(Usecontext)!
+    const auth = useContext(authContext)
     const [error, setError] = useState<string | null>(null)
+    const [mass, setMass] = useState<string | null>(null)
     const navigate = useNavigate()
 
        const schema = yup.object({
@@ -30,10 +32,13 @@ const Sign  = () =>{
     const submit_Form = async () => {
         
        try {
-        await schema.validate(context?.form, {abortEarly:false})
+        await schema.validate(form, {abortEarly:false})
         return schema;
-        } catch (err: any) {
-         setError(err.errors[0]);
+      
+        } catch (e) {
+        console.error(e)
+         setError("خطا در اعتبار سنجی");
+         setMass(null)
         return;
         }
         
@@ -44,14 +49,14 @@ const Sign  = () =>{
 
         event.preventDefault()
 
-        const isvalid = submit_Form()
+        const isvalid = await submit_Form()
         if(!isvalid){return}
         
         try{
                const res = await axios.post<api_sign>("http://127.0.0.1:8000/massage/sign-up/",
                 {
-                username : context?.form?.username,
-                password : context?.form?.password
+                username : form.username,
+                password : form.password
                 },
                 { 
                     headers: { 
@@ -60,13 +65,15 @@ const Sign  = () =>{
                 },  
             
             });
-            res.data && navigate("/");
+            console.log("signup success:", res.status, res.data);              
+            if (res.status === 201 || res.status === 200) {
+                setMass("نام کاربری و پسورد با موفقیت ذخیره شد")
+                setError(null)
+                navigate("/login", { replace: true });
+        }
         }catch(e){
-            if (axios.isAxiosError(e)){
-             
-            }
             console.error(e, "Error at sending username")
-            setError("خطا در ارسال نام کاربری یا رمز عبور")
+            setError(`نام کاربری ${form.username} ثبلا ثبت نام کرده است، لطفا نام کاربری جدید وارد کنید!`)
         }
     }
 
@@ -74,12 +81,16 @@ const Sign  = () =>{
 return(
     <>
         <div>
-            {error && <div><span style={{ color: 'red' }}>{error}</span></div>}
+            {error ?
+             (<div><span style={{ color: 'red' }}>{error}</span></div>): mass ? 
+              (<div><span style={{ color: 'black' }}>{mass}</span></div>): null}
+
             <form action="" onSubmit={add_user}>
-                <input type="text" placeholder='نام کاربری' value={context?.form?.username} onChange={(e)=> {context?.setForm({...context?.form, username: e.target.value})}} />
-                <input  type="password" placeholder='رمز عبور' value={context?.form?.password} onChange={(e)=> {context?.setForm({...context?.form, password: e.target.value})}} />
-                <button type="submit" value="ارسال"/>
+                <input type="text" placeholder='نام کاربری' value={form.username} onChange={(e)=> {setForm({...form, username: e.target.value})}} />
+                <input  type="password" placeholder='رمز عبور' value={form.password} onChange={(e)=> {setForm({...form, password: e.target.value})}} />
+                <button type="submit">ثبت نام</button>
             </form>
+
         </div>
     </>
 )

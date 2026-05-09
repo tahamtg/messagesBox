@@ -2,7 +2,7 @@ import {Routes, Route} from 'react-router-dom'
 import React, { useState, useEffect ,useContext} from 'react'
 import axios, {type AxiosResponse, type AxiosError, isAxiosError} from "axios";
 import { Usecontext } from './context';
-import { authContext, AuthProvider } from './authprovider';
+import {authContext} from './authprovider';
 
 interface apierrorType {
     not_exist_massage ?: string,
@@ -21,12 +21,11 @@ interface apigetmassage{
 
 const Massage : React.FC = () =>{
 
-const context = useContext(Usecontext)
+const {form, setForm} = useContext(Usecontext)!
 const auth = useContext(authContext)
 const [error, setError] = useState<string | null>(null)
 const [massage, setMassage] = useState<apigetmassage[]>([])
 const [newMassage, setNewMassage] = useState<string>("")
-
 
 
       const get_Massage = async () => {
@@ -71,7 +70,7 @@ const [newMassage, setNewMassage] = useState<string>("")
                 headers: { 
                     Accept: "application/json",
                     'Content-Type': 'application/json',
-                    "Authorization": "Bearer " + localStorage.getItem("token")
+                    "Authorization": `Bearer ${auth?.access}`  
                 }
             });
             setNewMassage(""); 
@@ -103,7 +102,7 @@ const [newMassage, setNewMassage] = useState<string>("")
 
                         <div>
                         <h1>massageBOX</h1>
-                        <div><span>{context?.form.username}</span></div>
+                        <div><h2>{form.username}</h2></div>
                         </div>
                     {error && <div><span style={{ color: 'red' }}>{error}</span></div>}
                     <div>

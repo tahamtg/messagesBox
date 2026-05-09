@@ -1,11 +1,10 @@
 import { createContext, useState, type JSX } from "react";
 
-
-
 interface context_content{
     set_token: (access: string, refresh: string)=>void
     rm_token: ()=>void
-    isAuth : boolean
+    isAuth : boolean,
+    access : string | null
 }
 
 export const authContext = createContext <context_content | null> (null)
@@ -32,11 +31,9 @@ export const authContext = createContext <context_content | null> (null)
 
     const isAuth = Boolean(access)
 
-   
-
     return ( 
 
-        <authContext.Provider value={{set_token, rm_token, isAuth}}>
+        <authContext.Provider value={{set_token, rm_token, isAuth, access}}>
             {children}
         </authContext.Provider>
 

@@ -9,7 +9,7 @@ const ProtectedRoute = ({ children }: {children: React.ReactNode}):JSX.Element =
    
         if(!ctx_auth?.isAuth){
            return <Navigate to="/sign" replace/>
-}
+         }
      
        return <>{children}</>
 
