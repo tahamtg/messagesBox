@@ -45,9 +45,9 @@ const Sign  = () =>{
     }
     
 
-    const add_user =  async (event: React.FormEvent<HTMLFormElement>) =>{
+    const add_user =  async () =>{
 
-        event.preventDefault()
+      
 
         const isvalid = await submit_Form()
         if(!isvalid){return}
@@ -85,11 +85,11 @@ return(
              (<div><span style={{ color: 'red' }}>{error}</span></div>): mass ? 
               (<div><span style={{ color: 'black' }}>{mass}</span></div>): null}
 
-            <form action="" onSubmit={add_user}>
+           
                 <input type="text" placeholder='نام کاربری' value={form.username} onChange={(e)=> {setForm({...form, username: e.target.value})}} />
                 <input  type="password" placeholder='رمز عبور' value={form.password} onChange={(e)=> {setForm({...form, password: e.target.value})}} />
-                <button type="submit">ثبت نام</button>
-            </form>
+                <button type="submit" onClick={add_user}>ثبت نام</button>
+            
 
         </div>
     </>

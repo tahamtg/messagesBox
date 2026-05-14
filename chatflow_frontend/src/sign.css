@@ -1,0 +1,98 @@
+*{
+    direction: rtl;
+    font-family: yekan;
+}
+
+@font-face {
+    font-family: yekan;
+    src: url(./assets/fonts/Yekan.woff);
+}
+
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: #f4f6f9;
+}
+
+.page {
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#form-sign {
+    width: 380px;
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 24px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.title {
+    text-align: center;
+}
+
+.title h1 {
+    margin: 0;
+    color: #222;
+    font-size: 28px;
+}
+
+.title p {
+    color: #666;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+#form-massage {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#form-massage input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #dcdcdc;
+    border-radius: 14px;
+    font-size: 15px;
+    outline: none;
+    box-sizing: border-box;
+    transition: 0.3s;
+}
+
+#form-massage input:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 10px rgba(74, 144, 226, 0.25);
+}
+
+#form-massage button {
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    background: #4a90e2;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#form-massage button:hover {
+    background: #357abd;
+}
+
+#form-massage button:disabled {
+    background: #9dbfe9;
+    cursor: not-allowed;
+}
