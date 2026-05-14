@@ -3,7 +3,8 @@ import axios, {type AxiosResponse, AxiosError, isAxiosError} from "axios";
 import {AuthProvider, authContext} from "./authprovider";
 import { useContext } from "react";
 import { Usecontext } from "./context";
-import { replace, useNavigate } from "react-router-dom"
+import { replace, useNavigate, Link } from "react-router-dom"
+import './login.css'
 
 interface Token_type{
     access : string,
@@ -15,41 +16,56 @@ const Login = ()=>{
     const auth = useContext(authContext)
     const [error, setError] = useState<string | null>(null)
     const [mass, setMass] = useState<string | null>(null)
+     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
     
 
     const toLogin = async ()=>{
         try{
+            setLoading(true)
             const res = await axios.post<Token_type>("http://127.0.0.1:8000/massage/token/" ,
                 {username: form.username,
                 password:  form.password}
             )
-
-           const have_auth = auth?.set_token(res.data.access, res.data.refresh)
-
-                setMass("خوش آمدید!")
+                
+                const have_auth = auth?.set_token(res.data.access, res.data.refresh)
+                const promis = await new Promise((have_auth)=> setTimeout(have_auth, 3000))
                 setError(null)
                 navigate("/", {replace:true})
 
+            
         }catch(e: any){   
 
             setError("نام کاربری یا رمز عبور اشتباه است")   
             setMass(null)    
             console.error("somthing is wrong!", e.response?.data)
 
+        }finally{
+            setLoading(false)
         }
+               
     }
 
     return(
         <>
-            <div>
-            {error ?
-             (<div><span style={{ color: 'red' }}>{error}</span></div>): mass ? 
-              (<div><span style={{ color: 'black' }}>{mass}</span></div>): null}
 
-                <div><input type="text" placeholder="نام کاربری" value={form.username} onChange={(e)=> {setForm({...form, username: e.target.value})}}/></div>
-                <div><input type="password" placeholder="رمز عبور" value={form.password} onChange={(e)=> {setForm({...form, password: e.target.value})}}/></div>
-                <div><button onClick={toLogin}>ورود</button></div>
+        <div className='login'>
+
+            <section className='massage'>
+            {error ?
+             (<div><span>{error}</span></div>): mass ? 
+              (<div><span>{mass}</span></div>): null}
+            </section>
+
+            <section className='form'>
+                <form action="">
+                <input type="text" placeholder="نام کاربری" value={form.username} onChange={(e)=> {setForm({...form, username: e.target.value})}}/>
+                <input type="password" placeholder="رمز عبور" value={form.password} onChange={(e)=> {setForm({...form, password: e.target.value})}}/>
+                <button className='button-form' onClick={toLogin}disabled={loading}>{loading? (<span>در حال بررسی...</span>): <span>ورود</span> }</button>
+                <Link className='linkto' to={'../sign'}>اکانت ندارید؟ ثبت نام کنید!</Link>
+                </form>
+            </section>
+
             </div>
         </>
     )

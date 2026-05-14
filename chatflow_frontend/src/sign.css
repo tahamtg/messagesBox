@@ -1,98 +1,86 @@
-*{
-    direction: rtl;
-    font-family: yekan;
-}
-
 @font-face {
     font-family: yekan;
-    src: url(./assets/fonts/Yekan.woff);
+    src: url('./assets/fonts/Yekan.woff');
+}
+
+*{
+    font-family: yekan;
+    direction: rtl;
+}
+
+body{
+    background-color: rgb(255, 255, 255);
 }
 
 
-body {
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-    background: #f4f6f9;
-}
-
-.page {
-    width: 100%;
+.sign{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     height: 100vh;
+    width: 100%;
+    align-items: center;
+    flex: 1px;
+    gap: 5px;
+}
 
+.massage div{
+    background: red;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.massage span{
+    color: aliceblue;
+    z-index: 1px;
+}
+
+.form{
     display: flex;
     justify-content: center;
-    align-items: center;
-}
-
-#form-sign {
-    width: 380px;
-    background: #ffffff;
-    padding: 35px;
-    border-radius: 24px;
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
-}
-
-.form {
-    display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.title {
-    text-align: center;
+.form input{
+    background: rgb(241, 241, 241);
+    border-radius: 1px;
+    padding-left: 50%;
+    padding-bottom: 1%;
+    padding-top: 1%;
+    border: none;
+    width: 50%;
 }
 
-.title h1 {
-    margin: 0;
-    color: #222;
-    font-size: 28px;
-}
-
-.title p {
-    color: #666;
-    margin-top: 10px;
-    font-size: 14px;
-}
-
-#form-massage {
+.form form{
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 5px;
 }
 
-#form-massage input {
-    width: 100%;
-    padding: 14px;
-    border: 1px solid #dcdcdc;
-    border-radius: 14px;
-    font-size: 15px;
-    outline: none;
-    box-sizing: border-box;
-    transition: 0.3s;
-}
-
-#form-massage input:focus {
-    border-color: #4a90e2;
-    box-shadow: 0 0 10px rgba(74, 144, 226, 0.25);
-}
-
-#form-massage button {
-    padding: 14px;
+.button-form{
+    color: antiquewhite;
+    background: blue;
+    border-radius: 0px;
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
     border: none;
-    border-radius: 14px;
-    background: #4a90e2;
-    color: white;
-    font-size: 16px;
+}
+
+.button-form:hover{
     cursor: pointer;
-    transition: 0.3s;
 }
 
-#form-massage button:hover {
-    background: #357abd;
+.linkto{
+    color: black;
+    text-decoration: none;
 }
 
-#form-massage button:disabled {
-    background: #9dbfe9;
-    cursor: not-allowed;
+.linkto:hover{
+    color: rgb(0, 10, 104);
+    text-decoration: underline;
 }
+
+
+

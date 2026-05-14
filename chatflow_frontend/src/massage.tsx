@@ -1,5 +1,5 @@
 import {Routes, Route} from 'react-router-dom'
-import React, { useState, useEffect ,useContext} from 'react'
+import React, { useState, useEffect ,useContext, useRef} from 'react'
 import axios, {type AxiosResponse, type AxiosError, isAxiosError} from "axios";
 import { Usecontext } from './context';
 import {authContext} from './authprovider';
@@ -26,6 +26,8 @@ const auth = useContext(authContext)
 const [error, setError] = useState<string | null>(null)
 const [massage, setMassage] = useState<apigetmassage[]>([])
 const [newMassage, setNewMassage] = useState<string>("")
+const timeMassage = useRef(null)
+const [typing, setTyping] = useState(false)
 
 
       const get_Massage = async () => {
@@ -38,6 +40,7 @@ const [newMassage, setNewMassage] = useState<string>("")
                 setError("پاسخ دریافتی از سرور نامعتبر است.");
                 setMassage([]); 
             }
+
         } catch (e) {
             console.error("Error fetching messages:", e); 
             if (axios.isAxiosError(e)) {
@@ -103,19 +106,20 @@ const [newMassage, setNewMassage] = useState<string>("")
                         <div>
                         <h1>massageBOX</h1>
                         <div><h2>{form.username}</h2></div>
+                        <div>{typing && (<span>{`${form.username} در حال نوشتن...`}</span>)}</div>
                         </div>
                     {error && <div><span style={{ color: 'red' }}>{error}</span></div>}
                     <div>
-                        <ul>
+                        <div>
                              {massage.map((messageText, index) => ( 
-                                      <li key={messageText.id}>{messageText.payam}</li>
+                                      <p key={messageText.id}>{messageText.payam}</p>
                          ))}       
                            
-                        </ul>
+                        </div>
                     </div>
                     <div>
                         <form action="" onSubmit={post_Massage}>
-                        <input placeholder="چیزی بنویسید" value={newMassage} type="text" onChange={(e)=> {setNewMassage(e.target.value)}} />
+                        <input placeholder="چیزی بنویسید" value={newMassage} type="text" onChange={(e)=> {setNewMassage(e.target.value);}} />
                         <input type="submit" value="ارسال پیام" />
                         </form>
                     </div>

@@ -4,7 +4,8 @@ import axios, {type AxiosResponse, type AxiosError, isAxiosError} from "axios";
 import { Usecontext } from './context';
 import * as yup from "yup";
 import { authContext } from './authprovider';
-import { Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import './sign.css'
 
 
 
@@ -20,6 +21,7 @@ const Sign  = () =>{
     const auth = useContext(authContext)
     const [error, setError] = useState<string | null>(null)
     const [mass, setMass] = useState<string | null>(null)
+    const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
 
        const schema = yup.object({
@@ -45,13 +47,15 @@ const Sign  = () =>{
     }
     
 
-    const add_user =  async () =>{
+    const add_user =  async (event: React.FormEvent<HTMLFormElement>) =>{
 
-      
+        event.preventDefault()
 
         const isvalid = await submit_Form()
         if(!isvalid){return}
-        
+        setLoading(true)
+        const promis = await new Promise((isvalid)=> setTimeout(isvalid, 3000))
+        setLoading(false)
         try{
                const res = await axios.post<api_sign>("http://127.0.0.1:8000/massage/sign-up/",
                 {
@@ -80,18 +84,26 @@ const Sign  = () =>{
 
 return(
     <>
-        <div>
-            {error ?
-             (<div><span style={{ color: 'red' }}>{error}</span></div>): mass ? 
-              (<div><span style={{ color: 'black' }}>{mass}</span></div>): null}
 
-           
+        <div className='sign'>
+
+            <section className='massage'>
+            {error ?
+             (<div><span>{error}</span></div>): mass ? 
+              (<div><span style={{ color: 'black' }}>{mass}</span></div>): null}
+            </section>
+
+            <section className='form'>
+            <form action="" onSubmit={add_user}>
                 <input type="text" placeholder='نام کاربری' value={form.username} onChange={(e)=> {setForm({...form, username: e.target.value})}} />
                 <input  type="password" placeholder='رمز عبور' value={form.password} onChange={(e)=> {setForm({...form, password: e.target.value})}} />
-                <button type="submit" onClick={add_user}>ثبت نام</button>
+                <button className='button-form' type="submit" disabled={loading}>{loading? (<span>در حال بررسی...</span>): <span>ثبت نام</span> }</button>
+            </form>
+                <Link className='linkto' to={'../login'}>اکانت دارید؟ وارد بشید!</Link>
+            </section>
             
-
         </div>
+ 
     </>
 )
 
