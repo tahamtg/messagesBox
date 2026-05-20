@@ -19,8 +19,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-        if close_code == 1006:
-            print("internet is disconnected!")
+            
+        await self.channel_layer.group_send(
+            self.room_group_name,
+                {
+                    "type" : "disconnected",
+                    "message" : "internet is disconnected!"
+                    "username" : self.scope["user"].username
+                    "1006" : close_code == 1006
+                    "1001" : close_code == 1001
+                }
+            )
+            
+    async def disconnected(self, event):
+        await self.send(
+            json.dumps({
+                "message" : event["massage"]
+                "username": event["username"]
+                "1006" : event["1006"]
+                "1001" : event["1001"]
+            })
+        )
+
     
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -28,7 +48,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await channel_layer.group_send(
             self.room_group_name,
             {
-                "type" : "chat_massage",
+                "type" : "chat_message",
                 "massage" : massage,
                 "username" : self.scope["user"].username
             }
@@ -45,5 +65,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "username" : username
             })
         )
+
+
 
     

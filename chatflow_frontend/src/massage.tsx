@@ -1,23 +1,6 @@
-import {Routes, Route} from 'react-router-dom'
 import React, { useState, useEffect ,useContext, useRef} from 'react'
-import axios, {type AxiosResponse, type AxiosError, isAxiosError} from "axios";
 import { Usecontext } from './context';
 import {authContext} from './authprovider';
-
-interface apierrorType {
-    not_exist_massage ?: string,
-    not_respone_server ?: string,
-    error ?: string,
-    not_exist_delete ?: string,
-    server_error ?: string,
-}
-
-interface apigetmassage{
-     id: number
-     payam: string,
-}
-
-
 
 const Massage : React.FC = () =>{
 
@@ -29,12 +12,41 @@ const [newMassage, setNewMassage] = useState<string>("")
 const timeMassage = useRef(null)
 const [typing, setTyping] = useState(false)
 const socket = useRef<WebSocket | null>(null)
+const [istyping, isTyping] = useState(false)
+const [disconnected, setDisconnected] = useState<string | null>(null)
 
      useEffect(() => {
-        socket.current = new WebSocket()
+        socket.current = new WebSocket("ws://127.0.0.1:8000/ws/chat/")
+
+        socket.current.onopen = ()=>{
+            console.log("connected")
+        }
+
+        socket.current.onmessage = (event)=>{
+           const data = JSON.parse(event.data)
+           if (data.type == "chat_message"){
+            setMassage([...massage, data])
+           }
+        }
+
+        socket.current.onclose = (event)=>{
+           if(event.code === 1006){
+                setDisconnected("اینرنت شما قطع شده است!")
+            
+           }
+        }
+
     }, []);
 
-
+    const post_Massage = (event: React.FormEvent<HTMLFormElement>)=>{
+        event.preventDefault()
+         socket.current?.send(
+            JSON.stringify({
+                "message" : newMassage
+            })
+        )
+    }
+       
 
   return (
     <>
@@ -42,9 +54,8 @@ const socket = useRef<WebSocket | null>(null)
                         <div>
                         <h1>massageBOX</h1>
                         <div><h2>{form.username}</h2></div>
-                        <div>{typing && (<span>{`${form.username} در حال نوشتن...`}</span>)}</div>
+                        <div>{disconnected && (<span style={{ color: 'red' }}>{disconnected}</span>)}</div>
                         </div>
-                    {error && <div><span style={{ color: 'red' }}>{error}</span></div>}
                     <div>
                         <div>
                              {massage.map((messageText, index) => ( 
