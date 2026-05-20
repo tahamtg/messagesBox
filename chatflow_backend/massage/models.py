@@ -5,6 +5,7 @@ from .manager import Username_Manager
 class User_Account (AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255, db_index=True, unique=True)
     avatar = models.ImageField(upload_to='media_avatar/' ,blank=True, null=True)
+    name = models.CharField(max_length=255, null=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 

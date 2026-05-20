@@ -28,74 +28,10 @@ const [massage, setMassage] = useState<apigetmassage[]>([])
 const [newMassage, setNewMassage] = useState<string>("")
 const timeMassage = useRef(null)
 const [typing, setTyping] = useState(false)
-
-
-      const get_Massage = async () => {
-        try {
-            const res = await axios.get<apigetmassage[]>("http://127.0.0.1:8000/massage/get/");
-     
-            if (res?.data) {
-                setMassage(res.data);
-            } else {
-                setError("پاسخ دریافتی از سرور نامعتبر است.");
-                setMassage([]); 
-            }
-
-        } catch (e) {
-            console.error("Error fetching messages:", e); 
-            if (axios.isAxiosError(e)) {
-                const axiosError = e as AxiosError<apierrorType>;
-                if (axiosError.response?.data?.not_exist_massage) {
-                    setError("پیامی دریافت نشد");
-                } else if (axiosError.response?.data?.not_respone_server) {
-                    setError("خطای سرور");
-                } else {
-                    setError("خطایی رخ داد، لطفا بعدا تلاش کنید");
-                }
-            } else {
-                setError("خطایی ناشناخته رخ داد");
-            }
-            setMassage([]); 
-        }
-    };
-         const post_Massage = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault(); 
-        if (newMassage.trim() === '') {
-            setError("لطفاً قبل از ارسال، پیامی بنویسید.");
-            return;
-        }
-        setError(null); 
-        try {
-      
-            await axios.post("http://127.0.0.1:8000/massage/post/", {
-                payam : newMassage 
-            }, {
-                headers: { 
-                    Accept: "application/json",
-                    'Content-Type': 'application/json',
-                    "Authorization": `Bearer ${auth?.access}`  
-                }
-            });
-            setNewMassage(""); 
-            await get_Massage();
-        } catch (e) {
-            console.error("Error posting message:", e);
-            setError("خطا در ارسال پیام");
-            if (axios.isAxiosError(e)) {
-                const axiosError = e as AxiosError<apierrorType>;
-                if (axiosError.response?.data?.not_exist_massage) {
-                    setError("خطا در ارسال پیام2");
-                } else if (axiosError.response?.data?.not_respone_server || axiosError.response?.status === 500) {
-                    setError("خطای سرور");
-                }
-            }
-        }
-    };
-
-  
+const socket = useRef<WebSocket | null>(null)
 
      useEffect(() => {
-        get_Massage();
+        socket.current = new WebSocket()
     }, []);
 
 

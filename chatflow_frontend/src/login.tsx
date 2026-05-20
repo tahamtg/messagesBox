@@ -31,7 +31,7 @@ const Login = ()=>{
                 const have_auth = auth?.set_token(res.data.access, res.data.refresh)
                 const promis = await new Promise((have_auth)=> setTimeout(have_auth, 3000))
                 setError(null)
-                navigate("/", {replace:true})
+                navigate("/profile", {replace:true})
 
             
         }catch(e: any){   

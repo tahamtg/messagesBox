@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'channels'
     'massage',
 ]
 
@@ -59,6 +60,17 @@ CORS_ALLOWED_ORIGINS = [
 
 
 ROOT_URLCONF = 'massagebox.urls'
+ASGI_APPLICATION = "core.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 TEMPLATES = [
     {
