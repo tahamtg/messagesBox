@@ -2,12 +2,19 @@ import React, { useState, useEffect ,useContext, useRef} from 'react'
 import { Usecontext } from './context';
 import {authContext} from './authprovider';
 
+interface get_data_from_websooket{
+    massage : string
+    username : string,
+    id : number,
+    date : string
+}
+
 const Massage : React.FC = () =>{
 
 const {form, setForm} = useContext(Usecontext)!
 const auth = useContext(authContext)
 const [error, setError] = useState<string | null>(null)
-const [massage, setMassage] = useState<apigetmassage[]>([])
+const [massage, setMassage] = useState<get_data_from_websooket[]>([])
 const [newMassage, setNewMassage] = useState<string>("")
 const timeMassage = useRef(null)
 const [typing, setTyping] = useState(false)
@@ -16,7 +23,7 @@ const [istyping, isTyping] = useState(false)
 const [disconnected, setDisconnected] = useState<string | null>(null)
 
      useEffect(() => {
-        socket.current = new WebSocket("ws://127.0.0.1:8000/ws/chat/")
+        socket.current = new WebSocket(`ws://127.0.0.1:8000/ws/chat/?${auth?.access}`)
 
         socket.current.onopen = ()=>{
             console.log("connected")
@@ -25,16 +32,21 @@ const [disconnected, setDisconnected] = useState<string | null>(null)
         socket.current.onmessage = (event)=>{
            const data = JSON.parse(event.data)
            if (data.type == "chat_message"){
-            setMassage([...massage, data])
+            setMassage((prev) => [...prev, data])
            }
         }
 
         socket.current.onclose = (event)=>{
            if(event.code === 1006){
                 setDisconnected("اینرنت شما قطع شده است!")
-            
            }
         }
+
+         return () => {
+
+        socket.current?.close()
+
+    }
 
     }, []);
 
@@ -58,8 +70,8 @@ const [disconnected, setDisconnected] = useState<string | null>(null)
                         </div>
                     <div>
                         <div>
-                             {massage.map((messageText, index) => ( 
-                                      <p key={messageText.id}>{messageText.payam}</p>
+                             {massage.map((messageText, id) => ( 
+                                      <p key={messageText.id}>{messageText.massage}</p>
                          ))}       
                            
                         </div>

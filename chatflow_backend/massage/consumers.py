@@ -1,5 +1,6 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from .models import Massage
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
@@ -44,13 +45,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
     
     async def receive(self, text_data):
         data = json.loads(text_data)
-        massage = data["message"]
+        massage = data
+        my_model = await sync_to_async(
+            Massage.objects.create)(
+                payam=massage["message"],
+                user=self.scope["user"]
+                )
+
         await channel_layer.group_send(
             self.room_group_name,
             {
                 "type" : "chat_message",
-                "massage" : massage,
-                "username" : self.scope["user"].username
+                "massage" : massage["message"],
+                "username" : self.scope["user"].username,
+                "massage_id" : my_model.id,
+                "date_massage": my_model.publish_date
             }
         )
 
@@ -58,11 +67,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         massage = event["massage"]
         username = event["username"]
+        userID = event["massage_id"]
+        date = event["date_massage"]
 
         await self.send(
             text_data=json.dumps({
                 "massage": massage,
-                "username" : username
+                "username" : username,
+                "id" : userID,
+                "date" : date
             })
         )
 
