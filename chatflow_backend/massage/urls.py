@@ -14,6 +14,5 @@ urlpatterns = [
     path('sign-up/', views.Sign_Up, name= 'sign up users'),
     path('token/', TokenObtainPairView.as_view()),
     path('token/refresh/', TokenRefreshView.as_view()),
-    path('upload/', views.Upload_profile, name= 'upload profile')
 ]
 

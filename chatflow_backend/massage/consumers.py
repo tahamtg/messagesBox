@@ -12,6 +12,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        
+        user = self.scope["user"]
+        if not user:
+            self.close()
+            return
 
         await self.accept()
 
@@ -59,7 +64,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "massage" : massage["message"],
                 "username" : self.scope["user"].username,
                 "massage_id" : my_model.id,
-                "date_massage": my_model.publish_date
+                "date_massage" : my_model.publish_date,
+                "token" : token
             }
         )
 
