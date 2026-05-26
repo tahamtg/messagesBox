@@ -1,4 +1,4 @@
-from channels.middleware import BaseMiddleware
+from .middleware import BaseMiddleware
 from channels.db import database_sync_to_async
 from .models import User_Account
 from urllib.parse import parse_qs

@@ -12,9 +12,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        print(self.scope)
         
         user = self.scope["user"]
         if not user:
+            print("DISCONNECTED!")
             self.close()
             return
 

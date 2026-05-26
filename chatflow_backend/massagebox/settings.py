@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'channels'
+    'channels',
     'massage',
 ]
 
@@ -60,7 +60,7 @@ CORS_ALLOWED_ORIGINS = [
 
 
 ROOT_URLCONF = 'massagebox.urls'
-ASGI_APPLICATION = "core.asgi.application"
+ASGI_APPLICATION = "massage.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
