@@ -1,31 +1,48 @@
-from .middleware import BaseMiddleware
-from channels.db import database_sync_to_async
-from .models import User_Account
 from urllib.parse import parse_qs
 from rest_framework_simplejwt.tokens import AccessToken
-from django.contrib.auth import get_user_model
+from channels.db import database_sync_to_async
+from rest_framework_simplejwt.exceptions import TokenError
+from django.contrib.auth.models import AnonymousUser # Import necessary
+from .models import User_Account # Assuming User_Account is in the same app
 
+@database_sync_to_async
+def get_user(userID):
+    try:
+        my_model = User_Account.objects.get(id=userID)
+        return my_model
+    except User_Account.DoesNotExist:
+        return AnonymousUser()
+    except Exception as e:
+        print(f"Error fetching user {userID}: {e}")
+        return AnonymousUser()
 
+class JWTAuthMiddleware:
+    def __init__(self, app):
+        self.app = app
 
-class JWTAuthMiddleware(BaseMiddleware):
-    
     async def __call__(self, scope, receive, send):
-        
-        query = self.scope["query_string"].decode()
-        params = query.parse_qs(query)
-        token = params.get("token", None)[0]
+        scope["user"] = AnonymousUser()
+        scope["user_id"] = None
 
-        if token:
-            try:
-                aceess_token = AccessToken(token)
-                id_user = aceess_token["user_id"]
-                user = await self.get_user(id_user)
-                scope["user"] = user
-            except Exception:
-                scope["user"] = None
-        
-        return await super().__call__(scope, receive, send)
+        if scope['type'] == 'websocket' and scope["query_string"]:
+            query_string = scope["query_string"].decode()
+            params = parse_qs(query_string)
+            token = params.get("token", [None])[0]
 
-           @database_sync_to_async
-           def get_user(self, userId):
-                User_Account.objects.get(id=userId)
+            if token:
+                try:
+                    access = AccessToken(token)
+                    user_id = access.get("user_id")
+                    if user_id:
+                        scope["user_id"] = user_id
+                        user = await get_user(user_id)
+                        scope["user"] = user
+                except TokenError:
+                    print("Invalid token provided.")
+                    pass
+                except Exception as e:
+                    print(f"Error processing token: {e}")
+                    pass
+
+    
+        return await self.app(scope, receive, send)

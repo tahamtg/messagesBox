@@ -26,7 +26,7 @@ useEffect(() => {
     if (!auth?.access) return;
 
     socket.current = new WebSocket(
-        `ws://127.0.0.1:8000/ws/chat/?token=${auth.access}`
+        `ws://127.0.0.1:8000/ws/chat/general/`
     );
 
     socket.current.onopen = () => {
@@ -34,6 +34,7 @@ useEffect(() => {
     };
 
     socket.current.onmessage = (event) => {
+        console.log(event.data)
         const data = JSON.parse(event.data);
 
         if (data.type === "chat_message") {
@@ -47,14 +48,23 @@ useEffect(() => {
         }
     };
 
+    socket.current.onerror = (e) => {
+  console.log("WS ERROR:", e);
+  setError("خطای WebSocket (جزئیات در console)");
+};
+
     return () => {
         socket.current?.close();
     };
+    
 }, [auth?.access]);
 
 const post_Massage = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+    if (!socket.current || socket.current.readyState !== WebSocket.OPEN){
+        console.error("connection to websocket is failed!")
+        return
+    }
     socket.current?.send(
         JSON.stringify({
             message: newMassage,
