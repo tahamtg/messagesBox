@@ -3,7 +3,7 @@ import { Usecontext } from './context';
 import {authContext} from './authprovider';
 
 interface get_data_from_websooket{
-    massage : string
+    message : string
     username : string,
     id : number,
     date : string
@@ -14,7 +14,7 @@ const Massage : React.FC = () =>{
 const {form, setForm} = useContext(Usecontext)!
 const auth = useContext(authContext)
 const [error, setError] = useState<string | null>(null)
-const [massage, setMassage] = useState<get_data_from_websooket[]>([])
+const [message, setMessages] = useState<get_data_from_websooket[]>([])
 const [newMassage, setNewMassage] = useState<string>("")
 const timeMassage = useRef(null)
 const [typing, setTyping] = useState(false)
@@ -26,25 +26,25 @@ useEffect(() => {
     if (!auth?.access) return;
 
     socket.current = new WebSocket(
-        `ws://127.0.0.1:8000/ws/chat/general/`
+        `ws://127.0.0.1:8000/ws/chat/general/?token=${auth.access}`
     );
 
     socket.current.onopen = () => {
         console.log("connected");
+        setDisconnected(null);
     };
 
-    socket.current.onmessage = (event) => {
-        console.log(event.data)
-        const data = JSON.parse(event.data);
+socket.current.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    console.log("RECEIVED:", data);
 
-        if (data.type === "chat_message") {
-            setMassage((prev) => [...prev, data]);
-        }
-    };
+    setMessages((prev) => [...prev, data]);
+};
 
     socket.current.onclose = (event) => {
+        console.log("WS CLOSED", event.code, event.reason);
         if (event.code === 1006) {
-            setDisconnected("اینترنت شما قطع شده است!");
+            setDisconnected("ارتباط WebSocket قطع شد (سرور یا خطا)");
         }
     };
 
@@ -87,9 +87,9 @@ return (
         </div>
 
         <div>
-            {massage.map((messageText) => (
+            {message.map((messageText) => (
                 <p key={messageText.id}>
-                    {messageText.massage}
+                    {messageText.message}
                 </p>
             ))}
         </div>

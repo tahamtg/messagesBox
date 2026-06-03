@@ -7,6 +7,10 @@ from asgiref.sync import sync_to_async
 class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
+        query_string = self.scope["query_string"].decode()
+        print("QUERY:", query_string)
+        print("USER:", self.scope["user"])
+        print("AUTH:", self.scope["user"].is_authenticated)
         channel_layer = get_channel_layer()
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = f"chat_{self.room_name}"
@@ -14,7 +18,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         user = self.scope["user"]
         print(user.is_authenticated)
         await self.accept()
-        await self.send(text_data="connected")
 
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -53,12 +56,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data):
+        print(self.scope["user"])
+        print(type(self.scope["user"]))
+        print(self.scope["user"].is_authenticated)
+        print(self.scope["query_string"])
         from .models import Massage
 
         channel_layer = get_channel_layer()
         data = json.loads(text_data)
         massage = data
-        print('massage:' massage["message"])
+        print('massage:', massage["message"])
 
         my_model = await sync_to_async(Massage.objects.create)(
             payam=massage["message"],
@@ -72,7 +79,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "message": massage["message"],
                 "username": self.scope["user"].username,
                 "massage_id": my_model.id,
-                "date_massage": my_model.publish_date
+                "date_massage": my_model.publish_date.isoformat()
             }
         )
 
