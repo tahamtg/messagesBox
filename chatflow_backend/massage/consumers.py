@@ -11,12 +11,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print("QUERY:", query_string)
         print("USER:", self.scope["user"])
         print("AUTH:", self.scope["user"].is_authenticated)
-        channel_layer = get_channel_layer()
+
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = f"chat_{self.room_name}"
 
-        user = self.scope["user"]
-        print(user.is_authenticated)
         await self.accept()
 
         await self.channel_layer.group_add(
@@ -24,25 +22,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-        print(self.scope)
-
     async def disconnect(self, close_code):
-        channel_layer = get_channel_layer()
 
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
-        )
-
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "disconnected",
-                "message": "internet is disconnected!",
-                "username": self.scope["user"].username,
-                "1006": close_code == 1006,
-                "1001": close_code == 1001
-            }
         )
 
     async def disconnected(self, event):
@@ -55,45 +39,93 @@ class ChatConsumer(AsyncWebsocketConsumer):
             })
         )
 
-    async def receive(self, text_data):
-        print(self.scope["user"])
-        print(type(self.scope["user"]))
-        print(self.scope["user"].is_authenticated)
-        print(self.scope["query_string"])
+    async def delete_mass(self, text_data):
         from .models import Massage
 
-        channel_layer = get_channel_layer()
-        data = json.loads(text_data)
-        massage = data
-        print('massage:', massage["message"])
+        data_del = json.loads(text_data)
 
-        my_model = await sync_to_async(Massage.objects.create)(
-            payam=massage["message"],
-            user=self.scope["user"]
-        )
+        print("DELETE DATA:", data_del)
 
-        await channel_layer.group_send(
+        try:
+            my_message = await sync_to_async(Massage.objects.get)(
+                id=data_del["massageId"]
+            )
+        except Massage.DoesNotExist:
+            print("MESSAGE NOT FOUND")
+            return
+
+
+        if my_message.user_id != self.scope["user"].id:
+            print("NOT OWNER")
+            return
+
+        await sync_to_async(
+            Massage.objects.filter(
+                id=data_del["massageId"]
+            ).delete
+        )()
+
+        print("MESSAGE DELETED")
+
+        await self.channel_layer.group_send(
             self.room_group_name,
             {
-                "type": "chat_message",
-                "message": massage["message"],
-                "username": self.scope["user"].username,
-                "massage_id": my_model.id,
-                "date_massage": my_model.publish_date.isoformat()
+                "type": "del_massage",
+                "id_massage": data_del["massageId"]
             }
         )
 
+    async def del_massage(self, event):
+        await self.send(
+            text_data=json.dumps({
+                "type": "message_deleted",
+                "mass_id": event["id_massage"]
+            })
+        )
+
+    async def receive(self, text_data):
+        from .models import Massage
+
+        print("RAW:", text_data)
+
+        data = json.loads(text_data)
+
+        
+        if data.get("type") == "delete_message":
+            await self.delete_mass(text_data)
+            return
+
+        
+        if data.get("type") == "chat_message":
+
+            print("MESSAGE:", data["message"])
+
+            my_model = await sync_to_async(
+                Massage.objects.create
+            )(
+                payam=data["message"],
+                user=self.scope["user"]
+            )
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "chat_message",
+                    "message": data["message"],
+                    "username": self.scope["user"].username,
+                    "date_massage": my_model.publish_date.isoformat(),
+                    "massage_id": my_model.id
+                }
+            )
+
     async def chat_message(self, event):
-        massage = event["message"]
-        username = event["username"]
-        userID = event["massage_id"]
-        date = event["date_massage"]
 
         await self.send(
             text_data=json.dumps({
-                "message": massage,
-                "username": username,
-                "id": userID,
-                "date": date
+                "type": "chat_message",
+                "message": event["message"],
+                "username": event["username"],
+                "date": event["date_massage"],
+                "id": event["massage_id"]
             })
         )

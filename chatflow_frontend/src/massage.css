@@ -1,77 +1,120 @@
 
-
-.chat-page{
-    height:100vh;
-    display:flex;
-    flex-direction:column;
+.back-chat{
+    display: flex;
+    flex-direction: column;
 }
 
-/* هدر */
-.chat-header{
-    background:#4a90e2;
-    color:white;
-    padding:15px 20px;
+*{
+        direction: rtl;
+        background: #273c75;
 }
 
-/* بخش پیام ها */
-.chat-messages{
-    flex:1;
-    overflow-y:auto;
-    padding:20px;
 
-    /* مهم */
-    padding-bottom:100px;
-
-    display:flex;
-    flex-direction:column;
-    gap:10px;
+.header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
 }
 
-/* هر پیام */
-.chat-messages p{
-    background:rgb(90, 89, 89);
-    padding:12px;
-    border-radius:12px;
-    width:fit-content;
-    max-width:70%;
-    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+.massages{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding-bottom: 60px;
 }
 
-/* فرم پایین */
-.chat-input{
-    position:fixed;
-    bottom:0;
-    left:0;
-    width:100%;
-    background:white;
-    padding:15px;
-    box-shadow:0 -2px 10px rgba(0,0,0,0.1);
-    box-sizing:border-box;
+.massages span{
+    color: aliceblue;
+    padding-top: 10px;
 }
 
-/* فرم */
-.chat-input form{
-    display:flex;
-    gap:10px;
-    max-width:900px;
-    margin:auto;
+.par-mass{
+    display: flex;
+    flex-direction: column;
 }
 
-/* input */
-.chat-input input[type="text"]{
-    flex:1;
-    padding:12px;
-    border:1px solid #ccc;
-    border-radius:10px;
-    outline:none;
+.massages p{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    color: #000000;
+    background-color: wheat;
+    border-radius: 10px;
+    padding: 10px;
+    width: fit-content;
+    height: fit-content;
 }
 
-/* دکمه */
-.chat-input input[type="submit"]{
-    padding:12px 20px;
-    border:none;
-    border-radius:10px;
-    background:#4a90e2;
-    color:white;
-    cursor:pointer;
+.massage-text{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 20px;
+    width: 100%;
+    padding-top: 20px;
+    margin-bottom: 5px;
+}
+
+.massage-text input{
+    width: 60%;
+    outline: 0px;
+    border: 1px solid rgb(255, 255, 255);
+    border-radius: 5px;
+    padding-right: 15px;
+}
+
+.title-logout{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.title-logout h2{
+
+}
+
+.title-logout button{
+    padding: 10px;
+    border: 1px solid wheat;
+    outline: 0px;
+    border-radius: 5px;
+    color: aliceblue;
+    cursor: pointer;
+}
+
+.header h1{
+    color: aliceblue;
+}
+
+.title-logout button{
+    padding: 0px;
+    height: 30px;
+    align-self: center;
+    width: 70px;
+    margin-bottom: 10px;
+}
+
+.massage-text button{
+    background: white;
+    outline: 0px;
+    border: 1px solid #000000;
+}
+
+.menudetails{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: fixed;
+    right: 50px;
+    top: 60px;
+    background: white;
+    padding: 5px;
+    border: 0px;
+    border-radius: 10px;
+}
+
+.menudetails button{
+    border: 1px solid black;
+    border-radius: 10px;
+    color: aliceblue;
 }
