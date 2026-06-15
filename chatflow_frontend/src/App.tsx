@@ -5,6 +5,8 @@ import {Usecontext} from './context'
 import { AuthProvider } from './authprovider'
 import ProtectedRoute from './ProtectedRoute'
 import React, { useState } from 'react'
+import User from './user'
+
 import Login from './login'
 
 interface api_sign {
@@ -30,6 +32,8 @@ const App: React.FC = () => {
           </ProtectedRoute>
           } />
         
+          <Route path=':userID' element={<User />} />
+
         <Route
           path="sign"
           element={<Sign />}

@@ -4,6 +4,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import sync_to_async
 
 
+
 class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
@@ -38,6 +39,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "1001": event["1001"]
             })
         )
+
+    async def get_id_user(self, text_data):
+        from .models import User_Account
+        from .models import Direct
+        id_user = json.loads(text_data)
+        print("get user!", id_user)
+
+        current_user = self.scope["user"]
+        target_user_id = id_user["ID_user"]
+
+        target_user  = await sync_to_async(User_Account.objects.get)(id=target_user_id)
+        direct = return await sync_to_async(Direct.objects.create)()
+
+        chat = await sync_to_async(Direct.objects.filter
+        (user_Direct=current_user)
+        .filter(user_Direct=target_user)
+        .first)()
+
+        if chat:
+            return chat;
+        
+        chat = await sync_to_async(direct.user_Direct.add)(current_user, target_user_id)
 
     async def delete_mass(self, text_data):
         from .models import Massage

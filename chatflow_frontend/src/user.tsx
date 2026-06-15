@@ -4,8 +4,6 @@ import {authContext} from './authprovider';
 import { useParams } from 'react-router-dom';
 import './massage.css'
 import  sendIcon  from './assets/send-svgrepo-com.svg'
-import { useNavigate } from 'react-router-dom';
-
 
 interface get_data_from_websooket{
     message : string
@@ -14,12 +12,11 @@ interface get_data_from_websooket{
     date : string
 }
 
-const Massage : React.FC = () =>{
+const User : React.FC = () =>{
 
 const {form, setForm} = useContext(Usecontext)!
 
 const auth = useContext(authContext)
-
 
 const [error, setError] = useState<string | null>(null)
 
@@ -47,9 +44,7 @@ const [selectId, setSelectId] = useState<number | null>(null)
 
 const menuref = useRef<HTMLDivElement>(null)
 
-const navigate = useNavigate()
-
-
+const {userID} = useParams()
 
 useEffect(() => {
     if (!auth?.access) return;
@@ -86,7 +81,6 @@ socket.current.onmessage = (event) => {
         }
     ]);
     }
-    
 };
 
     socket.current.onclose = (event) => {
@@ -195,23 +189,13 @@ const delete_massage= (id_massage: number)=>{
 
     }
 
-    
-      const send_ID_user = async (userid:number) =>{
-        socket.current?.send(
-            JSON.stringify({
-                type : "create-direct",
-                ID_user : userid
-            })
-        )
-    }
-
-
      
 return (
     <>
         <div className='back-chat'>
             <div className="header">
                 <h1>massageBOX</h1>
+                <h2>this is {userID}</h2>
 
             <section className="title-logout">
 
@@ -236,7 +220,7 @@ return (
         <div className='massages'>
          
             
-            {form.username && <span onClick={()=> navigate(``)}>{form.username}</span> }
+            {form.username && <span>{form.username}</span>}
         <section className="par-mass">
 
             {message.map((messageText) => (
@@ -295,4 +279,4 @@ return (
 );
 }
 
-export default Massage;
+export default User;

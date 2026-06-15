@@ -15,8 +15,19 @@ class User_Account(AbstractBaseUser, PermissionsMixin):
 
     objects = Username_Manager()
 
+
 class Massage (models.Model):
     user = models.ForeignKey(User_Account, on_delete=models.CASCADE, null=True, blank=False)
     payam = models.TextField()
     publish_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
+
+class Direct (model.Model):
+    user_Direct = models.ManyToMany(User_Account)
+    chat = models.ForeignKey(Massage, on_delete=models.CASCADE)
+    craeted_at = models.DateTimeField(auto_now_add=True)
+
+
+
+
+    
