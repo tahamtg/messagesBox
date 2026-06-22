@@ -8,36 +8,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import parser_classes
 from rest_framework import status
 from .models import Massage
+from .models import User_Account
 import traceback
-
-
-    # For massages
-@api_view(['GET'])
-def Look_Massage(request):
-
-        try:
-            getdata = Massage.objects.all()
-            serializer = MassageBoxSerializers(getdata, many = True)
-            return Response(serializer.data, status= status.HTTP_200_OK)
-        except  Exception as e:
-            return Response({'not_respone_server' : str(e)}, status= status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-#FOR post massages
-@api_view(['POST'])
-def Send_Massage(request):
-        
-    serializer = MassageBoxSerializers(data= request.data)
-    if serializer.is_valid():
-        try:
-            serializer.save(user=request.user)
-            return Response(serializer.data, status= status.HTTP_201_CREATED)
-        except  Exception as e:
-            return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
-                
-    else:
-
-        return Response({'error' : str(e)}, status= status.HTTP_400_BAD_REQUEST)
-        
 
 #for post user_account and if is unique username
 @api_view(['POST'])
@@ -48,6 +20,19 @@ def Sign_Up(request):
     get_user.is_valid(raise_exception=True)
     get_user.save()
     return Response(get_user.data, status=status.HTTP_201_CREATED)
+
+@api_view(["GET"])
+def Get_Users(request):
+
+    users = User_Account.objects.all()
+    data=[]
+    for user in users:
+        data.append({
+            "username": user.username,
+            "userid": user.id
+        })
+    
+    return Response(data)
 
 
 @api_view(['PATCH'])
@@ -62,5 +47,5 @@ def Upload_profile(request):
         except Exception as e:
             return Response(str(e), status= status.HTTP_400_BAD_REQUEST)
     else:
-        Response({"cant_put_profile" : "profile didnt updated!"})
+       return Response({"cant_put_profile" : "profile didnt updated!"})
         

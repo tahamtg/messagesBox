@@ -4,15 +4,20 @@ import {authContext} from './authprovider';
 import { useParams } from 'react-router-dom';
 import './massage.css'
 import  sendIcon  from './assets/send-svgrepo-com.svg'
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 
 interface get_data_from_websooket{
-    message : string
+
+    message : string,
     username : string,
     id : number,
     date : string
+
 }
 
-const User : React.FC = () =>{
+const User_Direct : React.FC = () =>{
 
 const {form, setForm} = useContext(Usecontext)!
 
@@ -44,13 +49,19 @@ const [selectId, setSelectId] = useState<number | null>(null)
 
 const menuref = useRef<HTMLDivElement>(null)
 
-const {userID} = useParams()
+const navigate = useNavigate()
+
+const {chat_id} = useParams()
+
+const [userID , setUserID] = useState()
+
 
 useEffect(() => {
+    
     if (!auth?.access) return;
 
     socket.current = new WebSocket(
-        `ws://127.0.0.1:8000/ws/chat/general/?token=${auth.access}`
+        `ws://127.0.0.1:8000/ws/chat/${chat_id}/?token=${auth.access}`
     );
 
     socket.current.onopen = () => {
@@ -63,24 +74,31 @@ socket.current.onmessage = (event) => {
 
     const data = JSON.parse(event.data);
 
+    if(data.type == "chat_ID"){
+        navigate(`${data.chat_id}`)
+    }
+
     if(data.type == "message_deleted"){
         setMessages((prev)=> prev.filter((msg)=> msg.id !== data.mass_id));
         setIsopen(false);
         return;
     }
-    
+
         console.log("RECEIVED:", data);
 
     if (data.type === "chat_message") {
         setMessages((prev) => [...prev, 
+
             {
                 message: data.message,
                 username: data.username,
                 id: data.id,
                 date: data.date,
-        }
+            }
+            
     ]);
     }
+    
 };
 
     socket.current.onclose = (event) => {
@@ -91,8 +109,9 @@ socket.current.onmessage = (event) => {
     };
 
     socket.current.onerror = (e) => {
-  console.log("WS ERROR:", e);
-  setError("خطای WebSocket (جزئیات در console)");
+    console.log("WS ERROR:", e);
+    setError("خطای WebSocket (جزئیات در console)");
+    
 };
 
     return () => {
@@ -189,19 +208,32 @@ const delete_massage= (id_massage: number)=>{
 
     }
 
+    
+      const send_ID_user = async (userid:number) =>{
+        socket.current?.send(
+            JSON.stringify({
+                type : "create-direct",
+                ID_user : userid
+            })
+        )
+    }
+
      
 return (
     <>
         <div className='back-chat'>
             <div className="header">
                 <h1>massageBOX</h1>
-                <h2>this is {userID}</h2>
+                <h1>hiiii</h1>
 
             <section className="title-logout">
 
                 <h2>{auth?.access && form.username}</h2>
 
-                <button onClick={() => auth?.rm_token()}>
+                <button onClick={() => {
+                            auth?.rm_token();
+                            navigate("/sign");
+                        }}>
 
                 {auth?.isAuth && <span>خروج</span>}
 
@@ -220,7 +252,8 @@ return (
         <div className='massages'>
          
             
-            {form.username && <span>{form.username}</span>}
+        {form.username&& <span>{form.username}</span> }
+           
         <section className="par-mass">
 
             {message.map((messageText) => (
@@ -279,4 +312,4 @@ return (
 );
 }
 
-export default User;
+export default User_Direct;

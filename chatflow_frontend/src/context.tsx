@@ -1,8 +1,9 @@
 import { createContext } from "react";
 
 interface api_sign {
-  username: string
-  password: string
+  username: string,
+  password: string,
+  userid : number | null
 }
 
 interface propsca {

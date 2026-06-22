@@ -5,20 +5,21 @@ import {Usecontext} from './context'
 import { AuthProvider } from './authprovider'
 import ProtectedRoute from './ProtectedRoute'
 import React, { useState } from 'react'
-import User from './user'
-
 import Login from './login'
+import User_Direct from './Direct'
 
 interface api_sign {
-  username: string
-  password: string
+  username: string,
+  password: string,
+  userid: number | null
 }
 
 const App: React.FC = () => {
 
   const [form, setForm] = useState<api_sign>({
     username: "",
-    password: ""
+    password: "",
+    userid : null
   })
 
   return (
@@ -32,7 +33,7 @@ const App: React.FC = () => {
           </ProtectedRoute>
           } />
         
-          <Route path=':userID' element={<User />} />
+          <Route path='/chat/:chat_id' element={<User_Direct />} />
 
         <Route
           path="sign"

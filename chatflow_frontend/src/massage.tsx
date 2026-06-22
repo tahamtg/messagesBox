@@ -5,13 +5,21 @@ import { useParams } from 'react-router-dom';
 import './massage.css'
 import  sendIcon  from './assets/send-svgrepo-com.svg'
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { number, string } from 'yup';
 
 
 interface get_data_from_websooket{
-    message : string
+    message : string,
     username : string,
     id : number,
-    date : string
+    date : string,
+    userid: number
+}
+
+interface getinfo{
+    username: string,
+    userid: number | null
 }
 
 const Massage : React.FC = () =>{
@@ -20,20 +28,13 @@ const {form, setForm} = useContext(Usecontext)!
 
 const auth = useContext(authContext)
 
-
 const [error, setError] = useState<string | null>(null)
 
 const [message, setMessages] = useState<get_data_from_websooket[]>([])
 
 const [newMassage, setNewMassage] = useState<string>("")
 
-const timeMassage = useRef(null)
-
-const [typing, setTyping] = useState(false)
-
 const socket = useRef<WebSocket | null>(null)
-
-const [istyping, isTyping] = useState(false)
 
 const [disconnected, setDisconnected] = useState<string | null>(null)
 
@@ -49,7 +50,7 @@ const menuref = useRef<HTMLDivElement>(null)
 
 const navigate = useNavigate()
 
-
+const [userid, setUserid] = useState<getinfo[]>([]);
 
 useEffect(() => {
     if (!auth?.access) return;
@@ -64,9 +65,14 @@ useEffect(() => {
     };
 
 
-socket.current.onmessage = (event) => {
+    socket.current.onmessage = (event) => {
 
     const data = JSON.parse(event.data);
+
+    if(data.type == "chat_ID"){
+        console.log("WS MESSAGE:", data);
+        navigate(`/chat/${data.chat_id}`)
+    }
 
     if(data.type == "message_deleted"){
         setMessages((prev)=> prev.filter((msg)=> msg.id !== data.mass_id));
@@ -83,6 +89,7 @@ socket.current.onmessage = (event) => {
                 username: data.username,
                 id: data.id,
                 date: data.date,
+                userid: data.username_id
         }
     ]);
     }
@@ -165,7 +172,6 @@ const setTimeOut = ()=>{
 
 };
 
-
 const delete_massage= (id_massage: number)=>{
     socket.current?.send(
       JSON.stringify({
@@ -195,8 +201,19 @@ const delete_massage= (id_massage: number)=>{
 
     }
 
+const get_user_id = async () => {
+    try {
+        const res = await axios.get("http://127.0.0.1:8000/massage/get-user/");
+        console.log(res.data);
+        setUserid(res.data);
+    } catch (e) {
+        console.error(e);
+    }
+};
+
     
       const send_ID_user = async (userid:number) =>{
+        console.log("SENDING USER ID:", userid);
         socket.current?.send(
             JSON.stringify({
                 type : "create-direct",
@@ -205,7 +222,9 @@ const delete_massage= (id_massage: number)=>{
         )
     }
 
-
+    useEffect(() => {
+    get_user_id();
+}, []);
      
 return (
     <>
@@ -231,12 +250,25 @@ return (
                 <span style={{ color: "red" }}>{disconnected}</span>
             )}
 
-
-
         <div className='massages'>
-         
-            
-            {form.username && <span onClick={()=> navigate(``)}>{form.username}</span> }
+
+    <div className='massages'>
+        {message.map((user) => (
+            <span
+                key={user.userid}
+                    onClick={() => {
+                    console.log("CLICKED");
+                    send_ID_user(user.userid!);
+                    }}
+                
+                style={{ cursor: "pointer" }}
+            >
+                {user.username}
+
+            </span>
+        ))}
+    </div>
+
         <section className="par-mass">
 
             {message.map((messageText) => (
@@ -247,9 +279,10 @@ return (
             >
             {messageText.message}
         </p>
+
         ))}
 
-            {isOpen && (
+        {isOpen && (
             <section ref={menuref} className="menudetails" style={{
             position: "absolute",
             top: posi.y,

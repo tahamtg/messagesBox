@@ -8,13 +8,14 @@ from asgiref.sync import sync_to_async
 class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
-        query_string = self.scope["query_string"].decode()
-        print("QUERY:", query_string)
-        print("USER:", self.scope["user"])
-        print("AUTH:", self.scope["user"].is_authenticated)
 
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = f"chat_{self.room_name}"
+
+        user = self.scope["user"]
+        if not user.is_authenticated:
+            await self.close()
+            return
 
         await self.accept()
 
@@ -40,27 +41,34 @@ class ChatConsumer(AsyncWebsocketConsumer):
             })
         )
 
-    async def get_id_user(self, text_data):
+    async def create_direct(self, data):
+        
+        current_user = self.scope["user"]
+        target_user_id = data["ID_user"]
         from .models import User_Account
         from .models import Direct
-        id_user = json.loads(text_data)
-        print("get user!", id_user)
+        print("USER:", self.scope["user"])
 
-        current_user = self.scope["user"]
-        target_user_id = id_user["ID_user"]
-
-        target_user  = await sync_to_async(User_Account.objects.get)(id=target_user_id)
-        direct = return await sync_to_async(Direct.objects.create)()
-
-        chat = await sync_to_async(Direct.objects.filter
-        (user_Direct=current_user)
-        .filter(user_Direct=target_user)
-        .first)()
-
-        if chat:
-            return chat;
+        target_user = await sync_to_async(User_Account.objects.get)(
+            id=target_user_id
+        )
         
-        chat = await sync_to_async(direct.user_Direct.add)(current_user, target_user_id)
+        chat = await sync_to_async(
+            lambda: Direct.objects.filter(user_Direct=current_user)
+            .filter(user_Direct=target_user)
+            .distinct()
+            .first()
+        )()
+
+        if not chat:
+            chat = await sync_to_async(Direct.objects.create)()
+            await sync_to_async(chat. user_Direct.add)(current_user, target_user)
+            print("CREATE DIRECT RECEIVED")
+
+        await self.send(text_data=json.dumps({
+            "type": "chat_ID",
+            "chat_id": chat.id
+        }))
 
     async def delete_mass(self, text_data):
         from .models import Massage
@@ -108,7 +116,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         from .models import Massage
-
+        from .models import User_Account
+        
         print("RAW:", text_data)
 
         data = json.loads(text_data)
@@ -118,6 +127,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.delete_mass(text_data)
             return
 
+        if data.get("type") == "create-direct":
+            await self.create_direct(data)
+
+        username_id = self.scope["user"].id
         
         if data.get("type") == "chat_message":
 
@@ -133,11 +146,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
+
                     "type": "chat_message",
                     "message": data["message"],
                     "username": self.scope["user"].username,
                     "date_massage": my_model.publish_date.isoformat(),
-                    "massage_id": my_model.id
+                    "massage_id": my_model.id,
+                    "username_id": username_id
                 }
             )
 
@@ -149,6 +164,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "message": event["message"],
                 "username": event["username"],
                 "date": event["date_massage"],
-                "id": event["massage_id"]
+                "id": event["massage_id"],
+                "username_id": event["username_id"]
             })
         )

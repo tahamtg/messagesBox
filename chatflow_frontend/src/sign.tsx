@@ -59,8 +59,10 @@ const Sign  = () =>{
         try{
                const res = await axios.post<api_sign>("http://127.0.0.1:8000/massage/sign-up/",
                 {
+                    
                 username : form.username,
                 password : form.password
+                
                 },
                 { 
                     headers: { 
