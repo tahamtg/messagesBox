@@ -13,7 +13,6 @@ const ProtectedRoute = ({ children }: {children: React.ReactNode}):JSX.Element =
      
        return <>{children}</>
 
-
 }
  
 export default ProtectedRoute;
