@@ -21,19 +21,6 @@ def Sign_Up(request):
     get_user.save()
     return Response(get_user.data, status=status.HTTP_201_CREATED)
 
-@api_view(["GET"])
-def Get_Users(request):
-
-    users = User_Account.objects.all()
-    data=[]
-    for user in users:
-        data.append({
-            "username": user.username,
-            "userid": user.id
-        })
-    
-    return Response(data)
-
 
 @api_view(['PATCH'])
 @parser_classes([MultiPartParser])
