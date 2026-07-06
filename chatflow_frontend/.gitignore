@@ -7,10 +7,21 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Frontend
+chatflow_frontend/node_modules/
+chatflow_frontend/dist/
+chatflow_frontend/dist-ssr/
 *.local
+
+# Python
+chatflow_backend/venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment
+.env
 
 # Editor directories and files
 .vscode/*
