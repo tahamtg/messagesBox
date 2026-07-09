@@ -57,7 +57,7 @@ const Sign  = () =>{
         const promis = await new Promise((isvalid)=> setTimeout(isvalid, 3000))
         setLoading(false)
         try{
-               const res = await axios.post<api_sign>("http://127.0.0.1:8000/massage/sign-up/",
+               const res = await axios.post<api_sign>("https://massagebox.runflare.run/massage/sign-up/",
                 {
                     
                 username : form.username,

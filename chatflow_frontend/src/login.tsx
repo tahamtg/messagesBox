@@ -23,7 +23,7 @@ const Login = ()=>{
     const toLogin = async ()=>{
         try{
             setLoading(true)
-            const res = await axios.post<Token_type>("http://127.0.0.1:8000/massage/token/" ,
+            const res = await axios.post<Token_type>("https://massagebox.runflare.run/massage/token/" ,
                 {username: form.username,
                 password:  form.password}
             )

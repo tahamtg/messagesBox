@@ -61,7 +61,7 @@ useEffect(() => {
     if (!auth?.access) return;
 
     socket.current = new WebSocket(
-        `ws://127.0.0.1:8000/ws/chat/${chat_id}/?token=${auth.access}`
+        `ws://massagebox.runflare.run/ws/chat/${chat_id}/?token=${auth.access}`
     );
 
     socket.current.onopen = () => {
