@@ -78,8 +78,9 @@ const Sign  = () =>{
                 navigate("/login", { replace: true });
         }
         }catch(e){
-            console.error(e, "Error at sending username")
-            setError(`نام کاربری ${form.username} ثبلا ثبت نام کرده است، لطفا نام کاربری جدید وارد کنید!`)
+            if(axios.isAxiosError(e)){
+                const axioserr = e.isAxiosError
+            }
         }
     }
 

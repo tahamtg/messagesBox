@@ -203,7 +203,7 @@ const delete_massage= (id_massage: number)=>{
 
 const get_user_id = async () => {
     try {
-        const res = await axios.get("http://127.0.0.1:8000/massage/get-user/");
+        const res = await axios.get("https://massagebox.runflare.run/massage/get-user/");
         console.log(res.data);
         setUserid(res.data);
     } catch (e) {
