@@ -6,7 +6,10 @@ from channels.auth import AuthMiddlewareStack
 from massage.routing import websocket_urlpatterns
 from massage.middleware import JWTAuthMiddleware
 
+print("ASGI LOADED")
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "massagebox.settings")
+
 
 django_asgi_app = get_asgi_application()
 
