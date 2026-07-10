@@ -84,7 +84,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'massagebox.wsgi.application'
+WSGI_APPLICATION = 'massage.wsgi.application'
 
 
 # Database
