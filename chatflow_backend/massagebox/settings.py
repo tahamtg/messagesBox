@@ -61,7 +61,7 @@ MIDDLEWARE = [
 
 
 ROOT_URLCONF = 'massagebox.urls'
-ASGI_APPLICATION = "massage.asgi.application"
+ASGI_APPLICATION = "massagebox.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
@@ -84,7 +84,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'massage.wsgi.application'
+WSGI_APPLICATION = 'massagebox.wsgi.application'
 
 
 # Database
