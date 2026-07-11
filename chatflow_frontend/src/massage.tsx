@@ -201,16 +201,6 @@ const delete_massage= (id_massage: number)=>{
 
     }
 
-const get_user_id = async () => {
-    try {
-        const res = await axios.get("https://massagebox.runflare.run/massage/get-user/");
-        console.log(res.data);
-        setUserid(res.data);
-    } catch (e) {
-        console.error(e);
-    }
-};
-
     
       const send_ID_user = async (userid:number) =>{
         console.log("SENDING USER ID:", userid);
@@ -223,7 +213,7 @@ const get_user_id = async () => {
     }
 
     useEffect(() => {
-    get_user_id();
+    
 }, []);
      
 return (
