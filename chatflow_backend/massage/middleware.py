@@ -1,15 +1,15 @@
 from urllib.parse import parse_qs
-from rest_framework_simplejwt.tokens import AccessToken
 from channels.db import database_sync_to_async
 from rest_framework_simplejwt.exceptions import TokenError
-from django.contrib.auth.models import AnonymousUser # Import necessary
-from .models import User_Account # Assuming User_Account is in the same app
 
 class JWTAuthMiddleware:
     def __init__(self, app):
         self.app = app
 
     async def __call__(self, scope, receive, send):
+        from django.contrib.auth.models import AnonymousUser
+        from rest_framework_simplejwt.tokens import AccessToken
+        from .models import User_Account
         scope["user"] = AnonymousUser()
         scope["user_id"] = None
 
