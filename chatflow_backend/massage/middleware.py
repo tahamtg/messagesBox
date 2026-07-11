@@ -3,7 +3,6 @@ from channels.db import database_sync_to_async
 from rest_framework_simplejwt.exceptions import TokenError
 
 class JWTAuthMiddleware:
-    print("SCOPE TYPE:", scope["type"])
     def __init__(self, app):
         self.app = app
 
@@ -11,6 +10,7 @@ class JWTAuthMiddleware:
         from django.contrib.auth.models import AnonymousUser
         from rest_framework_simplejwt.tokens import AccessToken
         from .models import User_Account
+        print("SCOPE TYPE:", scope["type"])
         scope["user"] = AnonymousUser()
         scope["user_id"] = None
 
