@@ -1,7 +1,7 @@
 from urllib.parse import parse_qs
 from channels.db import database_sync_to_async
 from rest_framework_simplejwt.exceptions import TokenError
-print("MIDDLEWARE LOADED")
+print("SCOPE TYPE:", scope["type"])
 class JWTAuthMiddleware:
     def __init__(self, app):
         self.app = app
