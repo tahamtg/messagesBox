@@ -8,14 +8,8 @@ django_asgi_app = get_asgi_application()
 
 from channels.routing import ProtocolTypeRouter, URLRouter
 from massage.routing import websocket_urlpatterns
-from massage.middleware import JWTAuthMiddleware
-
-print("ASGI LOADED")
-print(websocket_urlpatterns)
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
-    "websocket": JWTAuthMiddleware(
-        URLRouter(websocket_urlpatterns)
-    ),
+    "websocket": URLRouter(websocket_urlpatterns),
 })
