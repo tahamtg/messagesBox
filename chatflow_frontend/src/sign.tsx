@@ -79,9 +79,7 @@ const Sign  = () =>{
                 navigate("/login", { replace: true });
         }
         }catch(e){
-            if(axios.isAxiosError(e)){
-                const axioserr = e.isAxiosError
-            }
+           
         }
     }
 

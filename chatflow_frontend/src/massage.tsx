@@ -261,14 +261,18 @@ return (
         <section className="par-mass">
 
             {message.map((messageText) => (
-                <p
-            key={messageText.id}
+                <div key={messageText.id}>
+                <span key={messageText.id}>{messageText.username}</span>
+                                <p
+            
             onContextMenu={(e) => contextMenu(e, messageText.id)}
             onPointerDown={(e) => pressFin(e, messageText.id)}
             >
-            {messageText.username}
             {messageText.message}
         </p>
+                </div>
+                
+    
 
         ))}
 
