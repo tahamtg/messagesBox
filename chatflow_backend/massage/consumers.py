@@ -1,6 +1,5 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.layers import get_channel_layer
 from asgiref.sync import sync_to_async
 
 
@@ -13,7 +12,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f"chat_{self.room_name}"
 
         user = self.scope["user"]
-
         if not user.is_authenticated:
             await self.close()
             return
@@ -26,7 +24,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -43,24 +40,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def create_direct(self, data):
-
         current_user = self.scope["user"]
         target_user_id = data["ID_user"]
 
         from .models import User_Account
         from .models import Direct
 
-        print("USER:", self.scope["user"])
+        print("USER:", current_user)
 
-        target_user = await sync_to_async(
-            User_Account.objects.get
-        )(id=target_user_id)
+        target_user = await sync_to_async(User_Account.objects.get)(
+            id=target_user_id
+        )
 
         chat = await sync_to_async(
-            lambda: Direct.objects.filter(user_Direct=current_user)
-            .filter(user_Direct=target_user)
-            .distinct()
-            .first()
+            lambda: Direct.objects.filter(
+                user_Direct=current_user
+            ).filter(
+                user_Direct=target_user
+            ).distinct().first()
         )()
 
         if not chat:
@@ -71,13 +68,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
             print("CREATE DIRECT RECEIVED")
 
-        await self.send(text_data=json.dumps({
-            "type": "chat_ID",
-            "chat_id": chat.id
-        }))
+        await self.send(
+            text_data=json.dumps({
+                "type": "chat_ID",
+                "chat_id": chat.id
+            })
+        )
 
     async def delete_mass(self, text_data):
-
         from .models import Massage
 
         data_del = json.loads(text_data)
@@ -85,10 +83,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print("DELETE DATA:", data_del)
 
         try:
-            my_message = await sync_to_async(
-                Massage.objects.get
-            )(id=data_del["massageId"])
-
+            my_message = await sync_to_async(Massage.objects.get)(
+                id=data_del["massageId"]
+            )
         except Massage.DoesNotExist:
             print("MESSAGE NOT FOUND")
             return
@@ -114,7 +111,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def del_massage(self, event):
-
         await self.send(
             text_data=json.dumps({
                 "type": "message_deleted",
@@ -123,9 +119,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data):
-
         from .models import Massage
-        from .models import User_Account
 
         print("RAW:", text_data)
 
@@ -165,7 +159,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
 
     async def chat_message(self, event):
-
         await self.send(
             text_data=json.dumps({
                 "type": "chat_message",
