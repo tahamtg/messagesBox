@@ -75,6 +75,7 @@ const Sign  = () =>{
             if (res.status === 201 || res.status === 200) {
                 setMass("نام کاربری و پسورد با موفقیت ذخیره شد")
                 setError(null)
+                console.log("redirect is ok!")
                 navigate("/login", { replace: true });
         }
         }catch(e){

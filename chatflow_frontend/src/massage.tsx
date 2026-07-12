@@ -225,10 +225,6 @@ return (
 
             <section className="title-logout">
 
-                {message.map((User)=>(
-                    <h2>{auth?.access && User.username}</h2>
-                ))}
-
                 <button onClick={() => auth?.rm_token()}>
 
                 {auth?.isAuth && <span>خروج</span>}
@@ -270,6 +266,7 @@ return (
             onContextMenu={(e) => contextMenu(e, messageText.id)}
             onPointerDown={(e) => pressFin(e, messageText.id)}
             >
+            {messageText.username}
             {messageText.message}
         </p>
 
