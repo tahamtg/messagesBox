@@ -24,7 +24,6 @@ interface getinfo{
 
 const Massage : React.FC = () =>{
 
-const {form, setForm} = useContext(Usecontext)!
 
 const auth = useContext(authContext)
 
@@ -226,7 +225,9 @@ return (
 
             <section className="title-logout">
 
-                <h2>{auth?.access && form.username}</h2>
+                {message.map((User)=>(
+                    <h2>{auth?.access && User.username}</h2>
+                ))}
 
                 <button onClick={() => auth?.rm_token()}>
 
