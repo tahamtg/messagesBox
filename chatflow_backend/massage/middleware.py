@@ -26,6 +26,7 @@ class JWTAuthMiddleware:
 
                     if user_id:
                         scope["user_id"] = user_id
+                        print("TOKEN USER ID:", user_id)
                         scope["user"] = await database_sync_to_async(
                             User_Account.objects.get
                         )(id=user_id)
