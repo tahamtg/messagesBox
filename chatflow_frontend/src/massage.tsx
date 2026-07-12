@@ -213,6 +213,7 @@ const delete_massage= (id_massage: number)=>{
         )
     }
 
+
     useEffect(() => {
     
 }, []);
@@ -258,23 +259,31 @@ return (
         ))}
     </div>
 
-        <section className="par-mass">
+{message.map((messageText, index) => {
+    const showUsername =
+        index === 0 ||
+        message[index - 1].username !== messageText.username;
 
-            {message.map((messageText) => (
-                <div key={messageText.id}>
-                <span key={messageText.id}>{messageText.username}</span>
-                                <p
-            
-            onContextMenu={(e) => contextMenu(e, messageText.id)}
-            onPointerDown={(e) => pressFin(e, messageText.id)}
+    return (
+        <section className="par-mass" key={messageText.id}>
+
+            {showUsername && (
+                <span className="username">
+                    {messageText.username}
+                </span>
+            )}
+
+            <p
+                onContextMenu={(e) => contextMenu(e, messageText.id)}
+                onPointerDown={(e) => pressFin(e, messageText.id)}
             >
-            {messageText.message}
-        </p>
-                </div>
-                
-    
+                {messageText.message}
+            </p>
 
-        ))}
+        </section>
+    );
+})}
+        
 
         {isOpen && (
             <section ref={menuref} className="menudetails" style={{
@@ -297,7 +306,7 @@ return (
         </section>
             )}
 
-            </section>
+           
         </div>
 
             <div className="massage-text">
