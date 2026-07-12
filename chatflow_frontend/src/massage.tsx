@@ -58,6 +58,8 @@ useEffect(() => {
     socket.current = new WebSocket(
         `wss://massagebox.runflare.run/ws/chat/general/?token=${auth.access}`
     );
+    console.log("LOCAL:", localStorage.getItem("access"));
+    console.log("CONTEXT:", auth?.access);
 
     socket.current.onopen = () => {
         console.log("connected");
