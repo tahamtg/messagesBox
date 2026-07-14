@@ -57,8 +57,6 @@ useEffect(() => {
     socket.current = new WebSocket(
         `wss://massagebox.runflare.run/ws/chat/general/?token=${auth.access}`
     );
-    console.log("LOCAL:", localStorage.getItem("access"));
-    console.log("CONTEXT:", auth?.access);
 
     socket.current.onopen = () => {
         console.log("connected");
@@ -253,24 +251,29 @@ return (
                 
                 style={{ cursor: "pointer" }}
             >
-                {user.username}
+                
 
             </span>
         ))}
     </div>
 
-{message.map((messageText, index) => (
-    <section className="par-mass" key={messageText.id}>
+{message.map((messageText, index) => {
+    const showUsername =
+        index === 0 ||
+        message[index - 1].username !== messageText.username;
 
-                        <p
-                onContextMenu={(e) => contextMenu(e, messageText.id)}
-                onPointerDown={(e) => pressFin(e, messageText.id)}
-            >
-                {messageText.message}
-            </p>
+    return (
+        <section className="par-mass" key={messageText.id}>
+            {showUsername && (
+                <span className="username">
+                    {messageText.username}
+                </span>
+            )}
 
-    </section>
-))}
+            <p>{messageText.message}</p>
+        </section>
+    );
+})}
 
         
 
