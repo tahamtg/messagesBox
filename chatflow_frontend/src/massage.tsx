@@ -104,7 +104,7 @@ useEffect(() => {
 
     socket.current.onerror = (e) => {
   console.log("WS ERROR:", e);
-  setError("خطای WebSocket (جزئیات در console)");
+  setError("اتصال قطع شد!");
 };
 
     return () => {
