@@ -240,23 +240,6 @@ return (
 
         <div className='massages'>
 
-    <div className='massages'>
-        {message.map((user) => (
-            <span
-                key={user.userid}
-                    onClick={() => {
-                    console.log("CLICKED");
-                    send_ID_user(user.userid!);
-                    }}
-                
-                style={{ cursor: "pointer" }}
-            >
-                
-
-            </span>
-        ))}
-    </div>
-
 {message.map((messageText, index) => {
     const showUsername =
         index === 0 ||
@@ -265,7 +248,14 @@ return (
     return (
         <section className="par-mass" key={messageText.id}>
             {showUsername && (
-                <span className="username">
+                <span
+                  key={messageText.userid}
+                    onClick={() => {
+                    console.log("CLICKED");
+                    send_ID_user(messageText.userid!);
+                    }}
+                
+                style={{ cursor: "pointer" }} className="username">
                     {messageText.username}
                 </span>
             )}
