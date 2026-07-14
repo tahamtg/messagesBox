@@ -249,7 +249,6 @@ return (
         <section className="par-mass" key={messageText.id}>
             {showUsername && (
                 <span
-                  key={messageText.userid}
                     onClick={() => {
                     console.log("CLICKED");
                     send_ID_user(messageText.userid!);
