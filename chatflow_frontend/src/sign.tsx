@@ -6,6 +6,7 @@ import * as yup from "yup";
 import { authContext } from './authprovider';
 import { Link } from 'react-router-dom';
 import './sign.css'
+import Logo from '../public/d862b856-2462-456f-ada2-8f3f8304c7c8.png'
 
 
 
@@ -87,7 +88,20 @@ const Sign  = () =>{
 return(
     <>
 
+        <div className="total-sign">
+
+        <div className="radialback">
+
+        </div>
+        
+            
         <div className='sign'>
+
+
+            <div className="logo-container">
+                <img src={Logo} className="logo" alt="massagesbox" />
+            </div>
+            <h1 className='signup-title'>ثبت نام</h1>
 
             <section className='massage'>
             {error ?
@@ -104,6 +118,7 @@ return(
                 <Link className='linkto' to={'../login'}>اکانت دارید؟ وارد بشید!</Link>
             </section>
             
+        </div>
         </div>
  
     </>

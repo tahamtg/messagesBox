@@ -5,6 +5,7 @@ import { useContext } from "react";
 import { Usecontext } from "./context";
 import { replace, useNavigate, Link } from "react-router-dom"
 import './login.css'
+import Logo from '../public/d862b856-2462-456f-ada2-8f3f8304c7c8.png'
 
 interface Token_type{
     access : string,
@@ -49,24 +50,64 @@ const Login = ()=>{
     return(
         <>
 
-        <div className='login'>
+      <div className="total-login">
 
-            <section className='massage'>
-            {error ?
-             (<div><span>{error}</span></div>): mass ? 
-              (<div><span>{mass}</span></div>): null}
-            </section>
+    <div className="radialback"></div>
 
-            <section className='form'>
-                <form action="">
-                <input type="text" placeholder="نام کاربری" value={form.username} onChange={(e)=> {setForm({...form, username: e.target.value})}}/>
-                <input type="password" placeholder="رمز عبور" value={form.password} onChange={(e)=> {setForm({...form, password: e.target.value})}}/>
-                <button className='button-form' onClick={toLogin}disabled={loading}>{loading? (<span>در حال بررسی...</span>): <span>ورود</span> }</button>
-                <Link className='linkto' to={'../sign'}>اکانت ندارید؟ ثبت نام کنید!</Link>
-                </form>
-            </section>
+    <div className="login">
 
-            </div>
+        <div className="logo-container">
+            <img src={Logo} className="logo" alt="Messages Box" />
+        </div>
+
+        <h1 className="login-title">ورود</h1>
+
+        <p className="login-subtitle">
+            به حساب کاربری خود وارد شوید.
+        </p>
+
+        <section className="massage">
+            {error ? (
+                <span>{error}</span>
+            ) : mass ? (
+                <span>{mass}</span>
+            ) : null}
+        </section>
+
+        <section className="form">
+            <form>
+                <input
+                    type="text"
+                    placeholder="نام کاربری"
+                    value={form.username}
+                    onChange={(e)=>setForm({...form,username:e.target.value})}
+                />
+
+                <input
+                    type="password"
+                    placeholder="رمز عبور"
+                    value={form.password}
+                    onChange={(e)=>setForm({...form,password:e.target.value})}
+                />
+
+                <button
+                    className="button-form"
+                    onClick={toLogin}
+                    disabled={loading}
+                >
+                    {loading ? "در حال بررسی..." : "ورود"}
+                </button>
+
+                <Link className="linkto" to="../sign">
+                    اکانت ندارید؟ ثبت نام کنید!
+                </Link>
+
+            </form>
+        </section>
+
+    </div>
+
+</div>
         </>
     )
 }

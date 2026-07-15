@@ -4,11 +4,6 @@
     flex-direction: column;
 }
 
-*{
-        direction: rtl;
-        background: #273c75;
-}
-
 
 .header{
     display: flex;

@@ -1,86 +1,382 @@
 @font-face {
-    font-family: yekan;
-    src: url('./assets/fonts/Yekan.woff');
+    font-family: "yekan";
+    src: url("./assets/fonts/Yekan.woff");
 }
 
 *{
-    font-family: yekan;
-    direction: rtl;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    direction:rtl;
+    font-family:yekan;
 }
 
 body{
-    background-color: rgb(255, 255, 255);
+    background:#000;
+    overflow:hidden;
 }
 
+/* =========================
+        صفحه
+========================= */
+
+.total-sign{
+    position:relative;
+
+    width:100%;
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden;
+    padding:40px;
+}
+
+/* =========================
+      نور پس زمینه
+========================= */
+
+.radialback{
+    position:absolute;
+
+    left:-8%;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:1100px;
+    height:1100px;
+
+    border-radius:50%;
+
+    background:radial-gradient(
+        circle,
+
+        rgba(255,255,255,.95) 0%,
+        rgba(255,255,255,.55) 32%,
+        rgba(255,255,255,.22) 55%,
+        rgba(255,255,255,.10) 75%,
+        rgba(255,255,255,.04) 92%,
+        transparent 100%
+    );
+
+    filter:blur(130px);
+
+    z-index:0;
+}
+
+/* =========================
+          فرم
+========================= */
 
 .sign{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100vh;
-    width: 100%;
-    align-items: center;
-    flex: 1px;
-    gap: 5px;
+
+    position:relative;
+    z-index:5;
+
+    width:100%;
+    max-width:430px;
+
+    padding:45px 35px;
+
+    border-radius:24px;
+
+    background:rgba(255,255,255,.06);
+
+    border:1px solid rgba(255,255,255,.12);
+
+    backdrop-filter:blur(25px);
+    -webkit-backdrop-filter:blur(25px);
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.55),
+        inset 0 1px rgba(255,255,255,.08);
+         align-items: center;
+
+         
 }
 
-.massage div{
-    background: red;
-    padding-left: 5px;
-    padding-right: 5px;
-}
-.massage span{
-    color: aliceblue;
-    z-index: 1px;
+/* =========================
+         عنوان
+========================= */
+
+.signup-title{
+
+    color:#fff;
+
+    text-align:center;
+
+    font-size:32px;
+
+    margin-bottom:10px;
 }
 
-.form{
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    gap: 20px;
+.signup-subtitle{
+
+    text-align:center;
+
+    color:rgba(255,255,255,.55);
+
+    margin-bottom:35px;
+
+    font-size:14px;
 }
 
-.form input{
-    background: rgb(241, 241, 241);
-    border-radius: 1px;
-    padding-left: 50%;
-    padding-bottom: 1%;
-    padding-top: 1%;
-    border: none;
-    width: 50%;
+/* =========================
+          پیام
+========================= */
+
+.massage{
+
+    min-height:24px;
+
+    margin-bottom:18px;
+
+    text-align:center;
+
+    color:white;
 }
+
+/* =========================
+          فرم
+========================= */
 
 .form form{
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
 }
 
+/* =========================
+         Input
+========================= */
+
+.form input{
+
+    width:100%;
+
+    height:56px;
+
+    padding:0 18px;
+
+    border-radius:14px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    background:rgba(255,255,255,.04);
+
+    color:white;
+
+    font-size:15px;
+
+    transition:.3s;
+}
+
+.form input::placeholder{
+
+    color:rgba(255,255,255,.35);
+}
+
+.form input:focus{
+
+    outline:none;
+
+    border-color:rgba(255,255,255,.35);
+
+    background:rgba(255,255,255,.07);
+
+    box-shadow:0 0 18px rgba(255,255,255,.08);
+}
+
+/* =========================
+         Button
+========================= */
+
 .button-form{
-    color: antiquewhite;
-    background: blue;
-    border-radius: 0px;
-    padding-right: 20px;
-    padding-left: 20px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    border: none;
+
+    margin-top:8px;
+
+    width:100%;
+
+    height:56px;
+
+    border:none;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    background:white;
+
+    color:black;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    transition:.25s;
 }
 
 .button-form:hover{
-    cursor: pointer;
+
+    transform:translateY(-2px);
+
+    box-shadow:0 0 25px rgba(255,255,255,.22);
 }
 
+.button-form:disabled{
+
+    opacity:.6;
+
+    cursor:not-allowed;
+}
+
+/* =========================
+          لینک
+========================= */
+
 .linkto{
-    color: black;
-    text-decoration: none;
+
+    display:block;
+
+    margin-top:22px;
+
+    text-align:center;
+
+    color:rgba(255,255,255,.65);
+
+    text-decoration:none;
+
+    transition:.3s;
 }
 
 .linkto:hover{
-    color: rgb(0, 10, 104);
-    text-decoration: underline;
+
+    color:white;
 }
 
+/* ==================================
+        لپ تاپ های کوچک
+================================== */
 
+@media (max-width:1400px){
 
+    .radialback{
+
+        width:900px;
+        height:900px;
+
+        left:-25%;
+
+        filter:blur(120px);
+    }
+
+}
+
+/* ==================================
+          لپ تاپ
+================================== */
+
+@media (max-width:1200px){
+
+    .radialback{
+
+        width:820px;
+        height:820px;
+
+        left:-28%;
+    }
+
+}
+
+/* ==================================
+             تبلت
+================================== */
+
+@media (max-width:900px){
+
+    .total-sign{
+
+        padding:25px;
+    }
+
+    .radialback{
+
+        left:50%;
+        top:-300px;
+
+        transform:translateX(-50%);
+
+        width:850px;
+        height:850px;
+
+        filter:blur(120px);
+    }
+
+    .sign{
+
+        max-width:420px;
+    }
+
+}
+
+/* ==================================
+             موبایل
+================================== */
+
+@media (max-width:600px){
+
+    .total-sign{
+
+        padding:18px;
+    }
+
+    .radialback{
+
+        top:-260px;
+
+        width:650px;
+        height:650px;
+
+        left:50%;
+
+        transform:translateX(-50%);
+
+        filter:blur(90px);
+    }
+
+    .sign{
+
+        padding:35px 24px;
+
+        border-radius:20px;
+    }
+
+    .signup-title{
+
+        font-size:28px;
+    }
+
+    .form input,
+    .button-form{
+
+        height:52px;
+    }
+
+}
+
+.logo-container{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.logo{
+    width:180px;
+    max-width:60%;
+    height:auto;
+}
