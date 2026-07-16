@@ -17,6 +17,7 @@
 
 .header {
     display: flex;
+    flex-direction: row-reverse;
     justify-content: space-between;
     align-items: center;
     padding: 18px 25px;
@@ -60,9 +61,16 @@
     word-break: break-word;
 }
 
+@font-face {
+    font-family: font-Username;
+    src: url(../public/فونت-Cabin-Condensed-Bold.ttf);
+}
+
 .username {
     display: block;
-    color: #00bfff;
+    font-family: font-Username;
+    font-weight: bolder;
+    color: rgba(255, 255, 255, .8);
     font-weight: bold;
     margin-bottom: 6px;
 }
@@ -97,8 +105,6 @@
     background: #333;
 }
 
-/* Input */
-
 .massage-text {
     padding: 18px;
     border-top: 1px solid #222;
@@ -127,38 +133,28 @@
     color: #999;
 }
 
-/* Send Button */
 
 .send-btn {
     height: 50px;
     padding: 0 28px;
     border: none;
     border-radius: 50px;
-    background: #0d6efd;
+    background: #000000;
     color: white;
     font-size: 15px;
     font-weight: bold;
     cursor: pointer;
     transition: .3s;
     white-space: nowrap;
+    border: 1px solid white;
 }
 
 .send-btn:hover {
-    background: #0b5ed7;
+    background: #ffffff;
+    border: 1px solid rgb(0, 0, 0);
+    border-radius: 50px;
 }
 
-/* Scroll */
-
-.massages::-webkit-scrollbar {
-    width: 7px;
-}
-
-.massages::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 20px;
-}
-
-/* Responsive */
 
 @media (max-width:768px) {
 
