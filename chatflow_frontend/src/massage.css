@@ -31,19 +31,20 @@
 
 .header h1 {
     font-size: 1.7rem;
-    color: transparent;
+    color: white;
     font-family: font-Username;
     filter: drop-shadow(rgba(255, 255, 255, .4), 5px, 0px, 10px);
-    animation: animationText infinite linear alternate 1s;
+    animation: glow 1s linear infinite alternate 1s;
 }
 
-@keyframes animationText{
-    from{
-        filter: drop-shadow(rgba(255, 255, 255, .5), 5px, 10px, 10px);
+@keyframes glow {
+    from {
+        text-shadow: 0 0 5px rgba(255,255,255,.5);
     }
-    to{
-        filter: drop-shadow(rgba(255, 255, 255, .8), -5px, 10px, 10px),
-                drop-shadow(rgba(255, 255, 255, 1), -6px, 10px, 10px);
+    to {
+        text-shadow:
+            0 0 10px rgba(255,255,255,.8),
+            0 0 20px rgba(255,255,255,1);
     }
 }
 
