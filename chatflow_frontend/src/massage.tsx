@@ -52,6 +52,8 @@ const navigate = useNavigate()
 
 const [userid, setUserid] = useState<getinfo[]>([]);
 
+//===========For WebSocket===========//
+
 useEffect(() => {
     if (!auth?.access) return;
 
@@ -114,6 +116,7 @@ useEffect(() => {
     
 }, [auth?.access]);
 
+
 const post_Massage = (event: React.FormEvent<HTMLFormElement>) => {
     
     event.preventDefault();
@@ -131,6 +134,8 @@ const post_Massage = (event: React.FormEvent<HTMLFormElement>) => {
 
     setNewMassage("");
 };
+
+//===========For menu===========//
 
 const contextMenu = (e: React.MouseEvent, id: number)=>{
     e.preventDefault()
@@ -217,6 +222,8 @@ const delete_massage= (id_massage: number)=>{
     
 }, []);
      
+//===========For Final Fragment===========//
+
 return (
     <>
         <div className='back-chat'>
