@@ -7,6 +7,7 @@ import  sendIcon  from './assets/send-svgrepo-com.svg'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { number, string } from 'yup';
+import outIcon from '../public/logout-svgrepo-com.svg'
 
 
 interface get_data_from_websooket{
@@ -225,8 +226,8 @@ return (
             <section className="title-logout">
 
                 <button onClick={() => auth?.rm_token()}>
-
-                {auth?.isAuth && <span>خروج</span>}
+                
+                    {auth?.isAuth && <span>خروج{outIcon}</span>}
 
                 </button>
 
@@ -292,6 +293,7 @@ return (
 
             <div className="massage-text">
             <form onSubmit={post_Massage}>
+
                 <input
                 value={newMassage}
                 onChange={(e) => setNewMassage(e.target.value)}

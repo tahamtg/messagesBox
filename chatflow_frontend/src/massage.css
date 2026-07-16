@@ -2,6 +2,7 @@
 .back-chat{
     display: flex;
     flex-direction: column;
+    padding: 20px;
 }
 
 
@@ -64,8 +65,10 @@
     gap: 10px;
 }
 
-.title-logout h2{
-
+.title-logout button{
+    display: block;
+    color: #000000;
+    gap: 4px;
 }
 
 .title-logout button{
@@ -112,4 +115,15 @@
     border: 1px solid black;
     border-radius: 10px;
     color: aliceblue;
+}
+
+@font-face {
+    font-family: fontUsers;
+    src: url(../public/فونت-Cabin-Condensed-Bold.ttf);
+}
+
+.par-mass .username{
+    color: rgba(255, 255, 255, 0.8);
+    font-family: fontUsers;
+    filter: drop-shadow(rgba(255, 255, 255, 0.8), 0px, 5px, 5px);
 }
