@@ -33,17 +33,17 @@
     font-size: 1.7rem;
     color: white;
     font-family: font-Username;
-    filter: drop-shadow(rbga(255, 255, 255, .8), 5px, 0px, 10px);
+    filter: drop-shadow(rgba(255, 255, 255, .4), 5px, 0px, 10px);
     animation: animationText infinite linear alternate 1s;
 }
 
 @keyframes animationText{
     from{
-        filter: drop-shadow(rbga(255, 255, 255, .5), 5px, 10px, 10px);
+        filter: drop-shadow(rgba(255, 255, 255, .5), 5px, 10px, 10px);
     }
     to{
-        filter: drop-shadow(rbga(255, 255, 255, .8), -5px, 10px, 10px),
-                drop-shadow(rbga(255, 255, 255, 1), -6px, 10px, 10px);
+        filter: drop-shadow(rgba(255, 255, 255, .8), -5px, 10px, 10px),
+                drop-shadow(rgba(255, 255, 255, 1), -6px, 10px, 10px);
     }
 }
 
@@ -78,7 +78,7 @@
     border-radius: 15px;
     word-break: break-word;
     border-bottom-right-radius: 0px;
-    box-shadow: 0px 0px 10px 5px rgba(255, 255, 255, 0.3);
+    box-shadow: 0px 0px 10px 5px rgba(255, 255, 255, 0.5);
 }
 
 
