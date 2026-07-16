@@ -227,7 +227,7 @@ return (
 
                 <button onClick={() => auth?.rm_token()}>
                 
-                    {auth?.isAuth && <span>خروج{outIcon}</span>}
+                    {auth?.isAuth && <span>خروج</span>}
 
                 </button>
 
@@ -300,8 +300,8 @@ return (
                 placeholder="چیزی بنویسید"
                 />
 
-                <button type="submit">
-                     <img src={sendIcon} alt="send icon" style={{ width: '20px', height: '20px' }} />
+                <button type="submit" className="send-btn">
+                     ارسال
                 </button>
 
             </form>
