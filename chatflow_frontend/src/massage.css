@@ -31,7 +31,7 @@
 
 .header h1 {
     font-size: 1.7rem;
-    color: white;
+    color: transparent;
     font-family: font-Username;
     filter: drop-shadow(rgba(255, 255, 255, .4), 5px, 0px, 10px);
     animation: animationText infinite linear alternate 1s;
