@@ -1,39 +1,64 @@
-import { createContext, useState, type JSX } from "react";
+import { createContext, useEffect, useState, type JSX } from "react";
+import axios from "axios";
 
 interface context_content{
-    set_token: (access: string, refresh: string)=>void
-    rm_token: ()=>void
     isAuth : boolean,
-    access : string | null
+    logOut: ()=> void
 }
 
 export const authContext = createContext <context_content | null> (null)
 
+
+
  export const AuthProvider = ({ children }: { children: React.ReactNode }):JSX.Element => {
 
-    const [access, setAcess] = useState<string | null>(localStorage.getItem("access"))
-    const [refresh, setRefresh] = useState<string | null>(localStorage.getItem("refresh"))
-     
+    const [isAuth, setIsAuth] = useState(false)
 
-     const set_token = (access:string, refresh:string)=>{
-            setAcess(access)
-            setRefresh(refresh)
-            localStorage.setItem("access", access)
-            localStorage.setItem("refresh", refresh)
-     }
+    useEffect(()=>{
 
-     const rm_token = ()=>{
-        setAcess(null)
-        setRefresh(null)
-        localStorage.removeItem("access")
-        localStorage.removeItem("refresh")
-     }
+    
 
-    const isAuth = Boolean(access)
+    const check_Auth = async ()=>{
+        try{
+            const res = await axios.get("https://massagebox.runflare.run/massage/check-auth/",
+            {
+                withCredentials: true,
+            }
+        )
+        if(res.data.authenticate == true){
+            setIsAuth(true)
+        }else{
+            setIsAuth(false)
+            return
+        }
+        }catch(e){
+            setIsAuth(false) 
+        }
+    }
+
+    check_Auth();
+
+},[])
+
+    const logOut = async ()=>{
+
+        try{
+            await axios.post("https://massagebox.runflare.run/massage/logout/",
+                {},
+                {
+                    withCredentials:true,
+                }
+            )
+        setIsAuth(false)
+    }catch(e){
+        console.log("cant logout")
+    }
+        }
+
 
     return ( 
 
-        <authContext.Provider value={{set_token, rm_token, isAuth, access}}>
+        <authContext.Provider value={{isAuth, logOut}}>
             {children}
         </authContext.Provider>
 

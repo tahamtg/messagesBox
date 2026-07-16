@@ -10,6 +10,10 @@ from rest_framework import status
 from .models import Massage
 from .models import User_Account
 import traceback
+from rest_framework_simplejwt.views import TokenObtainPairView
+from datetime import timedelta
+from rest_framework.permissions import IsAuthenticated
+
 
 #for post user_account and if is unique username
 @api_view(['POST'])
@@ -35,4 +39,47 @@ def Upload_profile(request):
             return Response(str(e), status= status.HTTP_400_BAD_REQUEST)
     else:
        return Response({"cant_put_profile" : "profile didnt updated!"})
-        
+
+@api_view(['GET'])
+@premission_classes([IsAuthenticated])
+def Check_Auth(request):
+    return Response({
+        authenticate: True,
+        username: request.user.username
+    })
+
+@api_view(['POST'])
+def LogOut(request):
+    response = Response({
+        "massage" : "Logout successful!"
+    })
+    response.delete_cookie("access")
+    response.delete_cookie("refresh")
+
+
+class CreateTokenCookie(TokenObtainPairView):
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        access_token = response.data["access"]
+        refresh_token = response.data["refresh"]
+
+        response.set_cookie(
+            key="access",
+            value=access_token,
+            httponly=True,
+            secure=True,
+            samesite="Strict",
+            max_age= 3600,
+        )
+
+        response.set_cookie(
+            key="refresh",
+            value=refresh_token,
+            httponly=True,
+            secure=True,
+            samesite="Strict",
+            max_age= int(timedelta(days=60).total_seconds()),
+        )
+
+        return response

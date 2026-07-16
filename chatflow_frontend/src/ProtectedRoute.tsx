@@ -8,7 +8,7 @@ const ProtectedRoute = ({ children }: {children: React.ReactNode}):JSX.Element =
    const ctx_auth = useContext(authContext)
    
         if(!ctx_auth?.isAuth){
-           return <Navigate to="/sign" replace/>
+           return <Navigate to="/login" replace/>
          }
      
        return <>{children}</>

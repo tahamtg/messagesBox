@@ -7,30 +7,27 @@ import { replace, useNavigate, Link } from "react-router-dom"
 import './login.css'
 import Logo from '../public/d862b856-2462-456f-ada2-8f3f8304c7c8.png'
 
-interface Token_type{
-    access : string,
-    refresh :string
-}
-
 const Login = ()=>{
     const {form, setForm} = useContext(Usecontext)!
     const auth = useContext(authContext)
     const [error, setError] = useState<string | null>(null)
     const [mass, setMass] = useState<string | null>(null)
-     const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
     
 
     const toLogin = async ()=>{
         try{
             setLoading(true)
-            const res = await axios.post<Token_type>("https://massagebox.runflare.run/massage/token/" ,
-                {username: form.username,
-                password:  form.password}
+            const res = await axios.post("https://massagebox.runflare.run/massage/login/" ,
+            {
+                username: form.username,
+                password:  form.password
+            },
+            {
+                withCredentials: true,
+            }
             )
-                
-                const have_auth = auth?.set_token(res.data.access, res.data.refresh)
-                const promis = await new Promise((have_auth)=> setTimeout(have_auth, 3000))
                 setError(null)
                 navigate("/", {replace:true})
 

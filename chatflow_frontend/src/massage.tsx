@@ -55,10 +55,9 @@ const [userid, setUserid] = useState<getinfo[]>([]);
 //===========For WebSocket===========//
 
 useEffect(() => {
-    if (!auth?.access) return;
 
     socket.current = new WebSocket(
-        `wss://massagebox.runflare.run/ws/chat/general/?token=${auth.access}`
+        `wss://massagebox.runflare.run/ws/chat/general/`
     );
 
     socket.current.onopen = () => {
@@ -114,7 +113,7 @@ useEffect(() => {
         socket.current?.close();
     };
     
-}, [auth?.access]);
+}, []);
 
 
 const post_Massage = (event: React.FormEvent<HTMLFormElement>) => {
@@ -150,6 +149,7 @@ const handler = (e: MouseEvent | TouchEvent) =>{
     if (menuref.current && !menuref.current.contains(target)){
 
         setIsopen(false)
+        
     }
 
 };
@@ -232,7 +232,7 @@ return (
 
             <section className="title-logout">
 
-                <button onClick={() => auth?.rm_token()}>
+                <button onClick={() => auth?.logOut()}>
                 
                     {auth?.isAuth && <span>خروج</span>}
 
@@ -248,13 +248,16 @@ return (
 
         <div className='massages'>
 
-{message.map((messageText, index) => {
-    const showUsername =
-        index === 0 ||
-        message[index - 1].username !== messageText.username;
+        {message.map((messageText, index) => {
+            const showUsername =
+            index === 0 ||
+            message[index - 1].username !== messageText.username;
 
     return (
-        <section className="par-mass" key={messageText.id}>
+        <section className="par-mass" key={messageText.id} onContextMenu={(e)=> contextMenu(e, messageText.id)} 
+        onPointerDown={(e)=> pressFin(e, messageText.id)}
+        onPointerUp={setTimeOut} 
+        onPointerCancel={setTimeOut}   >
             {showUsername && (
                 <span
                     onClick={() => {
@@ -282,13 +285,15 @@ return (
             width : "fit-content"
         }}>
             
-            {message.map((msg)=>
+          
+            <button onClick={()=> {if (selectId) copy_massage(selectId);
 
-            <button onClick={()=> copy_massage(msg.id)} className="copy">
+            
+            }} className="copy">
                 کپی
             </button>
-)}
-            <button onClick={() => selectId && delete_massage(selectId)} className="delete">
+
+            <button onClick={() =>  {if (selectId) delete_massage(selectId);}} className="delete">
                 حذف
             </button>
 
