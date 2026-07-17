@@ -55,8 +55,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://massagebox.runflare.run"
+]
+
 CORS_ALLOWED_ORIGINS = [
-   "http://localhost:5173"
+   "https://massagebox.runflare.run"
     ]
 
 
@@ -65,7 +69,12 @@ ASGI_APPLICATION = "massagebox.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                ("redis", 6379)
+            ],
+        },
     },
 }
 
@@ -147,9 +156,8 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 AUTH_USER_MODEL = 'massage.User_Account'
 
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'massage.authentication.CookieJWTAuthentication',
     ),
 }

@@ -14,6 +14,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from datetime import timedelta
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 #for post user_account and if is unique username
@@ -72,7 +73,7 @@ class CreateTokenCookie(TokenObtainPairView):
         response = super().post(request, *args, **kwargs)
 
         print("TOKEN RESPONSE:", response.data)
-        
+
         access_token = response.data["access"]
         refresh_token = response.data["refresh"]
 
@@ -81,7 +82,7 @@ class CreateTokenCookie(TokenObtainPairView):
             value=access_token,
             httponly=True,
             secure=True,
-            samesite="Strict",
+            samesite="None",
             max_age= 3600,
         )
 
@@ -90,7 +91,7 @@ class CreateTokenCookie(TokenObtainPairView):
             value=refresh_token,
             httponly=True,
             secure=True,
-            samesite="Strict",
+            samesite="None",
             max_age= int(timedelta(days=60).total_seconds()),
         )
 
