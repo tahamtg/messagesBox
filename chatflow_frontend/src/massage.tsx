@@ -13,9 +13,9 @@ import outIcon from '../public/logout-svgrepo-com.svg'
 interface get_data_from_websooket{
     message : string,
     username : string,
-    username_id : number,
     date : string,
-    userid: number
+    username_id: number,
+    payam: string,
 }
 
 interface getinfo{
@@ -88,9 +88,10 @@ useEffect(() => {
             {
                 message: data.message,
                 username: data.username,
-                username_id: data.id,
+                id: data.id,
                 date: data.date,
-                userid: data.username_id
+                username_id: data.username_id,
+                payam: data.payam,
         }
     ]);
     }
@@ -284,7 +285,7 @@ return (
                 <span
                     onClick={() => {
                     console.log("CLICKED");
-                    send_ID_user(messageText.userid!);
+                    send_ID_user(messageText.username_id!);
                     }}
                 
                 style={{ cursor: "pointer" }} className="username">

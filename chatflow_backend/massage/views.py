@@ -26,7 +26,7 @@ def show_another_messages(request):
         data.append(
             {
                 "user": m.user.username,
-                "payam": m.payam,
+                "message": m.payam,
                 "publish_date": m.publish_date,
             }
             )
