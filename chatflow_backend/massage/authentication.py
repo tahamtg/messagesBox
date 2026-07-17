@@ -10,10 +10,17 @@ class CookieJWTAuthentication(JWTAuthentication):
         token = request.COOKIES.get("access")
 
         if not token:
+            print("NO TOKEN")
             return None
 
+        print("TOKEN FOUND")
+
         validated_data = self.get_validated_token(token)
+
         print("User Vlidated:", validated_data)
+
         get_user = self.get_user(validated_data)
+
         print('User:', get_user)
+        
         return (get_user, validated_data)
