@@ -15,5 +15,5 @@ class CookieJWTAuthentication(JWTAuthentication):
         validated_data = self.get_validated_token(token)
         print("User Vlidated:", validated_data)
         get_user = self.get_user(validated_data)
-        print('User:' get_user)
+        print('User:', get_user)
         return (get_user, validated_data)
