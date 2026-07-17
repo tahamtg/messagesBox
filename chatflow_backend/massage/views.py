@@ -64,8 +64,9 @@ def LogOut(request):
 
 class CreateTokenCookie(TokenObtainPairView):
 
+    print("LOGIN DATA:", request.data)
     def post(self, request, *args, **kwargs):
-        print("LOGIN VIEW START")
+        print("TOKEN RESPONSE:", response.data)
         response = super().post(request, *args, **kwargs)
         access_token = response.data["access"]
         refresh_token = response.data["refresh"]
