@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState, type JSX } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface context_content{
     isAuth : boolean,
@@ -14,6 +15,7 @@ export const authContext = createContext <context_content | null> (null)
  export const AuthProvider = ({ children }: { children: React.ReactNode }):JSX.Element => {
 
     const [isAuth, setIsAuth] = useState(false)
+    const navigate = useNavigate()
 
     useEffect(()=>{
 
@@ -51,6 +53,7 @@ export const authContext = createContext <context_content | null> (null)
                 }
             )
         setIsAuth(false)
+        navigate("/login", {replace: true})
     }catch(e){
         console.log("cant logout")
     }
