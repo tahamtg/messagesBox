@@ -52,7 +52,7 @@ def Check_Auth(request):
 
 @api_view(['POST'])
 def LogOut(request):
-    
+
     response = Response({
         "massage" : "Logout successful!"
     })
@@ -65,6 +65,7 @@ def LogOut(request):
 class CreateTokenCookie(TokenObtainPairView):
 
     def post(self, request, *args, **kwargs):
+        print("LOGIN VIEW START")
         response = super().post(request, *args, **kwargs)
         access_token = response.data["access"]
         refresh_token = response.data["refresh"]
