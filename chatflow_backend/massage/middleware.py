@@ -1,5 +1,5 @@
 from channels.db import database_sync_to_async
-
+from rest_framework_simplejwt.exceptions import TokenError
 
 class JWTAuthMiddleware:
 
@@ -16,41 +16,34 @@ class JWTAuthMiddleware:
 
         if scope["type"] == "websocket":
 
-            headers = dict(scope["headers"])
-
-            cookie = headers.get(b"cookie")
-
+            header = dic(scope['headers'])
+            cookie = header.get(b"cookie")
+            cookie = cookie.decode()
             if not cookie:
                 return await self.app(scope, receive, send)
-
-
-            cookie = cookie.decode()
-
-            cookies = {}
-
-            for i in cookie.split(";"):
-
-                key, value = i.strip().split("=", 1)
-
+            cookies ={}
+            for items in cookie.split(";"):
+                key, value = cookie.strip().split('=', 1)
                 cookies[key] = value
+            token = cookies["access"]
 
+            try:
 
-            token = cookies.get("access")
+                access = token.AccessToken(token)
+            
+            except TokenError:
 
+                scope["user"] = AnonymousUser()
+                return await self.app(scope, receive, send)
+            
+            user_id = access["user_id"]
 
-            if token:
+            userid = database_sync_to_async(User_Account.get)(
+                id=user_id
+            )
 
-                access = AccessToken(token)
+            scope["user"] = userid
 
-                user_id = access["user_id"]
-
-
-                user = await database_sync_to_async(
-                    User_Account.objects.get
-                )(id=user_id)
-
-
-                scope["user"] = user
 
 
         return await self.app(scope, receive, send)

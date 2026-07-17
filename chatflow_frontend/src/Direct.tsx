@@ -58,10 +58,9 @@ const [userID , setUserID] = useState()
 
 useEffect(() => {
     
-    if (!auth?.access) return;
 
     socket.current = new WebSocket(
-        `wss://massagebox.runflare.run/ws/chat/${chat_id}/?token=${auth.access}`
+        `wss://massagebox.runflare.run/ws/chat/${chat_id}/`
     );
 
     socket.current.onopen = () => {
@@ -118,7 +117,7 @@ socket.current.onmessage = (event) => {
         socket.current?.close();
     };
     
-}, [auth?.access]);
+}, []);
 
 const post_Massage = (event: React.FormEvent<HTMLFormElement>) => {
     
@@ -228,10 +227,10 @@ return (
 
             <section className="title-logout">
 
-                <h2>{auth?.access && form.username}</h2>
+                
 
                 <button onClick={() => {
-                            auth?.rm_token();
+                            auth?.logOut;
                             navigate("/sign");
                         }}>
 
