@@ -13,7 +13,7 @@ import outIcon from '../public/logout-svgrepo-com.svg'
 interface get_data_from_websooket{
     message : string,
     username : string,
-    id : number,
+    username_id : number,
     date : string,
     userid: number
 }
@@ -76,7 +76,7 @@ useEffect(() => {
     }
 
     if(data.type == "message_deleted"){
-        setMessages((prev)=> prev.filter((msg)=> msg.id !== data.mass_id));
+        setMessages((prev)=> prev.filter((msg)=> msg.username_id !== data.mass_id));
         setIsopen(false);
         return;
     }
@@ -88,7 +88,7 @@ useEffect(() => {
             {
                 message: data.message,
                 username: data.username,
-                id: data.id,
+                username_id: data.id,
                 date: data.date,
                 userid: data.username_id
         }
@@ -133,6 +133,28 @@ const post_Massage = (event: React.FormEvent<HTMLFormElement>) => {
 
     setNewMassage("");
 };
+
+//===========For Messages===========//
+
+const getOldMessages = async () => {
+    try {
+        const response = await axios.get(
+            "https://massagebox.runflare.run/massage/messages/",
+            {
+                withCredentials: true
+            }
+        );
+
+        setMessages(response.data);
+
+    } catch (error) {
+        console.log("GET OLD MESSAGES ERROR:", error);
+    }
+};
+
+useEffect(() => {
+    getOldMessages();
+}, []);
 
 //===========For menu===========//
 
@@ -199,7 +221,7 @@ const delete_massage= (id_massage: number)=>{
 
     const copy_massage = (id:number) =>{
 
-        const cp_mass = message.find((msg)=> msg.id == id)
+        const cp_mass = message.find((msg)=> msg.username_id == id)
         if (!cp_mass){return}
         navigator.clipboard.writeText(cp_mass.message)
         setIsopen(false)
@@ -254,8 +276,8 @@ return (
             message[index - 1].username !== messageText.username;
 
     return (
-        <section className="par-mass" key={messageText.id} onContextMenu={(e)=> contextMenu(e, messageText.id)} 
-        onPointerDown={(e)=> pressFin(e, messageText.id)}
+        <section className="par-mass" key={messageText.username_id} onContextMenu={(e)=> contextMenu(e, messageText.username_id)} 
+        onPointerDown={(e)=> pressFin(e, messageText.username_id)}
         onPointerUp={setTimeOut} 
         onPointerCancel={setTimeOut}   >
             {showUsername && (

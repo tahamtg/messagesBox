@@ -16,6 +16,22 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+@api_view(['GET'])
+def show_another_messages(request):
+    massages = Massage.objects.all()
+
+    data = []
+
+    for m in massages:
+        data.append(
+            {
+                "user": m.user.username,
+                "payam": m.payam,
+                "publish_date": m.publish_date,
+            }
+            )
+    
+    return Response(data)
 
 #for post user_account and if is unique username
 @api_view(['POST'])
