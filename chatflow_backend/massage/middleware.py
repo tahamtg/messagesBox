@@ -1,8 +1,6 @@
 from channels.db import database_sync_to_async
-from django.contrib.auth.models import AnonymousUser
-from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError
-from .models import User_Account
+
 
 
 class JWTAuthMiddleware:
@@ -11,6 +9,10 @@ class JWTAuthMiddleware:
         self.app = app
 
     async def __call__(self, scope, receive, send):
+        from django.contrib.auth.models import AnonymousUser
+        from rest_framework_simplejwt.tokens import AccessToken
+        from .models import User_Account
+
 
         scope["user"] = AnonymousUser()
 
@@ -37,7 +39,7 @@ class JWTAuthMiddleware:
                 try:
                     access = AccessToken(token)
 
-                    user_id = access["user_id"]
+                    user_id = access.get("user_id")
 
                     user = await database_sync_to_async(
                         User_Account.objects.get
@@ -45,7 +47,7 @@ class JWTAuthMiddleware:
 
                     scope["user"] = user
 
-                except TokenError:
+                except (TokenError, User_Account.DoesNotExist):
                     scope["user"] = AnonymousUser()
 
         return await self.app(scope, receive, send)
