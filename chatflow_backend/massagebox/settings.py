@@ -59,10 +59,12 @@ CSRF_TRUSTED_ORIGINS = [
     "https://massagebox.runflare.run"
 ]
 
+
 CORS_ALLOWED_ORIGINS = [
    "https://massagebox.runflare.run"
     ]
 
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'massagebox.urls'
 ASGI_APPLICATION = "massagebox.asgi.application"

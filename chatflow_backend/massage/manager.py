@@ -8,6 +8,7 @@ class Username_Manager(BaseUserManager):
         user = self.model(username=username)
         user.set_password(password)
         user.save(using= self._db)
+        user.is_active = True
         return user
 
     def create_superuser(self, username, password=None):
