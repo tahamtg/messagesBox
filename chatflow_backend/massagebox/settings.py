@@ -27,6 +27,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
+from datetime import timedelta
 
 # Application definition
 
@@ -157,4 +158,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'massage.authentication.CookieJWTAuthentication',
     ),
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME" : timedelta(days=1)
 }

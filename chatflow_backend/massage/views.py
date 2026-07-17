@@ -101,7 +101,7 @@ class CreateTokenCookie(TokenObtainPairView):
             httponly=True,
             secure=True,
             samesite="None",
-            max_age= 3600,
+            max_age= 86400,
         )
 
         response.set_cookie(
