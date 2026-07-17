@@ -201,6 +201,7 @@ const setTimeOut = ()=>{
 };
 
 const delete_massage= (id_massage: number)=>{
+    console.log("DELETE ID:", id_massage);
     socket.current?.send(
       JSON.stringify({
         type: "delete_message",
@@ -316,7 +317,9 @@ return (
                 کپی
             </button>
 
-            <button onClick={() =>  {if (selectId) delete_massage(selectId);}} className="delete">
+            <button onClick={() =>  {if (selectId) delete_massage(selectId);
+
+            }} className="delete">
                 حذف
             </button>
 
