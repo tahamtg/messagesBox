@@ -3,6 +3,7 @@ import axios from "axios";
 
 interface context_content{
     isAuth : boolean,
+    setIsAuth: React.Dispatch<React.SetStateAction<boolean>>,
     logOut: ()=> void
 }
 
@@ -25,7 +26,7 @@ export const authContext = createContext <context_content | null> (null)
                 withCredentials: true,
             }
         )
-        if(res.data.authenticate == true){
+        if(res.data.authenticate === true){
             setIsAuth(true)
         }else{
             setIsAuth(false)
@@ -58,7 +59,7 @@ export const authContext = createContext <context_content | null> (null)
 
     return ( 
 
-        <authContext.Provider value={{isAuth, logOut}}>
+        <authContext.Provider value={{isAuth, setIsAuth , logOut}}>
             {children}
         </authContext.Provider>
 

@@ -46,6 +46,8 @@ def Upload_profile(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def Check_Auth(request):
+    print("USER:", request.user)
+    print("COOKIES:", request.COOKIES)
     return Response({
         "authenticate": True,
         "username": request.user.username

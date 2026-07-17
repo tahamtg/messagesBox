@@ -28,12 +28,13 @@ const Login = ()=>{
                 withCredentials: true,
             }
             )
+                auth?.setIsAuth(true)
                 setError(null)
                 navigate("/", {replace:true})
-
+                
             
         }catch(e: any){   
-
+            auth?.setIsAuth(false)
             setError("نام کاربری یا رمز عبور اشتباه است")   
             setMass(null)    
             console.error("somthing is wrong!", e.response?.data)
