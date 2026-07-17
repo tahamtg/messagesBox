@@ -13,6 +13,7 @@ import traceback
 from rest_framework_simplejwt.views import TokenObtainPairView
 from datetime import timedelta
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 
 
 #for post user_account and if is unique username
@@ -40,22 +41,26 @@ def Upload_profile(request):
     else:
        return Response({"cant_put_profile" : "profile didnt updated!"})
 
+
 @api_view(['GET'])
-@premission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def Check_Auth(request):
     return Response({
-        authenticate: True,
-        username: request.user.username
+        "authenticate": True,
+        "username": request.user.username
     })
 
 @api_view(['POST'])
 def LogOut(request):
+    
     response = Response({
         "massage" : "Logout successful!"
     })
+
     response.delete_cookie("access")
     response.delete_cookie("refresh")
 
+    return response
 
 class CreateTokenCookie(TokenObtainPairView):
 
