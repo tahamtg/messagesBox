@@ -16,6 +16,7 @@ interface get_data_from_websooket{
     date : string,
     username_id: number,
     payam: string,
+    id: number
 }
 
 interface getinfo{
@@ -76,7 +77,7 @@ useEffect(() => {
     }
 
     if(data.type == "message_deleted"){
-        setMessages((prev)=> prev.filter((msg)=> msg.username_id !== data.mass_id));
+        setMessages((prev)=> prev.filter((msg)=> msg.id !== data.mass_id));
         setIsopen(false);
         return;
     }
@@ -95,7 +96,7 @@ useEffect(() => {
         }
     ]);
     }
-    
+
 };
 
     socket.current.onclose = (event) => {
@@ -200,6 +201,8 @@ const setTimeOut = ()=>{
 
 };
 
+//===========For delete_massage===========//
+
 const delete_massage= (id_massage: number)=>{
     console.log("DELETE ID:", id_massage);
     socket.current?.send(
@@ -221,13 +224,15 @@ const delete_massage= (id_massage: number)=>{
 
     }, []);
 
-    const copy_massage = (id:number) =>{
+//===========For copy_massage===========//
 
-        const cp_mass = message.find((msg)=> msg.username_id == id)
+    const copy_massage = (id:number) =>{
+        console.log("start func copy")
+        const cp_mass = message.find((msg)=> msg.id == id)
         if (!cp_mass){return}
         navigator.clipboard.writeText(cp_mass.message)
+        console.log("COPIED:" )
         setIsopen(false)
-
     }
 
     
@@ -278,8 +283,8 @@ return (
             message[index - 1].username !== messageText.username;
 
     return (
-        <section className="par-mass" key={messageText.username_id} onContextMenu={(e)=> contextMenu(e, messageText.username_id)} 
-        onPointerDown={(e)=> pressFin(e, messageText.username_id)}
+        <section className="par-mass" key={messageText.id} onContextMenu={(e)=> contextMenu(e, messageText.id)} 
+        onPointerDown={(e)=> pressFin(e, messageText.id)}
         onPointerUp={setTimeOut} 
         onPointerCancel={setTimeOut}   >
             {showUsername && (

@@ -25,7 +25,7 @@ def show_another_messages(request):
     for m in massages:
         data.append(
             {
-                "user": m.user.username,
+                "username": m.user.username,
                 "message": m.payam,
                 "publish_date": m.publish_date,
             }
