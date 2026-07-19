@@ -231,7 +231,7 @@ const delete_massage= (id_massage: number)=>{
         const cp_mass = message.find((msg)=> msg.id == id)
         if (!cp_mass){return}
         navigator.clipboard.writeText(cp_mass.message)
-        console.log("COPIED:" )
+        console.log("COPIED")
         setIsopen(false)
     }
 
