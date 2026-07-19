@@ -125,6 +125,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         data = json.loads(text_data)
 
+        currentUser = self.scope["user"]
+
         if data.get("type") == "delete_message":
             await self.delete_mass(text_data)
             return
@@ -154,7 +156,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "username": self.scope["user"].username,
                     "date_massage": my_model.publish_date.isoformat(),
                     "massage_id": my_model.id,
-                    "username_id": username_id
+                    "username_id": username_id,
+                    "curent_user": currentUser,
+                    "curent_user_id": currentUser.id
                 }
             )
 
@@ -166,6 +170,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "username": event["username"],
                 "date": event["date_massage"],
                 "id": event["massage_id"],
-                "username_id": event["username_id"]
+                "username_id": event["username_id"],
+                "curent_user": event["curent_user"],
+                "curent_user_id": event["curent_user_id"]
             })
         )

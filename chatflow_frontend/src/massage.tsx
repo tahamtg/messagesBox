@@ -16,7 +16,9 @@ interface get_data_from_websooket{
     date : string,
     username_id: number,
     payam: string,
-    id: number
+    id: number,
+    curent_user: string,
+    curent_user_id: number
 }
 
 interface getinfo{
@@ -87,6 +89,8 @@ useEffect(() => {
     if (data.type === "chat_message") {
         setMessages((prev) => [...prev, 
             {
+                curent_user: data.curent_user,
+                curent_user_id: data.curent_user_id,
                 message: data.message,
                 username: data.username,
                 id: data.id,
@@ -201,6 +205,7 @@ const setTimeOut = ()=>{
 
 };
 
+
 //===========For delete_massage===========//
 
 const delete_massage= (id_massage: number)=>{
@@ -283,13 +288,21 @@ return (
             message[index - 1].username !== messageText.username;
 
     return (
-        <section className="par-mass" key={messageText.id} onContextMenu={(e)=> contextMenu(e, messageText.id)} 
+        
+        <section className={
+            
+        messageText.username_id === messageText.curent_user_id ? "current-par-mass" : "par-mass"
+
+        } 
+        
+        key={messageText.id} onContextMenu={(e)=> contextMenu(e, messageText.id)} 
         onPointerDown={(e)=> pressFin(e, messageText.id)}
         onPointerUp={setTimeOut} 
         onPointerCancel={setTimeOut}   >
             {showUsername && (
-                <span
+                <span   
                     onClick={() => {
+                    if(messageText.username_id === messageText.curent_user_id) return;
                     console.log("CLICKED");
                     send_ID_user(messageText.username_id!);
                     }}
