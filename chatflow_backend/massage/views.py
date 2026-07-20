@@ -26,6 +26,7 @@ def show_another_messages(request):
         data.append(
             {
                 "username": m.user.username,
+                "current_username": m.user.username,
                 "message": m.payam,
                 "publish_date": m.publish_date,
             }
@@ -66,7 +67,8 @@ def Check_Auth(request):
     print("COOKIES:", request.COOKIES)
     return Response({
         "authenticate": True,
-        "username": request.user.username
+        "username": request.user.username,
+        "username_id": request.user.id,
     })
 
 @api_view(['POST'])

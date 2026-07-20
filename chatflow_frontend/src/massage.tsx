@@ -291,7 +291,7 @@ return (
         
         <section className={
             
-        messageText.username_id === messageText.curent_user_id ? "current-par-mass" : "par-mass"
+            messageText.username_id === auth?.currentUser.username_id ? "current-par-mass" : "par-mass"
 
         } 
         
@@ -302,7 +302,7 @@ return (
             {showUsername && (
                 <span   
                     onClick={() => {
-                    if(messageText.username_id === messageText.curent_user_id) return;
+                    if(messageText.username_id === auth?.currentUser.username_id) return;
                     console.log("CLICKED");
                     send_ID_user(messageText.username_id!);
                     }}
