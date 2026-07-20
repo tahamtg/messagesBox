@@ -31,7 +31,7 @@ const Login = ()=>{
                 auth?.setIsAuth(true)
                 setError(null)
                 navigate("/", {replace:true})
-                
+                console.log(auth?.currentUser);
             
         }catch(e: any){   
             auth?.setIsAuth(false)
