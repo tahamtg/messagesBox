@@ -55,6 +55,8 @@ const navigate = useNavigate()
 
 const [userid, setUserid] = useState<getinfo[]>([]);
 
+const messageRef = useRef<HTMLDivElement>(null)
+
 //===========For WebSocket===========//
 
 useEffect(() => {
@@ -255,6 +257,22 @@ const delete_massage= (id_massage: number)=>{
     useEffect(() => {
     
 }, []);
+
+//===========For To Scroll Div Messages===========//
+
+useEffect(()=>{
+
+    if(!messageRef.current) return;
+ 
+    messageRef.current?.scrollTo({
+    top: messageRef.current.scrollHeight,
+    behavior: "smooth"
+});
+
+}, [message]);
+
+
+
      
 //===========For Final Fragment===========//
 
@@ -280,7 +298,7 @@ return (
                 <span style={{ color: "red" }}>{disconnected}</span>
             )}
 
-        <div className='massages'>
+        <div ref={messageRef} className='massages'>
 
         {message.map((messageText, index) => {
             const showUsername =
