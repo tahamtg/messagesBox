@@ -62,7 +62,7 @@ const messageRef = useRef<HTMLDivElement>(null)
 useEffect(() => {
 
     socket.current = new WebSocket(
-        `wss://massagebox.runflare.run/ws/chat/general/`
+        `wss://massagesbox.ir/ws/chat/general/`
     );
 
     socket.current.onopen = () => {
@@ -147,7 +147,7 @@ const post_Massage = (event: React.FormEvent<HTMLFormElement>) => {
 const getOldMessages = async () => {
     try {
         const response = await axios.get(
-            "https://massagebox.runflare.run/massage/messages/",
+            "https://massagesbox.ir/massage/messages/",
             {
                 withCredentials: true
             }

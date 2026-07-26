@@ -57,12 +57,12 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://massagebox.runflare.run"
+    "https://massagesbox.ir"
 ]
 
 
 CORS_ALLOWED_ORIGINS = [
-   "https://massagebox.runflare.run"
+   "https://massagesbox.ir"
     ]
 
 CORS_ALLOW_CREDENTIALS = True

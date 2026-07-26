@@ -60,7 +60,7 @@ useEffect(() => {
     
 
     socket.current = new WebSocket(
-        `wss://massagebox.runflare.run/ws/chat/${chat_id}/`
+        `wss://massagesbox.ir/ws/chat/${chat_id}/`
     );
 
     socket.current.onopen = () => {

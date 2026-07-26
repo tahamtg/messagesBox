@@ -37,7 +37,7 @@ export const authContext = createContext <context_content | null> (null)
 
     const check_Auth = async ()=>{
         try{
-            const res = await axios.get("https://massagebox.runflare.run/massage/check-auth/",
+            const res = await axios.get("https://massagesbox.ir/massage/check-auth/",
             {
                 withCredentials: true,
             }
@@ -66,7 +66,7 @@ export const authContext = createContext <context_content | null> (null)
     const logOut = async ()=>{
 
         try{
-            await axios.post("https://massagebox.runflare.run/massage/logout/",
+            await axios.post("https://massagesbox.ir/massage/logout/",
                 {},
                 {
                     withCredentials:true,
