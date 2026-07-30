@@ -11,7 +11,6 @@ interface context_content{
     setCurrentuser: React.Dispatch<React.SetStateAction<CurrentUser>>
 }
 
-
 interface CurrentUser{
     username: string,
     username_id: number

@@ -2,7 +2,6 @@ import React, { useState, useEffect ,useContext, useRef} from 'react'
 import { Usecontext } from './context';
 import {authContext} from './authprovider';
 import { useParams } from 'react-router-dom';
-import './massage.css'
 import  sendIcon  from './assets/send-svgrepo-com.svg'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -26,7 +25,7 @@ interface getinfo{
     userid: number | null
 }
 
-const Massage : React.FC = () =>{
+const Room2 : React.FC = () =>{
 
 
 const auth = useContext(authContext)
@@ -62,7 +61,7 @@ const messageRef = useRef<HTMLDivElement>(null)
 useEffect(() => {
 
     socket.current = new WebSocket(
-        `wss://massagesbox.ir/ws/chat/general/`
+        `wss://massagesbox.ir/ws/chat/room2/`
     );
 
     socket.current.onopen = () => {
@@ -279,20 +278,6 @@ useEffect(()=>{
 return (
     <>
         <div className='back-chat'>
-            <div className="header">
-                <h1>massageBOX</h1>
-
-            <section className="title-logout">
-
-                <button onClick={() => auth?.logOut()}>
-                
-                    {auth?.isAuth && <span>خروج</span>}
-
-                </button>
-
-            </section>
-
-            </div>
 
             {disconnected && (
                 <span style={{ color: "red" }}>{disconnected}</span>
@@ -390,4 +375,4 @@ return (
 );
 }
 
-export default Massage;
+export default Room2;

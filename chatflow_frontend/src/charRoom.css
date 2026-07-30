@@ -13,54 +13,14 @@
     flex-direction: column;
 }
 
-/* Header */
 
-.header {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: space-between;
-    align-items: center;
-    padding: 18px 25px;
-    border-bottom: 1px solid #222;
-}
 
 @font-face {
     font-family: font-Username;
     src: url(../public/فونت-Cabin-Condensed-Bold.ttf);
 }
 
-.header h1 {
-    font-size: 1.7rem;
-    color: white;
-    font-family: font-Username;
-    filter: drop-shadow(rgba(255, 255, 255, .4), 5px, 0px, 10px);
-    animation: glow 1s linear infinite alternate 1s;
-}
 
-@keyframes glow {
-    from {
-        text-shadow: 0 0 5px rgba(255,255,255,.5);
-    }
-    to {
-        text-shadow:
-            0 0 10px rgba(255,255,255,.8),
-            0 0 20px rgba(255,255,255,1);
-    }
-}
-
-.title-logout button {
-    background: crimson;
-    color: white;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: .3s;
-}
-
-.title-logout button:hover {
-    background: rgb(170, 0, 34);
-}
 
 /* Messages */
 

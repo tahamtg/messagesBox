@@ -119,7 +119,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data):
-        from .models import Massage
+        from .models import Massage, Room
 
         print("RAW:", text_data)
 
@@ -139,10 +139,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             print("MESSAGE:", data["message"])
 
+            room = await sync_to_async(
+                Room.objects.get
+            )(name = self.room_name)
+
             my_model = await sync_to_async(
                 Massage.objects.create
             )(
                 payam=data["message"],
+                room=room,
                 user=self.scope["user"]
             )
 

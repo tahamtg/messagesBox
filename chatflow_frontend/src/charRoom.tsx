@@ -1,24 +1,29 @@
 import React, { useState, useEffect ,useContext, useRef} from 'react'
-import { Usecontext } from './context';
 import {authContext} from './authprovider';
 import { useParams } from 'react-router-dom';
-import  sendIcon  from './assets/send-svgrepo-com.svg'
+import '../src/charRoom.css'
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 
 interface get_data_from_websooket{
-
     message : string,
     username : string,
-    id : number,
-    date : string
-
+    publish_date : string,
+    username_id: number,
+    payam: string,
+    id: number,
+    curent_user: string,
+    curent_user_id: number
 }
 
-const User_Direct : React.FC = () =>{
+interface getinfo{
+    username: string,
+    userid: number | null
+}
 
-const {form, setForm} = useContext(Usecontext)!
+const ChatRoom : React.FC = () =>{
+
 
 const auth = useContext(authContext)
 
@@ -28,13 +33,7 @@ const [message, setMessages] = useState<get_data_from_websooket[]>([])
 
 const [newMassage, setNewMassage] = useState<string>("")
 
-const timeMassage = useRef(null)
-
-const [typing, setTyping] = useState(false)
-
 const socket = useRef<WebSocket | null>(null)
-
-const [istyping, isTyping] = useState(false)
 
 const [disconnected, setDisconnected] = useState<string | null>(null)
 
@@ -50,16 +49,22 @@ const menuref = useRef<HTMLDivElement>(null)
 
 const navigate = useNavigate()
 
-const {chat_id} = useParams()
+const [userid, setUserid] = useState<getinfo[]>([]);
 
-const [userID , setUserID] = useState()
+const messageRef = useRef<HTMLDivElement>(null)
 
+const {roomName} = useParams()
+
+
+const room = roomName ?? 'general'
+
+
+//===========For WebSocket===========//
 
 useEffect(() => {
-    
 
     socket.current = new WebSocket(
-        `wss://massagesbox.ir/ws/chat/${chat_id}/`
+        `wss://massagesbox.ir/ws/chat/${room}/`
     );
 
     socket.current.onopen = () => {
@@ -68,12 +73,13 @@ useEffect(() => {
     };
 
 
-socket.current.onmessage = (event) => {
+    socket.current.onmessage = (event) => {
 
     const data = JSON.parse(event.data);
 
     if(data.type == "chat_ID"){
-        navigate(`${data.chat_id}`)
+        console.log("WS MESSAGE:", data);
+        navigate(`/chat/${data.chat_id}`)
     }
 
     if(data.type == "message_deleted"){
@@ -81,22 +87,24 @@ socket.current.onmessage = (event) => {
         setIsopen(false);
         return;
     }
-
+    
         console.log("RECEIVED:", data);
 
     if (data.type === "chat_message") {
         setMessages((prev) => [...prev, 
-
             {
+                curent_user: data.curent_user,
+                curent_user_id: data.curent_user_id,
                 message: data.message,
                 username: data.username,
                 id: data.id,
-                date: data.date,
-            }
-            
+                publish_date: data.date,
+                username_id: data.username_id,
+                payam: data.payam,
+        }
     ]);
     }
-    
+
 };
 
     socket.current.onclose = (event) => {
@@ -107,16 +115,16 @@ socket.current.onmessage = (event) => {
     };
 
     socket.current.onerror = (e) => {
-    console.log("WS ERROR:", e);
-    setError("خطای WebSocket (جزئیات در console)");
-    
+  console.log("WS ERROR:", e);
+  setError("اتصال قطع شد!");
 };
 
     return () => {
         socket.current?.close();
     };
     
-}, []);
+}, [room]);
+
 
 const post_Massage = (event: React.FormEvent<HTMLFormElement>) => {
     
@@ -136,6 +144,30 @@ const post_Massage = (event: React.FormEvent<HTMLFormElement>) => {
     setNewMassage("");
 };
 
+//===========For Messages===========//
+
+const getOldMessages = async () => {
+    try {
+        const response = await axios.get(
+            `https://massagesbox.ir/massage/${room}/`,
+            {
+                withCredentials: true
+            }
+        );
+
+        setMessages(response.data);
+
+    } catch (error) {
+        console.log("GET OLD MESSAGES ERROR:", error);
+    }
+};
+
+useEffect(() => {
+    getOldMessages();
+}, [room]);
+
+//===========For menu===========//
+
 const contextMenu = (e: React.MouseEvent, id: number)=>{
     e.preventDefault()
     setSelectId(id)
@@ -149,6 +181,7 @@ const handler = (e: MouseEvent | TouchEvent) =>{
     if (menuref.current && !menuref.current.contains(target)){
 
         setIsopen(false)
+        
     }
 
 };
@@ -163,7 +196,7 @@ const pressFin = (e: React.PointerEvent, id: number)=>{
         setPosi({x : e.clientX, y : e.clientY})
         setIsopen(true)
     
-    }, 5000)
+    }, 500)
 
 };
 
@@ -177,7 +210,10 @@ const setTimeOut = ()=>{
 };
 
 
+//===========For delete_massage===========//
+
 const delete_massage= (id_massage: number)=>{
+    console.log("DELETE ID:", id_massage);
     socket.current?.send(
       JSON.stringify({
         type: "delete_message",
@@ -197,17 +233,20 @@ const delete_massage= (id_massage: number)=>{
 
     }, []);
 
-    const copy_massage = (id:number) =>{
+//===========For copy_massage===========//
 
+    const copy_massage = (id:number) =>{
+        console.log("start func copy")
         const cp_mass = message.find((msg)=> msg.id == id)
         if (!cp_mass){return}
         navigator.clipboard.writeText(cp_mass.message)
+        console.log("COPIED")
         setIsopen(false)
-
     }
 
     
       const send_ID_user = async (userid:number) =>{
+        console.log("SENDING USER ID:", userid);
         socket.current?.send(
             JSON.stringify({
                 type : "create-direct",
@@ -216,55 +255,79 @@ const delete_massage= (id_massage: number)=>{
         )
     }
 
+
+    useEffect(() => {
+    
+}, []);
+
+//===========For To Scroll Div Messages===========//
+
+useEffect(()=>{
+
+    if(!messageRef.current) return;
+ 
+    messageRef.current?.scrollTo({
+    top: messageRef.current.scrollHeight,
+    behavior: "smooth"
+});
+
+}, [message]);
+
+
+
      
+//===========For Final Fragment===========//
+
 return (
     <>
         <div className='back-chat'>
-            <div className="header">
-                <h1>massageBOX</h1>
-                <h1>hiiii</h1>
-
-            <section className="title-logout">
-
-                
-
-                <button onClick={() => {
-                            auth?.logOut;
-                            navigate("/sign");
-                        }}>
-
-                {auth?.isAuth && <span>خروج</span>}
-
-                </button>
-
-            </section>
-
-            </div>
 
             {disconnected && (
                 <span style={{ color: "red" }}>{disconnected}</span>
             )}
 
+        <div ref={messageRef} className='massages'>
 
+        {message.map((messageText, index) => {
+            const showUsername =
+            index === 0 ||
+            message[index - 1].username !== messageText.username;
 
-        <div className='massages'>
-         
+    return (
+        
+        <section className={
             
-        {form.username&& <span>{form.username}</span> }
-           
-        <section className="par-mass">
+            messageText.username_id === auth?.currentUser.username_id ? "current-par-mass" : "par-mass"
 
-            {message.map((messageText) => (
-                <p
-            key={messageText.id}
-            onContextMenu={(e) => contextMenu(e, messageText.id)}
-            onPointerDown={(e) => pressFin(e, messageText.id)}
-            >
-            {messageText.message}
-        </p>
-        ))}
+        } 
+        
+        key={messageText.id} onContextMenu={(e)=> contextMenu(e, messageText.id)} 
+        onPointerDown={(e)=> pressFin(e, messageText.id)}
+        onPointerUp={setTimeOut} 
+        onPointerCancel={setTimeOut}   >
+            {showUsername && (
+                <span   
+                    onClick={() => {
+                    console.log(auth?.currentUser);
+                    console.log(messageText);
+                    if(messageText.username_id === auth?.currentUser.username_id) return;
+                    console.log("CLICKED");
+                    send_ID_user(messageText.username_id!);
+                    }}
+                
+                style={{ cursor: "pointer" }} className="username">
+                    {messageText.username}
+                </span>
+            )}
 
-            {isOpen && (
+            <p>{messageText.message}</p>
+        </section>
+    );
+})}
+
+        
+
+        {isOpen && (
             <section ref={menuref} className="menudetails" style={{
             position: "absolute",
             top: posi.y,
@@ -272,32 +335,38 @@ return (
             width : "fit-content"
         }}>
             
-            {message.map((msg)=>
+          
+            <button onClick={()=> {if (selectId) copy_massage(selectId);
 
-            <button onClick={()=> copy_massage(msg.id)} className="copy">
+            
+            }} className="copy">
                 کپی
             </button>
-)}
-            <button onClick={() => selectId && delete_massage(selectId)} className="delete">
+
+            <button onClick={() =>  {if (selectId) delete_massage(selectId);
+
+            }} className="delete">
                 حذف
             </button>
 
         </section>
             )}
 
-            </section>
+           
         </div>
 
             <div className="massage-text">
             <form onSubmit={post_Massage}>
+
                 <input
+                type='text'
                 value={newMassage}
                 onChange={(e) => setNewMassage(e.target.value)}
                 placeholder="چیزی بنویسید"
                 />
 
-                <button type="submit">
-                     <img src={sendIcon} alt="send icon" style={{ width: '20px', height: '20px' }} />
+                <button type="submit" className="send-btn">
+                     ارسال
                 </button>
 
             </form>
@@ -310,4 +379,4 @@ return (
 );
 }
 
-export default User_Direct;
+export default ChatRoom;

@@ -1,0 +1,79 @@
+.boxUser{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+.telev-user{
+    width:600px;
+    height:350px;
+
+    background:#111;
+    color:#39ff14;
+
+    border:12px solid #444;
+    border-radius:18px;
+
+    box-shadow:
+        0 0 30px rgba(0,0,0,.6),
+        inset 0 0 20px rgba(255,255,255,.05);
+
+    overflow-y:auto;
+    padding:20px;
+}
+
+.telev-user ul{
+    list-style:none;
+    margin:0;
+    padding:0;
+}
+
+.telev-user li{
+    padding:12px;
+    margin-bottom:10px;
+
+    border-radius:8px;
+
+    background:#202020;
+
+    font-size:18px;
+    transition:.3s;
+}
+
+.telev-user li:hover{
+    background:#39ff14;
+    color:black;
+}
+
+.buttons{
+    margin-top:25px;
+    display:flex;
+    gap:25px;
+}
+
+.buttons button{
+    width:130px;
+    height:45px;
+
+    border:none;
+    border-radius:10px;
+
+    background:#2d89ef;
+    color:white;
+
+    font-size:18px;
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.buttons button:hover{
+    transform:scale(1.05);
+    background:#0f6ad8;
+}
+
+.buttons button:active{
+    transform:scale(.96);
+}

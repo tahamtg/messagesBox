@@ -15,10 +15,27 @@ from datetime import timedelta
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.pagination import PageNumberPagination
+
+class Pagination(PageNumberPagination):
+
+    page_size = 5
+    page_query_param = "users"
+
+def Pagination_data(request):
+
+    users = User_Account.objects.all()
+    paginator = pagination()
+    serializer = Authenticate_User
+    query_res = paginator.paginate_queryset(users, request)
+    serializer_res = serializer(query_res, many=True)
+    return paginator.get_paginated_response(serializer_res.data)
 
 @api_view(['GET'])
-def show_another_messages(request):
-    massages = Massage.objects.all()
+def show_another_messages(request, room_name):
+
+    room = Room.objects.get(name=room_name)
+    massages = Massage.objects.filter(room=room)
 
     data = []
 
@@ -29,6 +46,7 @@ def show_another_messages(request):
                 "username_id": m.user.id,
                 "message": m.payam,
                 "publish_date": m.publish_date,
+                "id": m.id,
             }
             )
     

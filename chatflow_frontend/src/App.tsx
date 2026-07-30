@@ -1,5 +1,4 @@
 import { Routes, Route } from 'react-router-dom'
-import Massage from './massage'
 import Sign from './sign'
 import {Usecontext} from './context'
 import { AuthProvider } from './authprovider'
@@ -7,6 +6,9 @@ import ProtectedRoute from './ProtectedRoute'
 import React, { useState } from 'react'
 import Login from './login'
 import User_Direct from './Direct'
+import Layout from './Layout'
+import ChatRoom from './charRoom'
+import About from './about'
 
 interface api_sign {
   username: string,
@@ -25,24 +27,37 @@ const App: React.FC = () => {
   return (
    <Usecontext.Provider value={{form, setForm}}>
     <AuthProvider>
+
       <Routes>
          
+      <Route element={<Layout/>}>
+
         <Route path="/" element={
-          <ProtectedRoute>
-          <Massage />
-          </ProtectedRoute>
+         <ProtectedRoute>
+          <ChatRoom />
+         </ProtectedRoute>
           } />
         
-          <Route path='/chat/:chat_id' element={<User_Direct />} />
+        <Route
+        path="about"
+        element={<About />}
+        />
+        <Route path='/chat/:chat_id' element={<User_Direct />} />
+        <Route path='/:roomName' element={<ChatRoom />} />
+
+      </Route>
 
         <Route
           path="sign"
           element={<Sign />}
         />
-          <Route
+
+        <Route
           path="login"
           element={<Login />}
         />
+
+        
       </Routes>
     
     </AuthProvider>
@@ -50,4 +65,4 @@ const App: React.FC = () => {
   )
 }
 
-export default App
+export default App;
