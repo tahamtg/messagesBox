@@ -108,6 +108,7 @@ def upload(request):
     req = MassageBoxSerializers(data=request.data)
     if req.is_valid(raise_exception=True):
         req.save()
+        print(req.errors)
     return Response({"message": "Object saved",
     "data": req.data})
 
