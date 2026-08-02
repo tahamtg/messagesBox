@@ -143,7 +143,7 @@ const post_Massage = async (event: React.FormEvent<HTMLFormElement>) => {
         formdata.append("file", resFile);
     }
         
-    const req = await axios.post('https://massagesbox.ir/Upload/',
+    const req = await axios.post('https://massagesbox.ir/massage/Upload/',
         formdata
     ,{
         withCredentials: true
@@ -342,11 +342,11 @@ return (
             {messageText.media && (
                 <img
                 className="message-media"
-                src={`https://massagesbox.ir${messageText.media}`}
+                src={`https://massagesbox.ir/massage/${messageText.media}`}
                 alt="imageBOX"
             />
             )}
-            
+
             <p>{messageText.message}</p>
         </section>
     );
