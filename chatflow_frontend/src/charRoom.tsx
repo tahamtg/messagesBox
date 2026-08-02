@@ -14,7 +14,8 @@ interface get_data_from_websooket{
     payam: string,
     id: number,
     curent_user: string,
-    curent_user_id: number
+    curent_user_id: number,
+    media: string | null,
 }
 
 interface getinfo{
@@ -54,6 +55,8 @@ const [userid, setUserid] = useState<getinfo[]>([]);
 const messageRef = useRef<HTMLDivElement>(null)
 
 const {roomName} = useParams()
+
+const [resFile, setResFile] = useState<File | null>(null)
 
 
 const room = roomName ?? 'general'
@@ -101,6 +104,7 @@ useEffect(() => {
                 publish_date: data.date,
                 username_id: data.username_id,
                 payam: data.payam,
+                media: data.media,
         }
     ]);
     }
@@ -126,9 +130,26 @@ useEffect(() => {
 }, [room]);
 
 
-const post_Massage = (event: React.FormEvent<HTMLFormElement>) => {
+//===========For Post Messages & Media===========//
+
+
+const post_Massage = async (event: React.FormEvent<HTMLFormElement>) => {
     
     event.preventDefault();
+
+    const formdata: FormData = new FormData()
+    
+    if (resFile){
+        formdata.append("file", resFile);
+    }
+        
+    const req = await axios.post('https://massagesbox.ir/Upload/',
+        formdata
+    ,{
+        withCredentials: true
+    });
+
+    
     
     if (!socket.current || socket.current.readyState !== WebSocket.OPEN){
         console.error("connection to websocket is failed!")
@@ -274,8 +295,6 @@ useEffect(()=>{
 }, [message]);
 
 
-
-     
 //===========For Final Fragment===========//
 
 return (
@@ -320,6 +339,14 @@ return (
                 </span>
             )}
 
+            {messageText.media && (
+                <img
+                className="message-media"
+                src={`https://massagesbox.ir${messageText.media}`}
+                alt="imageBOX"
+            />
+            )}
+            
             <p>{messageText.message}</p>
         </section>
     );
@@ -368,6 +395,12 @@ return (
                 <button type="submit" className="send-btn">
                      ارسال
                 </button>
+
+                <input type="file" name="file" id="file" onChange={(e)=> {
+                    if (e.target.files?.length){
+                        setResFile(e.target.files[0]);
+                    }
+                }} />
 
             </form>
 

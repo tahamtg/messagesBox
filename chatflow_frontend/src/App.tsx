@@ -33,9 +33,9 @@ const App: React.FC = () => {
       <Route element={<Layout/>}>
 
         <Route path="/" element={
-         <ProtectedRoute>
+         //<ProtectedRoute>
           <ChatRoom />
-         </ProtectedRoute>
+         //</ProtectedRoute>
           } />
         
         <Route

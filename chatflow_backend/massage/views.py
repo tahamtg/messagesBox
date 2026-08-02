@@ -47,6 +47,7 @@ def show_another_messages(request, room_name):
                 "message": m.payam,
                 "publish_date": m.publish_date,
                 "id": m.id,
+                "media": str(m.media) if m.media else None,
             }
             )
     
@@ -100,6 +101,16 @@ def LogOut(request):
     response.delete_cookie("refresh")
 
     return response
+
+@api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
+def upload(request):
+    req = MassageBoxSerializers(data=request.data)
+    if req.is_valid(raise_exception=True):
+        req.save()
+    return Response({"message": "Object saved",
+    "data": req.data})
+
 
 class CreateTokenCookie(TokenObtainPairView):
 

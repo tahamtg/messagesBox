@@ -3,6 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {authContext} from './authprovider';
 import './header.css'
 import { Link } from "react-router-dom";
+import { useMediaQuery } from "react-responsive";
+import box1 from '../public/box1.png'
+import box2 from '../public/box2.png'
 
 const Header = () => {
 
@@ -11,6 +14,9 @@ const Header = () => {
     const auth = useContext(authContext)
     const [openPopUp, setOpenPopUP] = useState(false)
     const aside = useRef<HTMLDivElement>(null)
+    const mobileres = useMediaQuery({
+        maxWidth: 768
+    })
 
     const handler = (e: MouseEvent | TouchEvent)=>{
         if (aside.current && !aside.current.contains(e.target as Node)){
@@ -50,6 +56,7 @@ const Header = () => {
                 <button className="forpopup" onClick={()=> (setOpenPopUP(!openPopUp))}>
                     
                     { openPopUp ? <span>بستن</span> : <span>دسترسی</span> }
+
                 </button>
 
             </div>
@@ -70,20 +77,13 @@ const Header = () => {
             <div className={location.pathname == '/' ? 'active' : ""}><button
              onClick={() => {
              navigate("/", { replace: true });
-            }}>صفحه اصلی</button>
+            }}>{mobileres ? <img width={'100px'} height={'70px'} src={box1} alt="box1" /> : <span>صفحه اصلی</span>}</button>
              </div>
 
             <div className={location.pathname == '/room2' ? 'active' : ""}><button 
             onClick={() => {
             navigate("/room2", { replace: true });
-            }}>جعبه دوم
-            </button>
-            </div>
-
-            <div className={location.pathname == '/room3' ? 'active' : ""}><button 
-            onClick={() => {
-            navigate("/room3", { replace: true });
-            }}>جعبه سوم
+            }}> {mobileres ? <img width={'100px'} height={'70px'} src={box2} alt="box2" /> : <span>جعبه دوم</span>}
             </button>
             </div>
 

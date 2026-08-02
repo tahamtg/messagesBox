@@ -29,6 +29,7 @@ class Massage (models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     direct = models.ForeignKey(Direct, on_delete=models.CASCADE, null=True, blank=True)
     payam = models.TextField()
+    media = models.FileField(upload_to='image&videos', null=True, blank=True)
     publish_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
 
