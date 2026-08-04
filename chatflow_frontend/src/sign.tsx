@@ -27,8 +27,8 @@ const Sign  = () =>{
 
        const schema = yup.object({
         
-            username : yup.string().required("نام کاربری الزامی میباشد").min(4, "نام کاربری باید حتما 4 کاراکتر باشد"),
-            password : yup.string().required().matches(/[0-9]/, "باید عدد داشته باشد")
+            username : yup.string().required("نام کاربری الزامی میباشد"),
+            password : yup.string().required(),
         
     })
 
@@ -79,8 +79,8 @@ const Sign  = () =>{
                 console.log("redirect is ok!")
                 navigate("/login", { replace: true });
         }
-        }catch(e){
-           
+        }catch(e:any){
+           console.log(e.response?.data)
         }
     }
 
@@ -90,10 +90,7 @@ return(
 
         <div className="total-sign">
 
-        <div className="radialback">
-
-        </div>
-        
+        <div className="radialback"></div>
             
         <div className='sign'>
 
