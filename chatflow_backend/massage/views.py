@@ -30,6 +30,7 @@ def Pagination_data(request):
     query_res = paginator.paginate_queryset(users, request)
     serializer_res = serializer(query_res, many=True)
     return paginator.get_paginated_response(serializer_res.data)
+    print(serializer_res.data)
 
 @api_view(['GET'])
 def show_another_messages(request, room_name):
