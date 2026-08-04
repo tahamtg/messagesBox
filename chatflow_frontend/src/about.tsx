@@ -14,8 +14,22 @@ const [user, setUser] = useState<Users[]>([])
 
 const getUser = async ()=>{
 
-const res = await axios.get(`https://massagesbox.ir/showUsers/?page=${page}`)
-setUser(res.data.results)
+      try{
+
+        const res = await axios.get(`https://massagesbox.ir/showUsers/?page=${page}`)
+        console.log(res.data);
+        console.log(res.data.results);
+
+  
+        if (res.data?.results){
+            setUser(res.data?.results)
+        }
+        
+    }catch(e: any){
+        console.log(e)
+    }
+
+    
 
 }
 
@@ -32,7 +46,7 @@ useEffect(() => {
         
         <div className="telev-user">
             <ul>
-                { user.map((users)=> (
+                {(user ?? []).map((users)=> (
                     <li key={users.id}>{users.username}</li>
                 ))}  
             </ul>
