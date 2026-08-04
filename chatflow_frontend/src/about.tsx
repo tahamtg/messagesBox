@@ -21,8 +21,8 @@ const getUser = async ()=>{
         console.log(res.data.results);
 
   
-        if (res?.data){
-            setUser(res?.data)
+        if (res.data?.results){
+            setUser(res.data?.results)
         }
         
     }catch(e: any){
