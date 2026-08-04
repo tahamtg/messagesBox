@@ -16,7 +16,7 @@ const getUser = async ()=>{
 
       try{
 
-        const res = await axios.get(`https://massagesbox.ir/showUsers/?page=${page}`)
+        const res = await axios.get(`https://massagesbox.ir/showUsers/?page_user=${page}`)
         console.log(res.data);
         console.log(res.data.results);
 
