@@ -56,11 +56,11 @@ useEffect(() => {
 
             <div className="buttons">
 
-                <button onClick={()=> (getUser(), setPage(prev => prev + 1))}>
+                <button onClick={()=> (setPage(prev => prev + 1))}>
                     بعد
                 </button>
 
-                <button onClick={()=> (getUser(), setPage(prev => Math.max(1, prev - 1)))}>
+                <button onClick={()=> (setPage(prev => Math.max(1, prev - 1)))}>
                     قبل
                 </button>
 

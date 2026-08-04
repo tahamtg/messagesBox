@@ -25,7 +25,8 @@ class Pagination(PageNumberPagination):
 def Pagination_data(request):
 
     users = User_Account.objects.all()
-    paginator = pagination()
+    print(users.count())
+    paginator = Pagination()
     serializer = Authenticate_User
     query_res = paginator.paginate_queryset(users, request)
     serializer_res = serializer(query_res, many=True)
