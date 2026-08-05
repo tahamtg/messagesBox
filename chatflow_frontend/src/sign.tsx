@@ -20,17 +20,27 @@ const Sign  = () =>{
 
     const {form, setForm} = useContext(Usecontext)!
     const auth = useContext(authContext)
-    const [error, setError] = useState<string | null>(null)
+    const [error, setError] = useState<string[]>([])
     const [mass, setMass] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
 
-       const schema = yup.object({
-        
-            username : yup.string().required("نام کاربری الزامی میباشد"),
-            password : yup.string().required(),
-        
-    })
+  const schema = yup.object({
+    username: yup
+        .string()
+        .required("نام کاربری الزامی میباشد")
+        .min(3, "نام کاربری باید حداقل ۳ کاراکتر باشد")
+        .max(255, "نام کاربری خیلی طولانی است")
+        .matches(
+            /^[a-zA-Z0-9_]+$/,
+            "نام کاربری فقط شامل حروف، عدد و _ باشد"
+        ),
+
+    password: yup
+        .string()
+        .required("رمز عبور الزامی میباشد")
+        .min(8, "رمز عبور باید حداقل ۸ کاراکتر باشد")
+});
 
     const submit_Form = async () => {
         
@@ -39,11 +49,12 @@ const Sign  = () =>{
         return schema;
       
         } catch (e) {
-        console.error(e)
-         setError("خطا در اعتبار سنجی");
-         setMass(null)
-        return;
-        }
+
+        if(e instanceof yup.ValidationError){
+            setError(e.errors)
+    }
+
+}
         
     }
     
@@ -101,9 +112,13 @@ return(
             <h1 className='signup-title'>ثبت نام</h1>
 
             <section className='massage'>
-            {error ?
-             (<div><span>{error}</span></div>): mass ? 
-              (<div><span style={{ color: 'black' }}>{mass}</span></div>): null}
+                {
+                error.map((err,index)=>(
+                <div key={index}>
+                <span>{err}</span>
+                </div>
+                ))
+            }
             </section>
 
             <section className='form'>

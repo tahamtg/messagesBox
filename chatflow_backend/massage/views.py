@@ -22,6 +22,7 @@ class Pagination(PageNumberPagination):
     page_size = 5
     page_query_param = "page_user"
 
+
 def Pagination_data(request):
 
     users = User_Account.objects.all()

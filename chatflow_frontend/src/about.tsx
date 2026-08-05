@@ -9,16 +9,21 @@ interface Users{
 
 const About = () => {
 
-const [page, setPage] = useState<number>(1);
 const [user, setUser] = useState<Users[]>([])
+const [nextPage, setNextPage] = useState<string | null>(null)
+const [perviosPage, setPerviosPage] = useState<string | null>(null)
+const [count, setCount] = useState<number | null>(null)
 
 const getUser = async ()=>{
 
       try{
 
-        const res = await axios.get(`https://massagesbox.ir/showUsers/?page_user=${page}`)
+        const res = await axios.get('https://massagesbox.ir/showUsers/')
         console.log(res.data);
         console.log(res.data.results);
+        setNextPage(res.data.next)
+        setPerviosPage(res.data.previous)
+        setCount(res.data.count)
 
   
         if (res.data?.results){
@@ -33,13 +38,26 @@ const getUser = async ()=>{
 
 }
 
-useEffect(() => {
+const getUserPage = async (pageUrl:string) => {
+    try {
+        const res = await axios.get(pageUrl)
 
-    console.log("page changed:", page);
+        setUser(res.data.results)
+        setNextPage(res.data.next)
+        setPerviosPage(res.data.previous)
+    }
+    catch(e){
+        console.log(e)
+    }
+}
+
+useEffect(() => {
 
     getUser();
 
-}, [page]);
+}, []);
+
+const totlaPage = count ?  Math.ceil(count / 5) : 0;
 
     return ( 
 
@@ -56,11 +74,28 @@ useEffect(() => {
 
             <div className="buttons">
 
-                <button onClick={()=> (setPage(prev => prev + 1))}>
-                    بعد
+                <button 
+                    disabled={!nextPage}
+                    onClick={()=> nextPage && getUserPage(nextPage)}
+                >
+                        بعد
                 </button>
 
-                <button onClick={()=> (setPage(prev => Math.max(1, prev - 1)))}>
+                {Array.from({length: totlaPage}).map((_, index)=>(
+                    <button 
+                        key={index}
+                        onClick={()=>getUserPage(
+                        `https://massagesbox.ir/showUsers/?page_user=${index + 1}`
+                    )}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
+
+                <button 
+                    disabled={!perviosPage}
+                    onClick={()=> perviosPage && getUserPage(perviosPage)}
+                >
                     قبل
                 </button>
 
