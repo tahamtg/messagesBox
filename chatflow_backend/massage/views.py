@@ -25,6 +25,8 @@ class Pagination(PageNumberPagination):
 
 def Pagination_data(request):
 
+    print("SHOW USERS CALLED")
+
     users = User_Account.objects.all()
     print(users.count())
     paginator = Pagination()
