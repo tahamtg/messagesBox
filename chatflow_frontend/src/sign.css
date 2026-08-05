@@ -380,3 +380,55 @@ body{
     max-width:60%;
     height:auto;
 }
+
+.info-box {
+    width: 100%;
+    max-width: 420px;
+    margin: 15px auto;
+    padding: 15px 20px;
+
+    background: rgba(20, 20, 20, 0.75);
+    backdrop-filter: blur(8px);
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+
+    color: white;
+    font-size: 14px;
+    line-height: 1.8;
+
+    box-sizing: border-box;
+}
+
+.info-box p {
+    margin: 0 0 10px;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.info-box ul {
+    margin: 0;
+    padding-right: 20px;
+}
+
+.info-box li {
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 5px;
+}
+
+
+/* موبایل */
+@media (max-width: 480px) {
+
+    .info-box {
+        max-width: 90%;
+        padding: 12px 15px;
+        font-size: 13px;
+        border-radius: 12px;
+    }
+
+    .info-box p {
+        font-size: 15px;
+    }
+
+}

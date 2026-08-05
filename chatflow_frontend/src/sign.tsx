@@ -20,7 +20,7 @@ const Sign  = () =>{
 
     const {form, setForm} = useContext(Usecontext)!
     const auth = useContext(authContext)
-    const [error, setError] = useState<string[]>([])
+    const [error, setError] = useState<string[] | null>([])
     const [mass, setMass] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
@@ -110,15 +110,23 @@ return(
                 <img src={Logo} className="logo" alt="massagesbox" />
             </div>
             <h1 className='signup-title'>ثبت نام</h1>
+            <div className="info-box"> 
+                <p>شرایط ثبت نام:</p> 
+                <ul> <li>نام کاربری حداقل ۳ کاراکتر باشد.</li> 
+                <li>نام کاربری فقط شامل حروف، عدد و _ باشد.</li> 
+                <li>رمز عبور حداقل ۸ کاراکتر باشد.</li>
+                <li>نام کاربری تکراری قابل استفاده نیست.</li>
+                </ul> 
+                </div>
 
             <section className='massage'>
-                {
-                error.map((err,index)=>(
-                <div key={index}>
-                <span>{err}</span>
-                </div>
-                ))
-            }
+                {error &&
+                    error.map((err,index)=>(
+                    <div key={index}>
+                    <span>{err}</span>
+                    </div>
+                    ))
+                }
             </section>
 
             <section className='form'>
