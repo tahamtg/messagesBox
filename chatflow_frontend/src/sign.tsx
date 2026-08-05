@@ -50,9 +50,11 @@ const Sign  = () =>{
       
         } catch (e) {
 
-        if(e instanceof yup.ValidationError){
-            setError(e.errors)
-    }
+            if(e instanceof yup.ValidationError){
+                setError(e.errors)
+        }else{
+            setError(null)
+        }
 
 }
         
