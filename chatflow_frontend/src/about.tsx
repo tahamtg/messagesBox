@@ -15,6 +15,8 @@ const [perviosPage, setPerviosPage] = useState<string | null>(null)
 const [count, setCount] = useState<number | null>(null)
 
 const getUser = async ()=>{
+    
+    console.log("GET USERS FUNCTION RUNNING")
 
       try{
 
