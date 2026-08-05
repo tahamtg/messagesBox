@@ -15,12 +15,12 @@ const [perviosPage, setPerviosPage] = useState<string | null>(null)
 const [count, setCount] = useState<number | null>(null)
 
 const getUser = async ()=>{
-    
+
     console.log("GET USERS FUNCTION RUNNING")
 
       try{
 
-        const res = await axios.get('https://massagesbox.ir/showUsers/')
+        const res = await axios.get("https://massagesbox.ir/massage/showUsers/")
         console.log(res.data);
         console.log(res.data.results);
         setNextPage(res.data.next)
