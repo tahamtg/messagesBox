@@ -26,7 +26,7 @@ class Pagination(PageNumberPagination):
 def Pagination_data(request):
 
     model = User_Account.objects.all()
-    serializer = Authenticate_User(model, ,any=True)
+    serializer = Authenticate_User(model, ,many=True)
 
     return Response({
         'usernames' : serializer.data
