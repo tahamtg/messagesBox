@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Sign from './sign'
 import {Usecontext} from './context'
-import { AuthProvider } from './authprovider'
+import AuthLayout from './AuthLayout '
 import ProtectedRoute from './ProtectedRoute'
 import React, { useState } from 'react'
 import Login from './login'
@@ -26,10 +26,17 @@ const App: React.FC = () => {
 
   return (
    <Usecontext.Provider value={{form, setForm}}>
-    <AuthProvider>
+    
 
       <Routes>
-         
+
+      <Route
+          path="sign"
+          element={<Sign />}
+        />
+
+      <Route element={<AuthLayout/>}>
+
       <Route element={<Layout/>}>
 
         <Route path="/" element={
@@ -49,21 +56,17 @@ const App: React.FC = () => {
 
         
 
+     
         <Route
           path="login"
-          element={<Login />}
+          element={
+          <Login />
+        }
         />
-
+      </Route>
         
       </Routes>
     
-    </AuthProvider>
-
-    <Route
-          path="sign"
-          element={<Sign />}
-        />
-        
     </Usecontext.Provider>
   )
 }
