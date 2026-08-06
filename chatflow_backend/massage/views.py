@@ -13,6 +13,7 @@ import traceback
 from rest_framework_simplejwt.views import TokenObtainPairView
 from datetime import timedelta
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.decorators import permission_classes
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
