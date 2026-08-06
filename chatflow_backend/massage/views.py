@@ -33,8 +33,6 @@ def Pagination_data(request):
         'usernames' : serializer.data
     })
 
-    
-
 @api_view(['GET'])
 def show_another_messages(request, room_name):
 

@@ -21,8 +21,8 @@ const getUser = async ()=>{
       try{
 
         const res = await axios.get("https://massagesbox.ir/massage/showUsers/")
-            console.log(res.data)
-            setUser(res.data)
+            console.log(res.data.usernames)
+            setUser(res.data.usernames)
 
         
     }catch(e: any){
