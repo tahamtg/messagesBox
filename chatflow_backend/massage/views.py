@@ -25,16 +25,13 @@ class Pagination(PageNumberPagination):
 
 def Pagination_data(request):
 
-    print("SHOW USERS CALLED")
+    model = User_Account.objects.all()
+    serializer = Authenticate_User(model, ,any=True)
 
-    users = User_Account.objects.all()
-    print(users.count())
-    paginator = Pagination()
-    serializer = Authenticate_User
-    query_res = paginator.paginate_queryset(users, request)
-    serializer_res = serializer(query_res, many=True)
-    print(serializer_res.data)
-    return paginator.get_paginated_response(serializer_res.data)
+    return Response({
+        'usernames' : serializer.data
+    })
+
     
 
 @api_view(['GET'])

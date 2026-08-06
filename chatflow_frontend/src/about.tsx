@@ -21,15 +21,9 @@ const getUser = async ()=>{
       try{
 
         const res = await axios.get("https://massagesbox.ir/massage/showUsers/")
-        console.log(res.data);
-        console.log(res.data.results);
-        setNextPage(res.data.next)
-        setPerviosPage(res.data.previous)
-        setCount(res.data.count)
 
-  
-        if (res.data?.results){
-            setUser(res.data?.results)
+        if (res.data){
+            setUser(res.data)
         }
         
     }catch(e: any){
@@ -40,32 +34,11 @@ const getUser = async ()=>{
 
 }
 
-const getUserPage = async (pageUrl:string) => {
-    try {
-        const res = await axios.get(pageUrl)
-
-        setUser(res.data.results)
-        setNextPage(res.data.next)
-        setPerviosPage(res.data.previous)
-    }
-    catch(e){
-        console.log(e)
-    }
-}
-
-useEffect(() => {
-
-    getUser();
-
-}, []);
-
-const totlaPage = count ?  Math.ceil(count / 5) : 0;
 
     return ( 
 
         <div className="boxUser">
 
-        
         <div className="telev-user">
             <ul>
                 {(user ?? []).map((users)=> (
@@ -73,35 +46,6 @@ const totlaPage = count ?  Math.ceil(count / 5) : 0;
                 ))}  
             </ul>
         </div>
-
-            <div className="buttons">
-
-                <button 
-                    disabled={!nextPage}
-                    onClick={()=> nextPage && getUserPage(nextPage)}
-                >
-                        بعد
-                </button>
-
-                {Array.from({length: totlaPage}).map((_, index)=>(
-                    <button 
-                        key={index}
-                        onClick={()=>getUserPage(
-                        `https://massagesbox.ir/showUsers/?page_user=${index + 1}`
-                    )}
-                    >
-                        {index + 1}
-                    </button>
-                ))}
-
-                <button 
-                    disabled={!perviosPage}
-                    onClick={()=> perviosPage && getUserPage(perviosPage)}
-                >
-                    قبل
-                </button>
-
-            </div>
 
         </div>
      );
