@@ -58,22 +58,17 @@ def show_another_messages(request, room_name):
 
 #for post user_account and if is unique username
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def Sign_Up(request):
 
     access_cookie = request.COOKIES.get("access")
     refresh_cookie = request.COOKIES.get("refresh")
 
-    if access_cookie:
-        response.delete_cookie("access")
-
-    if refresh_cookie:
-        response.delete_cookie("refresh")
-
     get_user = Authenticate_User(data=request.data)
     
     get_user.is_valid(raise_exception=True)
     get_user.save()
-    return Response(get_user.data, status=status.HTTP_201_CREATED)
+    return Response(get_user.data, status=status.HTTP_201_CREATED,)
 
 
 @api_view(['PATCH'])
