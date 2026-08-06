@@ -45,7 +45,7 @@ useEffect(()=>{
         <div className="telev-user">
             <ul>
                 {user.map((users)=> (
-                    <li key={users.id}>{users.username}</li>
+                    <li key={users.id}>{users.id}-{users.username}</li>
                 ))}  
             </ul>
         </div>
