@@ -23,4 +23,4 @@ class CookieJWTAuthentication(JWTAuthentication):
 
         except Exception as e:
             print("ERROR:", repr(e))
-            raise
+            raise None
