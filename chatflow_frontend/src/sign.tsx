@@ -70,6 +70,7 @@ const Sign  = () =>{
         setLoading(true)
         const promis = await new Promise((isvalid)=> setTimeout(isvalid, 3000))
         setLoading(false)
+
         try{
                const res = await axios.post<api_sign>("https://massagesbox.ir/massage/sign-up/",
                 {
@@ -85,6 +86,7 @@ const Sign  = () =>{
                 },  
             
             });
+            
             console.log("signup success:", res.status, res.data);              
             if (res.status === 201 || res.status === 200) {
                 setMass("نام کاربری و پسورد با موفقیت ذخیره شد")

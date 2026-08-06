@@ -47,10 +47,7 @@ const App: React.FC = () => {
 
       </Route>
 
-        <Route
-          path="sign"
-          element={<Sign />}
-        />
+        
 
         <Route
           path="login"
@@ -61,6 +58,12 @@ const App: React.FC = () => {
       </Routes>
     
     </AuthProvider>
+
+    <Route
+          path="sign"
+          element={<Sign />}
+        />
+        
     </Usecontext.Provider>
   )
 }
