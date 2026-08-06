@@ -60,6 +60,15 @@ def show_another_messages(request, room_name):
 @api_view(['POST'])
 def Sign_Up(request):
 
+    access_cookie = request.COOKIES.get("access")
+    refresh_cookie = request.COOKIES.get("refresh")
+
+    if access_cookie:
+        response.delete_cookie("access")
+
+    if refresh_cookie:
+        response.delete_cookie("refresh")
+
     get_user = Authenticate_User(data=request.data)
     
     get_user.is_valid(raise_exception=True)
