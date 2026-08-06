@@ -21,10 +21,9 @@ const getUser = async ()=>{
       try{
 
         const res = await axios.get("https://massagesbox.ir/massage/showUsers/")
-
-        if (res.data){
+            console.log(res.data)
             setUser(res.data)
-        }
+
         
     }catch(e: any){
         console.log(e)
@@ -41,7 +40,7 @@ const getUser = async ()=>{
 
         <div className="telev-user">
             <ul>
-                {(user ?? []).map((users)=> (
+                {user.map((users)=> (
                     <li key={users.id}>{users.username}</li>
                 ))}  
             </ul>
