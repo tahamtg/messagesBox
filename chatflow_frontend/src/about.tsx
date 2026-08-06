@@ -29,7 +29,6 @@ const getUser = async ()=>{
         console.log(e)
     }
 
-
 }
 
 useEffect(()=>{
