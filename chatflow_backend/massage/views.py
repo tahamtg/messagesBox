@@ -17,20 +17,27 @@ from rest_framework.permissions import AllowAny
 from rest_framework.decorators import permission_classes
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
-
-class Pagination(PageNumberPagination):
-
-    page_size = 5
-    page_query_param = "page_user"
+from django.core.paginator import Paginator
 
 @api_view(['GET'])
 def Pagination_data(request):
 
     model = User_Account.objects.all()
-    serializer = Authenticate_User(model ,many=True)
+
+    paginator = Paginator(model, 5)
+
+    page = request.GET.get("page_user")
+
+    page_obj = paginator.get_page(page)
+    
+    data = Authenticate_User(page_obj ,many=True).data
 
     return Response({
-        'usernames' : serializer.data
+        "count": paginator.count,
+        "pages": paginator.num_pages,
+        "next_page": page_obj.next_page_number() if page_obj.has_next() else None,
+        "previous_page": page_obj.previous_page_number() if page_obj.has_previous() else None,
+        "resualt": data,
     })
 
 @api_view(['GET'])

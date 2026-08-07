@@ -78,38 +78,38 @@ useEffect(() => {
 
     socket.current.onmessage = (event) => {
 
-    const data = JSON.parse(event.data);
+        const data = JSON.parse(event.data);
 
-    if(data.type == "chat_ID"){
-        console.log("WS MESSAGE:", data);
-        navigate(`/chat/${data.chat_id}`)
-    }
+        if(data.type == "chat_ID"){
+            console.log("WS MESSAGE:", data);
+            navigate(`/chat/${data.chat_id}`)
+        }
 
-    if(data.type == "message_deleted"){
-        setMessages((prev)=> prev.filter((msg)=> msg.id !== data.mass_id));
-        setIsopen(false);
-        return;
-    }
+        if(data.type == "message_deleted"){
+            setMessages((prev)=> prev.filter((msg)=> msg.id !== data.mass_id));
+            setIsopen(false);
+            return;
+        }
     
         console.log("RECEIVED:", data);
 
-    if (data.type === "chat_message") {
-        setMessages((prev) => [...prev, 
-            {
-                curent_user: data.curent_user,
-                curent_user_id: data.curent_user_id,
-                message: data.message,
-                username: data.username,
-                id: data.id,
-                publish_date: data.date,
-                username_id: data.username_id,
-                payam: data.payam,
-                media: data.media,
+        if (data.type === "chat_message") {
+            setMessages((prev) => [...prev, 
+                {
+                    curent_user: data.curent_user,
+                    curent_user_id: data.curent_user_id,
+                    message: data.message,
+                    username: data.username,
+                    id: data.id,
+                    publish_date: data.date,
+                    username_id: data.username_id,
+                    payam: data.payam,
+                    media: data.media,
+            }
+        ]);
         }
-    ]);
-    }
 
-};
+    };
 
     socket.current.onclose = (event) => {
         console.log("WS CLOSED", event.code, event.reason);
