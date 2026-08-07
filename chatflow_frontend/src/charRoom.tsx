@@ -137,20 +137,6 @@ const post_Massage = async (event: React.FormEvent<HTMLFormElement>) => {
     
     event.preventDefault();
 
-    const formdata: FormData = new FormData()
-    
-    if (resFile){
-        formdata.append("media", resFile);
-    }
-        
-    const req = await axios.post('https://massagesbox.ir/massage/Upload/',
-        formdata
-    ,{
-        withCredentials: true
-    });
-
-    
-    
     if (!socket.current || socket.current.readyState !== WebSocket.OPEN){
         console.error("connection to websocket is failed!")
         return
@@ -164,6 +150,30 @@ const post_Massage = async (event: React.FormEvent<HTMLFormElement>) => {
 
     setNewMassage("");
 };
+
+//===========For Upload Media===========//
+
+const uploadMedia = async () => {
+
+    if (!resFile) {
+        alert("ابتدا یک فایل انتخاب کنید");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("media", resFile);
+
+    await axios.post(
+        "https://massagesbox.ir/massage/Upload/",
+        formData,
+        {
+            withCredentials: true,
+        }
+    );
+
+    setResFile(null);
+};
+
 
 //===========For Messages===========//
 
@@ -206,6 +216,7 @@ const handler = (e: MouseEvent | TouchEvent) =>{
     }
 
 };
+
 
 const pressFin = (e: React.PointerEvent, id: number)=>{
 
@@ -382,29 +393,48 @@ return (
            
         </div>
 
-            <div className="massage-text">
-            <form onSubmit={post_Massage}>
+<div className="massage-text">
+    <form onSubmit={post_Massage}>
 
-                <input
-                type='text'
-                value={newMassage}
-                onChange={(e) => setNewMassage(e.target.value)}
-                placeholder="چیزی بنویسید"
-                />
+        <input
+            type="text"
+            value={newMassage}
+            onChange={(e) => setNewMassage(e.target.value)}
+            placeholder="چیزی بنویسید"
+        />
 
-                <button type="submit" className="send-btn">
-                     ارسال
-                </button>
+        <div className="upload-media">
 
-                <input type="file" name="file" id="file" onChange={(e)=> {
-                    if (e.target.files?.length){
+            <input
+                type="file"
+                name="file"
+                id="file"
+                onChange={(e) => {
+                    if (e.target.files?.length) {
                         setResFile(e.target.files[0]);
                     }
-                }} />
+                }}
+            />
 
-            </form>
+            <button
+                type="button"
+                className="media-btn"
+                onClick={uploadMedia}
+            >
+                ارسال مدیا
+            </button>
 
-            </div>
+            <button
+                type="submit"
+                className="send-btn"
+            >
+                ارسال
+            </button>
+
+        </div>
+
+    </form>
+</div>
 
         </div>
 

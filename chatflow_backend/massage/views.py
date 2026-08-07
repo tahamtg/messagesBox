@@ -18,6 +18,7 @@ from rest_framework.decorators import permission_classes
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
 from django.core.paginator import Paginator
+from .models import Room
 
 @api_view(['GET'])
 def Pagination_data(request):

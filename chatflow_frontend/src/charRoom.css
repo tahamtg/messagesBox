@@ -186,3 +186,64 @@
     border-radius: 12px;
     display: block;
 }
+
+.upload-media{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.media-btn{
+    height:50px;
+    padding:0 22px;
+    border:none;
+    border-radius:50px;
+    background:#1b1b1b;
+    color:white;
+    border:.7px solid white;
+    cursor:pointer;
+    transition:.3s;
+    white-space:nowrap;
+}
+
+.media-btn:hover{
+    background:white;
+    color:black;
+}
+
+.upload-media input[type="file"]{
+    width:180px;
+    color:white;
+    background:transparent;
+}
+
+@media (max-width:480px){
+
+    .massage-text form{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .massage-text input[type="text"]{
+        width:100%;
+    }
+
+    .upload-media{
+        width:100%;
+        display:flex;
+        justify-content:space-between;
+        gap:8px;
+        flex-wrap:wrap;
+    }
+
+    .upload-media input[type="file"]{
+        width:100%;
+    }
+
+    .media-btn,
+    .send-btn{
+        flex:1;
+    }
+}
+
