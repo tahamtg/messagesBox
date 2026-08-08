@@ -148,7 +148,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )(
                 payam=data["message"],
                 room=room,
-                user=self.scope["user"]
+                user=self.scope["user"],
+                file_id=data.get("mediaId"),
             )
 
             await self.channel_layer.group_send(
@@ -159,7 +160,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "username": self.scope["user"].username,
                     "date_massage": my_model.publish_date.isoformat(),
                     "massage_id": my_model.id,
-                    "username_id": username_id
+                    "username_id": username_id,
+                    "media_URL": my_model.file
                 }
             )
 

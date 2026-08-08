@@ -19,6 +19,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
 from django.core.paginator import Paginator
 from .models import Room
+from .serializers import UplaodMedia
 
 @api_view(['GET'])
 def Pagination_data(request):
@@ -57,7 +58,6 @@ def show_another_messages(request, room_name):
                 "message": m.payam,
                 "publish_date": m.publish_date,
                 "id": m.id,
-                "media": str(m.media) if m.media else None,
             }
             )
     
@@ -119,12 +119,12 @@ def LogOut(request):
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
 def upload(request):
-    req = MassageBoxSerializers(data=request.data)
+    req = UplaodMedia(data=request.data)
     if req.is_valid(raise_exception=True):
-        req.save()
+        res = req.save()
         print(req.errors)
     return Response({"message": "Object saved",
-    "data": req.data})
+    "data": req.data , "mediaUrl": res.media.url, "mediaUrlid": res.id})
 
 
 class CreateTokenCookie(TokenObtainPairView):

@@ -24,14 +24,19 @@ class Room (models.Model):
     def __init__(self):
         return self.name
 
+class MediaUpload(models.Model):
+    media = models.FileField(upload_to='image&videos', null=True, blank=True)
+
 class Massage (models.Model):
     user = models.ForeignKey(User_Account, on_delete=models.CASCADE, null=True, blank=False)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     direct = models.ForeignKey(Direct, on_delete=models.CASCADE, null=True, blank=True)
     payam = models.TextField()
-    media = models.FileField(upload_to='image&videos', null=True, blank=True)
     publish_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
+    file = models.ForeignKey(MediaUpload, on_delete=models.SET_NULL, null=True, blank=True)
+
+
 
 
 

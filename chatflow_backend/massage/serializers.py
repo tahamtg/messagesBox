@@ -1,9 +1,14 @@
 from rest_framework import serializers
-from .models import Massage, User_Account
+from .models import Massage, User_Account, MediaUpload
 
 class MassageBoxSerializers (serializers.ModelSerializer):
     class Meta:
         model = Massage
+        fields = '__all__'
+
+class UplaodMedia (serializers.ModelSerializer):
+    class Meta:
+        model = MediaUpload
         fields = '__all__'
 
 class Authenticate_User (serializers.ModelSerializer):

@@ -58,6 +58,10 @@ const {roomName} = useParams()
 
 const [resFile, setResFile] = useState<File | null>(null)
 
+const [mediaUrl, setMediaUrl] = useState<string | null>(null)
+
+const [mediaId, setMediaId] = useState<string | null>(null)
+
 
 const room = roomName ?? 'general'
 
@@ -145,6 +149,8 @@ const post_Massage = async (event: React.FormEvent<HTMLFormElement>) => {
         JSON.stringify({
             type: "chat_message",
             message: newMassage,
+            mediaURL : mediaUrl,
+            mediaId : mediaId,
         })
     );
 
@@ -163,7 +169,7 @@ const uploadMedia = async () => {
     const formData = new FormData();
     formData.append("media", resFile);
 
-    await axios.post(
+    const response = await axios.post(
         "https://massagesbox.ir/massage/Upload/",
         formData,
         {
@@ -171,6 +177,8 @@ const uploadMedia = async () => {
         }
     );
 
+    setMediaUrl(response.data.mediaUrl)
+    setMediaId(response.data.mediaUrlid)
     setResFile(null);
 };
 
