@@ -361,7 +361,7 @@ return (
             {messageText.media && (
                 <img
                 className="message-media"
-                src={`https://massagesbox.ir/massage/${messageText.media}`}
+                src={`https://massagesbox.ir${messageText.media}`}
                 alt="imageBOX"
             />
             )}

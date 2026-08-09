@@ -120,12 +120,35 @@ def LogOut(request):
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
 def upload(request):
-    req = UplaodMedia(data=request.data)
-    if req.is_valid(raise_exception=True):
+
+    try:
+        print("UPLOAD REQUEST:", request.data)
+        print("FILES:", request.FILES)
+
+        req = UplaodMedia(data=request.data)
+
+        req.is_valid(raise_exception=True)
+
         res = req.save()
-        print(req.errors)
-    return Response({"message": "Object saved",
-    "data": req.data , "mediaUrl": res.media.url, "mediaUrlid": res.id})
+
+        print("UPLOAD SUCCESS:", res)
+
+        return Response({
+            "message": "Object saved",
+            "data": req.data,
+            "mediaUrl": res.media.url,
+            "mediaUrlid": res.id
+        })
+
+    except Exception as e:
+        print("========== UPLOAD ERROR ==========")
+        traceback.print_exc()
+        print("==================================")
+
+        return Response(
+            {"error": str(e)},
+            status=500
+        )
 
 
 class CreateTokenCookie(TokenObtainPairView):
