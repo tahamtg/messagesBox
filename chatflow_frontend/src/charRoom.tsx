@@ -108,7 +108,7 @@ useEffect(() => {
                     publish_date: data.date,
                     username_id: data.username_id,
                     payam: data.payam,
-                    media: data.media,
+                    media: data.media_URL,
             }
         ]);
         }

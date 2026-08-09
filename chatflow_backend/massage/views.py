@@ -58,6 +58,7 @@ def show_another_messages(request, room_name):
                 "message": m.payam,
                 "publish_date": m.publish_date,
                 "id": m.id,
+                "media_URL": m.file.media.url if m.file else None,
             }
             )
     

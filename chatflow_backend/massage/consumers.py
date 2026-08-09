@@ -161,7 +161,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "date_massage": my_model.publish_date.isoformat(),
                     "massage_id": my_model.id,
                     "username_id": username_id,
-                    "media_URL": my_model.file
+                    "media_URL": my_model.file.media.url if my_model.file else None
                 }
             )
 
@@ -173,6 +173,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "username": event["username"],
                 "date": event["date_massage"],
                 "id": event["massage_id"],
-                "username_id": event["username_id"]
+                "username_id": event["username_id"],
+                "media_URL": event["media_URL"]
             })
         )

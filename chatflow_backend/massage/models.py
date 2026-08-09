@@ -21,7 +21,7 @@ class Direct (models.Model):
 
 class Room (models.Model):
     name = models.CharField(max_length=50, unique=True)
-    def __init__(self):
+    def __str__(self):
         return self.name
 
 class MediaUpload(models.Model):
