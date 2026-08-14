@@ -137,6 +137,94 @@
     transform: translateY(0);
 }
 
+/* =========================
+   Search Results
+========================= */
+
+.topic-results {
+    width: 100%;
+
+    margin-top: 18px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+/* هر نتیجه */
+
+.topic-title {
+    width: 100%;
+
+    padding: 15px 17px;
+
+    background: #111419;
+
+    border: 1px solid #22272e;
+    border-radius: 12px;
+
+    color: #e6edf3;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.topic-title:hover {
+    background: #171a21;
+
+    border-color: #6c63ff;
+
+    transform: translateY(-1px);
+}
+
+/* Loading */
+
+.topic-results p {
+    margin: 0;
+
+    padding: 15px 17px;
+
+    color: #7d8590;
+
+    font-size: 14px;
+
+    text-align: center;
+}
+
+/* حالت بدون نتیجه */
+
+.topic-results p:not(.loading) {
+    color: #6f7782;
+}
+
+/* Loading animation */
+
+.topic-results p:first-child {
+    animation: searchLoading 1.2s ease-in-out infinite;
+}
+
+@keyframes searchLoading {
+    0% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.4;
+    }
+}
+
 .home-footer {
     margin-top: 18px;
 
@@ -146,12 +234,16 @@
 }
 
 
-/* Mobile */
+/* =========================
+   Mobile
+========================= */
 
 @media (max-width: 600px) {
 
     .home-page {
         padding: 20px;
+        align-items: flex-start;
+        padding-top: 70px;
     }
 
     .home-content h1 {
@@ -162,13 +254,80 @@
     .home-description {
         font-size: 15px;
         line-height: 1.8;
+
+        margin-top: 22px;
+        margin-bottom: 35px;
     }
 
     .topic-input-wrapper {
         flex-direction: column;
     }
 
+    .topic-input-wrapper input {
+        padding: 13px 14px;
+    }
+
     .topic-input-wrapper button {
         height: 48px;
+
+        width: 100%;
+    }
+
+    .topic-results {
+        margin-top: 14px;
+
+        gap: 7px;
+    }
+
+    .topic-title {
+        padding: 14px;
+
+        font-size: 14px;
+
+        border-radius: 10px;
+    }
+
+    .home-footer {
+        font-size: 12px;
+
+        line-height: 1.8;
+    }
+}
+
+
+/* =========================
+   Small Mobile
+========================= */
+
+@media (max-width: 380px) {
+
+    .home-page {
+        padding: 18px;
+        padding-top: 50px;
+    }
+
+    .home-content h1 {
+        font-size: 38px;
+    }
+
+    .home-badge {
+        font-size: 11px;
+        letter-spacing: 2px;
+    }
+
+    .home-description {
+        font-size: 14px;
+    }
+
+    .topic-input-wrapper {
+        padding: 6px;
+    }
+
+    .topic-input-wrapper input {
+        font-size: 14px;
+    }
+
+    .topic-title {
+        font-size: 13px;
     }
 }

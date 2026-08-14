@@ -16,34 +16,44 @@ const Login = ()=>{
     const navigate = useNavigate()
     
 
-    const toLogin = async ()=>{
-        try{
-            setLoading(true)
-            const res = await axios.post("https://massagesbox.ir/massage/login/" ,
+    const toLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+        setLoading(true);
+
+        const res = await axios.post(
+            "https://massagesbox.ir/massage/login/",
             {
                 username: form.username,
-                password:  form.password
+                password: form.password
             },
             {
                 withCredentials: true,
             }
-            )
-                auth?.setIsAuth(true)
-                setError(null)
-                navigate("/", {replace:true})
-                console.log(auth?.currentUser);
-            
-        }catch(e: any){   
-            auth?.setIsAuth(false)
-            setError("نام کاربری یا رمز عبور اشتباه است")   
-            setMass(null)    
-            console.error("somthing is wrong!", e.response?.data)
+        );
 
-        }finally{
-            setLoading(false)
-        }
-               
+        auth?.setIsAuth(true);
+        setError(null);
+
+        navigate("/", { replace: true });
+
+        console.log(res.data);
+
+    } catch (e: any) {
+        auth?.setIsAuth(false);
+        setError("نام کاربری یا رمز عبور اشتباه است");
+        setMass(null);
+
+        console.error(
+            "something is wrong!",
+            e.response?.data
+        );
+
+    } finally {
+        setLoading(false);
     }
+};
 
     return(
         <>
@@ -73,7 +83,7 @@ const Login = ()=>{
         </section>
 
         <section className="form">
-            <form>
+            <form onSubmit={toLogin}>
                 <input
                     type="text"
                     placeholder="نام کاربری"
@@ -89,8 +99,8 @@ const Login = ()=>{
                 />
 
                 <button
+                    type="submit"
                     className="button-form"
-                    onClick={toLogin}
                     disabled={loading}
                 >
                     {loading ? "در حال بررسی..." : "ورود"}

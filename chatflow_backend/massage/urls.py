@@ -11,4 +11,5 @@ urlpatterns = [
     path('<str:room_name>/', views.show_another_messages, name='show another messages'),
     path("<slug:slug>/", views.get_topics),
     path("post-topic/", views.create_topic),
+    path("searching/", views.get_search),
 ]

@@ -22,6 +22,21 @@ from .models import Room
 from .serializers import UplaodMedia, TopicSerializer
 
 
+#get query from searching
+@api_view(["GET"])
+def get_search(request):
+    search = request.query_params.get("search")
+    get_data = Massage.objects.filter(topic__icontains=search)
+    data = []
+
+    for searching in get_data:
+        data.append({
+            "title" : searching.topic
+        })
+    
+    return Response(data)
+
+
 #For GET ROOMS DATA
 @api_view(["GET"])
 def get_topics(request, slug):
