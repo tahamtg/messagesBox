@@ -40,40 +40,59 @@ def get_search(request):
 #For GET ROOMS DATA
 @api_view(["GET"])
 def get_topics(request, slug):
+
     try:
         room = Room.objects.get(slug=slug)
 
-    except Room.DoesNotExist:
-        return Response(
-            {"error": "Room not found"},
-            status=404
-        )
-    topics = room.topics.all()
-    data=[]
-    for topic in topics:
-        data.append(
-            {
-            
+        topics = room.topics.all()
+
+        data = []
+
+        for topic in topics:
+            data.append({
                 "id": topic.id,
                 "name": topic.name,
                 "slug": topic.slug,
-            
-            }
-            )
+            })
 
-    return Response(data)
+        return Response(data)
+
+    except Exception as e:
+        traceback.print_exc()
+
+        return Response(
+            {"error": str(e)},
+            status=500
+        )
 
 @api_view(["POST"])
 def create_topic(request, slug):
-    room = Room.objects.get(slug=slug)
 
-    serializer = TopicSerializer(data=request.data)
+    try:
+        room = Room.objects.get(slug=slug)
 
-    if serializer.is_valid():
-        serializer.save(room=room)
-        return Response(serializer.data, status=201)
+        serializer = TopicSerializer(data=request.data)
 
-    return Response(serializer.errors, status=400)
+        if serializer.is_valid():
+            serializer.save(room=room)
+
+            return Response(
+                serializer.data,
+                status=201
+            )
+
+        return Response(
+            serializer.errors,
+            status=400
+        )
+
+    except Exception as e:
+        traceback.print_exc()
+
+        return Response(
+            {"error": str(e)},
+            status=500
+        )
 
 @api_view(['GET'])
 def Pagination_data(request):
