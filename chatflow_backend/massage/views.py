@@ -40,7 +40,14 @@ def get_search(request):
 #For GET ROOMS DATA
 @api_view(["GET"])
 def get_topics(request, slug):
-    room = Room.objects.get(slug=slug)
+    try:
+        room = Room.objects.get(slug=slug)
+
+    except Room.DoesNotExist:
+        return Response(
+            {"error": "Room not found"},
+            status=404
+        )
     topics = room.topics.all()
     data=[]
     for topic in topics:

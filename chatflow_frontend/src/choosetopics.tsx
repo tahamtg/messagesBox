@@ -67,7 +67,7 @@ const ChooseTopics = () => {
                 setCreating(true);
 
                 const res = await axios.post(
-                    `https://massagesbox.ir/massage/${slug}/topics/create//`,
+                    `https://massagesbox.ir/massage/${slug}/topics/create/`,
                     {
                         name: name
                     }

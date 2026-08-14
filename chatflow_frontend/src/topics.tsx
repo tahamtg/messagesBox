@@ -57,7 +57,7 @@ const topics = [
                 <div className="topic" key={topic.slug}>
                     <button
                         type="button"
-                        onClick={() => navigate(`/${topic.slug}`)}
+                        onClick={() => navigate(`/topics/${topic.slug}`)}
                     >
                         {topic.title}
                     </button>
