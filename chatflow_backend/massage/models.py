@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .manager import Username_Manager
+from django.utils.text import slugify
 
 class User_Account(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255, unique=True)
@@ -23,6 +24,37 @@ class Room (models.Model):
     name = models.CharField(max_length=50, unique=True)
     def __str__(self):
         return self.name
+    
+    slug = models.SlugField(
+        max_length=120,
+        unique=True
+    )
+
+
+class Topic(models.Model):
+    room = models.ForeignKey(
+        Room,
+        on_delete=models.CASCADE,
+        related_name="topics"
+    )
+
+    name = models.CharField(max_length=100)
+
+    slug = models.SlugField(
+        max_length=120,
+        unique=True
+    )
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
 
 class MediaUpload(models.Model):
     media = models.FileField(upload_to='image&videos', null=True, blank=True)
@@ -35,6 +67,13 @@ class Massage (models.Model):
     publish_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     file = models.ForeignKey(MediaUpload, on_delete=models.SET_NULL, null=True, blank=True)
+    topic = models.ForeignKey(
+        Topic,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="messages"
+    )
 
 
 

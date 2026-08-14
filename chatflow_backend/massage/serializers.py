@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Massage, User_Account, MediaUpload
+from .models import Massage, User_Account, MediaUpload, Topic
 
 class MassageBoxSerializers (serializers.ModelSerializer):
     class Meta:
@@ -25,3 +25,8 @@ class Authenticate_User (serializers.ModelSerializer):
             password= validated_data['password']
         )
         return user
+
+class TopicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Topic
+        fields = ["id", "name", "slug"]

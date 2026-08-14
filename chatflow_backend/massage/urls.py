@@ -1,7 +1,6 @@
 from django.urls import path
 from . import views
 
-
 urlpatterns = [
     path('sign-up/', views.Sign_Up, name='sign up users'),
     path('login/', views.CreateTokenCookie.as_view(), name='login users'),
@@ -10,4 +9,6 @@ urlpatterns = [
     path('showUsers/', views.Pagination_data, name='show users'),
     path('Upload/', views.upload, name='upload'),
     path('<str:room_name>/', views.show_another_messages, name='show another messages'),
+    path("<slug:slug>/", views.get_topics),
+    path("post-topic/", views.create_topic),
 ]

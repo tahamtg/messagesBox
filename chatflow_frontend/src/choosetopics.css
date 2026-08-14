@@ -1,0 +1,370 @@
+.topics-page {
+    min-height: 100vh;
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+
+    padding: 70px 20px;
+
+    box-sizing: border-box;
+
+    direction: rtl;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #202020 0%,
+            #101010 45%,
+            #080808 100%
+        );
+
+    color: white;
+}
+
+
+.topics-container {
+    width: 100%;
+    max-width: 850px;
+}
+
+
+/* Header */
+
+.topics-header {
+    text-align: center;
+    margin-bottom: 45px;
+}
+
+
+.topics-badge {
+    display: inline-block;
+
+    padding: 7px 15px;
+
+    border: 1px solid #333;
+    border-radius: 30px;
+
+    font-size: 12px;
+
+    color: #aaa;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 18px;
+}
+
+
+.topics-header h1 {
+    margin: 0;
+
+    font-size: 38px;
+
+    font-weight: 800;
+
+    color: white;
+}
+
+
+.topics-header p {
+    margin-top: 15px;
+
+    color: #888;
+
+    font-size: 16px;
+}
+
+
+/* Create topic */
+
+.create-topic {
+    background: #151515;
+
+    border: 1px solid #292929;
+
+    border-radius: 18px;
+
+    padding: 24px;
+
+    margin-bottom: 40px;
+
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+
+.create-topic label {
+    display: block;
+
+    margin-bottom: 12px;
+
+    font-size: 15px;
+
+    color: #ddd;
+
+    font-weight: 600;
+}
+
+
+.topic-input {
+    display: flex;
+
+    gap: 10px;
+}
+
+
+.topic-input input {
+    flex: 1;
+
+    height: 52px;
+
+    border: 1px solid #333;
+
+    border-radius: 12px;
+
+    outline: none;
+
+    background: #0d0d0d;
+
+    color: white;
+
+    padding: 0 16px;
+
+    font-size: 15px;
+
+    direction: rtl;
+
+    transition: 0.2s;
+}
+
+
+.topic-input input::placeholder {
+    color: #666;
+}
+
+
+.topic-input input:focus {
+    border-color: #555;
+
+    background: #111;
+}
+
+
+.topic-input button {
+    width: 110px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: white;
+
+    color: #111;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+
+.topic-input button:hover {
+    transform: translateY(-2px);
+
+    background: #e8e8e8;
+}
+
+
+.topic-input button:disabled {
+    opacity: 0.4;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* Topics */
+
+.topics-section h2 {
+    font-size: 20px;
+
+    margin-bottom: 18px;
+
+    color: #eee;
+}
+
+
+.topics-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+
+/* Topic Card */
+
+.topic-card {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 18px 20px;
+
+    border-radius: 16px;
+
+    border: 1px solid #292929;
+
+    background: #151515;
+
+    color: white;
+
+    cursor: pointer;
+
+    text-align: right;
+
+    transition:
+        transform 0.2s,
+        border-color 0.2s,
+        background 0.2s;
+}
+
+
+.topic-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #444;
+
+    background: #1b1b1b;
+}
+
+
+.topic-card-content {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+}
+
+
+.topic-icon {
+    width: 45px;
+
+    height: 45px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #222;
+
+    color: #aaa;
+
+    font-size: 22px;
+
+    font-weight: bold;
+}
+
+
+.topic-card h3 {
+    margin: 0 0 5px;
+
+    font-size: 17px;
+}
+
+
+.topic-card-content span:last-child {
+    color: #666;
+
+    font-size: 12px;
+}
+
+
+.topic-arrow {
+    font-size: 22px;
+
+    color: #666;
+
+    transition: 0.2s;
+}
+
+
+.topic-card:hover .topic-arrow {
+    color: white;
+
+    transform: translateX(-4px);
+}
+
+
+/* Empty */
+
+.no-topics {
+    text-align: center;
+
+    padding: 45px 20px;
+
+    border: 1px dashed #333;
+
+    border-radius: 16px;
+
+    color: #666;
+
+    line-height: 2;
+}
+
+
+/* Loading */
+
+.topics-loading {
+    text-align: center;
+
+    padding: 40px;
+
+    color: #666;
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .topics-page {
+        padding: 40px 15px;
+    }
+
+    .topics-header h1 {
+        font-size: 28px;
+    }
+
+    .topics-header p {
+        font-size: 14px;
+    }
+
+    .topic-input {
+        flex-direction: column;
+    }
+
+    .topic-input button {
+        width: 100%;
+
+        height: 48px;
+    }
+
+    .topic-card {
+        padding: 15px;
+    }
+
+}

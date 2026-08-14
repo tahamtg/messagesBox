@@ -1,74 +1,95 @@
-import { Routes, Route } from 'react-router-dom'
-import Sign from './sign'
-import {Usecontext} from './context'
+import { Routes, Route } from "react-router-dom";
+import React, { useState } from "react";
+
+import Sign from "./sign";
+import Login from "./login";
+import { Usecontext } from "./context";
 import AuthLayout from './AuthLayout '
-import ProtectedRoute from './ProtectedRoute'
-import React, { useState } from 'react'
-import Login from './login'
-import User_Direct from './Direct'
-import Layout from './Layout'
-import ChatRoom from './charRoom'
-import About from './about'
+import ProtectedRoute from "./ProtectedRoute";
+
+import Layout from "./Layout";
+import ChatRoom from "./charRoom";
+import User_Direct from "./Direct";
+import About from "./about";
+import Index from ".";
+import Topics from "./topics";
+import ChooseTopics from "./choosetopics";
 
 interface api_sign {
-  username: string,
-  password: string,
-  userid: number | null
+    username: string;
+    password: string;
+    userid: number | null;
 }
 
 const App: React.FC = () => {
 
-  const [form, setForm] = useState<api_sign>({
-    username: "",
-    password: "",
-    userid : null
-  })
+    const [form, setForm] = useState<api_sign>({
+        username: "",
+        password: "",
+        userid: null,
+    });
 
-  return (
-   <Usecontext.Provider value={{form, setForm}}>
-    
+    return (
+        <Usecontext.Provider value={{ form, setForm }}>
 
-      <Routes>
+            <Routes>
 
-      <Route
-          path="sign"
-          element={<Sign />}
-        />
+                <Route
+                    path="/sign"
+                    element={<Sign />}
+                />
 
-      <Route element={<AuthLayout/>}>
+                <Route
+                    path="/login"
+                    element={<Login />}
+                />
 
-      <Route element={<Layout/>}>
+                <Route element={<AuthLayout />}>
 
-        <Route path="/" element={
-         <ProtectedRoute>
-          <ChatRoom />
-         </ProtectedRoute>
-          } />
-        
-        <Route
-        path="about"
-        element={<About />}
-        />
-        <Route path='/chat/:chat_id' element={<User_Direct />} />
-        <Route path='/:roomName' element={<ChatRoom />} />
+                    <Route element={<Layout />}>
 
-      </Route>
+                        <Route
+                            path="/"
+                            element={
+                               // <ProtectedRoute>
+                                    <Index />
+                               // </ProtectedRoute>
+                            }
+                        />
 
-        
+                        <Route
+                            path="/about"
+                            element={<About />}
+                        />
 
-     
-        <Route
-          path="login"
-          element={
-          <Login />
-        }
-        />
-      </Route>
-        
-      </Routes>
-    
-    </Usecontext.Provider>
-  )
-}
+                        <Route
+                            path="/chat/:chat_id"
+                            element={<User_Direct />}
+                        />
+
+                        <Route
+                            path="/topics/:roomSlug/:topicSlug"
+                            element={<ChatRoom />}
+                        />
+
+                        <Route
+                            path="/topics"
+                            element={<Topics />}
+                        />
+
+                        <Route
+                            path="/:slug"
+                            element={<ChooseTopics />}
+                        />
+
+                    </Route>
+
+                </Route>
+
+            </Routes>
+
+        </Usecontext.Provider>
+    );
+};
 
 export default App;

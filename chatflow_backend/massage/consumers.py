@@ -1,56 +1,109 @@
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
+
 from asgiref.sync import sync_to_async
+from channels.generic.websocket import AsyncWebsocketConsumer
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
+########Connect########
+
     async def connect(self):
-        print("CONNECT FUNCTION CALLED")
+        from .models import Room, Topic
 
-        self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
-        self.room_group_name = f"chat_{self.room_name}"
+        self.room_slug = self.scope["url_route"]["kwargs"]["room_slug"]
+        self.topic_slug = self.scope["url_route"]["kwargs"]["topic_slug"]
 
+        self.topic_group_name = None
+
+        self.room = None
+        self.topic = None
+
+        # Authentication
         user = self.scope["user"]
+
         if not user.is_authenticated:
             await self.close()
             return
 
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
+        # Get Room
+        try:
+            self.room = await sync_to_async(
+                Room.objects.get
+            )(slug=self.room_slug)
+
+        except Room.DoesNotExist:
+            await self.close()
+            return
+
+        # Get Topic
+
+        try:
+            self.topic = await sync_to_async(
+                Topic.objects.get
+            )(
+                slug=self.topic_slug,
+                room=self.room
+            )
+
+        except Topic.DoesNotExist:
+            await self.close()
+            return
+
+        self.topic_group_name = (
+            f"chat_room_{self.room_slug}_topic_{self.topic_slug}"
         )
+
+        # Join Topic
+        if self.topic_group_name:
+            await self.channel_layer.group_add(
+                self.topic_group_name,
+                self.channel_name
+            )
 
         await self.accept()
 
-    async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
+        print(
+            "CONNECTED!",
+            self.room_slug,
+            self.topic_slug
         )
 
+########Disconnect########
+
+    async def disconnect(self, close_code):
+
+        # Leave topic group
+        if self.topic_group_name:
+            await self.channel_layer.group_discard(
+                self.topic_group_name,
+                self.channel_name
+            )
+
     async def disconnected(self, event):
+
         await self.send(
             text_data=json.dumps({
+                "type": "disconnect",
                 "message": event["message"],
                 "username": event["username"],
                 "1006": event["1006"],
-                "1001": event["1001"]
+                "1001": event["1001"],
             })
         )
 
+########DIRECT########
+
     async def create_direct(self, data):
+
+        from .models import User_Account, Direct
+
         current_user = self.scope["user"]
         target_user_id = data["ID_user"]
 
-        from .models import User_Account
-        from .models import Direct
-
-        print("USER:", current_user)
-
-        target_user = await sync_to_async(User_Account.objects.get)(
-            id=target_user_id
-        )
+        target_user = await sync_to_async(
+            User_Account.objects.get
+        )(id=target_user_id)
 
         chat = await sync_to_async(
             lambda: Direct.objects.filter(
@@ -61,12 +114,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )()
 
         if not chat:
-            chat = await sync_to_async(Direct.objects.create)()
-            await sync_to_async(chat.user_Direct.add)(
+
+            chat = await sync_to_async(
+                Direct.objects.create
+            )()
+
+            await sync_to_async(
+                chat.user_Direct.add
+            )(
                 current_user,
                 target_user
             )
-            print("CREATE DIRECT RECEIVED")
 
         await self.send(
             text_data=json.dumps({
@@ -75,42 +133,52 @@ class ChatConsumer(AsyncWebsocketConsumer):
             })
         )
 
+########Delete Messages########
+
     async def delete_mass(self, text_data):
+
         from .models import Massage
 
-        data_del = json.loads(text_data)
+        data = json.loads(text_data)
 
-        print("DELETE DATA:", data_del)
+        message_id = data["massageId"]
 
         try:
-            my_message = await sync_to_async(Massage.objects.get)(
-                id=data_del["massageId"]
+            message = await sync_to_async(
+                Massage.objects.get
+            )(
+                id=message_id,
+                room=self.room,
+                topic=self.topic
             )
+
         except Massage.DoesNotExist:
             print("MESSAGE NOT FOUND")
             return
 
-        if my_message.user_id != self.scope["user"].id:
+        # Check owner
+        if message.user_id != self.scope["user"].id:
             print("NOT OWNER")
             return
 
         await sync_to_async(
             Massage.objects.filter(
-                id=data_del["massageId"]
+                id=message_id
             ).delete
         )()
 
-        print("MESSAGE DELETED")
-
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "del_massage",
-                "id_massage": data_del["massageId"]
-            }
-        )
+        # Notify topic if message belongs to topic
+        if self.topic_group_name:
+            await self.channel_layer.group_send(
+                self.topic_group_name,
+                {
+                    "type": "del_massage",
+                    "id_massage": message_id
+                }
+            )
 
     async def del_massage(self, event):
+
         await self.send(
             text_data=json.dumps({
                 "type": "message_deleted",
@@ -118,62 +186,84 @@ class ChatConsumer(AsyncWebsocketConsumer):
             })
         )
 
+########Receive Items########
+
     async def receive(self, text_data):
-        from .models import Massage, Room
+
+        from .models import Massage
 
         print("RAW:", text_data)
 
         data = json.loads(text_data)
 
-        if data.get("type") == "delete_message":
-            await self.delete_mass(text_data)
-            return
+        message_type = data.get("type")
 
-        if data.get("type") == "create-direct":
+        # -------------------------
+        # DIRECT CHAT
+        # -------------------------
+
+        if message_type == "create-direct":
             await self.create_direct(data)
             return
 
-        username_id = self.scope["user"].id
+        # -------------------------
+        # DELETE MESSAGE
+        # -------------------------
 
-        if data.get("type") == "chat_message":
+        if message_type == "delete_message":
+            await self.delete_mass(text_data)
+            return
 
-            print("MESSAGE:", data["message"])
 
-            room = await sync_to_async(
-                Room.objects.get
-            )(name = self.room_name)
+        # -------------------------
+        # NORMAL ROOM MESSAGE
+        # -------------------------
+        if message_type == "message":
+
+            message = data.get("message")
+
+            if not message:
+                return
 
             my_model = await sync_to_async(
                 Massage.objects.create
             )(
-                payam=data["message"],
-                room=room,
+                payam=message,
+                room=self.room,
                 user=self.scope["user"],
+                topic=self.topic,
                 file_id=data.get("mediaId"),
             )
 
             await self.channel_layer.group_send(
-                self.room_group_name,
+                self.topic_group_name,
                 {
-                    "type": "chat_message",
-                    "message": data["message"],
+                    "type": "chat_topic_message",
+                    "message": message,
                     "username": self.scope["user"].username,
                     "date_massage": my_model.publish_date.isoformat(),
                     "massage_id": my_model.id,
-                    "username_id": username_id,
-                    "media_URL": my_model.file.media.url if my_model.file else None
+                    "username_id": self.scope["user"].id,
+                    "media_URL": (
+                        my_model.file.media.url
+                        if my_model.file
+                        else None
+                    ),
                 }
             )
 
-    async def chat_message(self, event):
+            return
+
+    async def chat_topic_message(self, event):
+
         await self.send(
             text_data=json.dumps({
-                "type": "chat_message",
+                "type": "chat_topic_message",
                 "message": event["message"],
                 "username": event["username"],
                 "date": event["date_massage"],
                 "id": event["massage_id"],
                 "username_id": event["username_id"],
-                "media_URL": event["media_URL"]
+                "media_URL": event["media_URL"],
             })
         )

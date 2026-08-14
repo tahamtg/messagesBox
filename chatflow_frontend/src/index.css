@@ -1,0 +1,174 @@
+.home-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #0b0d10;
+    color: #ffffff;
+
+    padding: 30px;
+}
+
+.home-content {
+    width: 100%;
+    max-width: 720px;
+}
+
+.home-badge {
+    display: inline-block;
+
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+
+    color: #8b949e;
+
+    margin-bottom: 24px;
+}
+
+.home-content h1 {
+    margin: 0;
+
+    font-size: clamp(42px, 7vw, 76px);
+    line-height: 1.05;
+    letter-spacing: -3px;
+    font-weight: 800;
+}
+
+.home-content h1 span {
+    color: #6c63ff;
+}
+
+.home-description {
+    max-width: 600px;
+
+    margin-top: 28px;
+    margin-bottom: 45px;
+
+    color: #8b949e;
+
+    font-size: 17px;
+    line-height: 1.9;
+}
+
+.topic-box {
+    width: 100%;
+}
+
+.topic-box label {
+    display: block;
+
+    margin-bottom: 10px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #c9d1d9;
+}
+
+.topic-input-wrapper {
+    display: flex;
+    gap: 10px;
+
+    width: 100%;
+
+    padding: 7px;
+
+    background: #15181d;
+
+    border: 1px solid #272c33;
+    border-radius: 14px;
+
+    transition: 0.2s ease;
+}
+
+.topic-input-wrapper:focus-within {
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
+}
+
+.topic-input-wrapper input {
+    flex: 1;
+
+    min-width: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #ffffff;
+
+    padding: 14px 16px;
+
+    font-size: 15px;
+}
+
+.topic-input-wrapper input::placeholder {
+    color: #5f6873;
+}
+
+.topic-input-wrapper button {
+    border: none;
+    outline: none;
+
+    padding: 0 25px;
+
+    border-radius: 10px;
+
+    background: #6c63ff;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.topic-input-wrapper button:hover {
+    transform: translateY(-1px);
+    background: #7a72ff;
+}
+
+.topic-input-wrapper button:active {
+    transform: translateY(0);
+}
+
+.home-footer {
+    margin-top: 18px;
+
+    color: #555e69;
+
+    font-size: 13px;
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .home-page {
+        padding: 20px;
+    }
+
+    .home-content h1 {
+        font-size: 45px;
+        letter-spacing: -2px;
+    }
+
+    .home-description {
+        font-size: 15px;
+        line-height: 1.8;
+    }
+
+    .topic-input-wrapper {
+        flex-direction: column;
+    }
+
+    .topic-input-wrapper button {
+        height: 48px;
+    }
+}
