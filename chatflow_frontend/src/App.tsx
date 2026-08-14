@@ -51,9 +51,9 @@ const App: React.FC = () => {
                         <Route
                             path="/"
                             element={
-                               // <ProtectedRoute>
+                               <ProtectedRoute>
                                     <Index />
-                               // </ProtectedRoute>
+                               </ProtectedRoute>
                             }
                         />
 
