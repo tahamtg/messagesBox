@@ -36,7 +36,11 @@ const Login = ()=>{
         auth?.setIsAuth(true);
         setError(null);
 
+        console.log("BEFORE NAVIGATE");
+
         navigate("/about", { replace: true });
+
+        console.log("AFTER NAVIGATE");
 
         console.log(res.data);
 
