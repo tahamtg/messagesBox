@@ -82,7 +82,7 @@ def create_topic(request, slug):
                 serializer.data,
                 status=201
             )
-
+        print("SERIALIZER ERRORS:", serializer.errors)
         return Response(
             serializer.errors,
             status=400
