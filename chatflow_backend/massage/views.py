@@ -69,6 +69,8 @@ def get_topics(request, slug):
 def create_topic(request, slug):
 
     try:
+        print("SLUG RECEIVED:", slug)
+        print("DATA:", request.data)
         room = Room.objects.get(slug=slug)
 
         serializer = TopicSerializer(data=request.data)
@@ -117,7 +119,8 @@ def Pagination_data(request):
 
 @api_view(['GET'])
 def show_another_messages(request, room_slug, topic_slug):
-
+    print("ROOM SLUG RECEIVED:", room_slug)
+    print("QUERY PARAMS:", request.GET)
     room = Room.objects.get(slug=room_slug)
 
     topic = room.topics.get(slug=topic_slug)
