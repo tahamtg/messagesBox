@@ -50,18 +50,18 @@ const Login = ()=>{
 
         console.log(res.data);
 
-        } catch (e: any) {
-            console.log("LOGIN CATCH:", e);
-            console.log("LOGIN ERROR RESPONSE:", e.response?.data);
-            console.log("LOGIN ERROR STATUS:", e.response?.status);
+    } catch (e: any) {
+        console.log("LOGIN CATCH:", e);
+        console.log("LOGIN ERROR RESPONSE:", e.response?.data);
+        console.log("LOGIN ERROR STATUS:", e.response?.status);
 
-            auth?.setIsAuth(false);
-            setError("نام کاربری یا رمز عبور اشتباه است");
-            setMass(null);
-        }finally {
-                setLoading(false);
-            }
-        };
+        auth?.setIsAuth(false);
+        setError("نام کاربری یا رمز عبور اشتباه است");
+        setMass(null);
+    }finally {
+            setLoading(false);
+        }
+    };
 
     return(
         <>

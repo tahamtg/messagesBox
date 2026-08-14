@@ -78,7 +78,7 @@ const App: React.FC = () => {
                         />
 
                         <Route
-                            path="/:slug"
+                            path="/topics/:slug"
                             element={<ChooseTopics />}
                         />
 

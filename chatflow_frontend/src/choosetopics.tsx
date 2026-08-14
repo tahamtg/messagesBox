@@ -26,7 +26,7 @@ const ChooseTopics = () => {
             try {
 
                 const res = await axios.get(
-                    `https://massagesbox.ir/message/${slug}/`
+                    `https://massagesbox.ir/massage/${slug}/topics/`
                 );
 
                 setTopics(res.data);
@@ -50,57 +50,51 @@ const ChooseTopics = () => {
 
 
   
-    const createTopic = async () => {
+        const createTopic = async (
+            e?: React.FormEvent<HTMLFormElement>
+        ) => {
 
-        const name = topicName.trim();
+            e?.preventDefault();
 
-        if (!name) {
-            return;
-        }
+            const name = topicName.trim();
 
-        try {
+            if (!name || creating) {
+                return;
+            }
 
-            setCreating(true);
+            try {
 
-            const res = await axios.post(
-                `https://massagesbox.ir/rooms/${slug}/`,
-                {
-                    name: name
-                }
-            );
+                setCreating(true);
 
-            navigate(`/message/${slug}/${res.data.slug}`, { replace: true });
+                const res = await axios.post(
+                    `https://massagesbox.ir/massage/${slug}/topics/create//`,
+                    {
+                        name: name
+                    }
+                );
 
-            // اضافه کردن تاپیک جدید به لیست
-            setTopics((prev) => [
-                ...prev,
-                res.data
-            ]);
+                setTopics((prev) => [
+                    ...prev,
+                    res.data
+                ]);
 
-            // خالی کردن input
-            setTopicName("");
+                setTopicName("");
 
-        } catch (error) {
+                navigate(
+                    `/topics/${slug}/${res.data.slug}`,
+                    { replace: true }
+                );
 
-            console.error("Error creating topic:", error);
+            } catch (error) {
 
-        } finally {
+                console.error("Error creating topic:", error);
 
-            setCreating(false);
+            } finally {
 
-        }
-    };
+                setCreating(false);
 
-
-    const handleKeyDown = (
-        e: React.KeyboardEvent<HTMLInputElement>
-    ) => {
-
-        if (e.key === "Enter") {
-            createTopic();
-        }
-
-    };
+            }
+        };
 
 
     return (
@@ -136,7 +130,7 @@ const ChooseTopics = () => {
 
                     <div className="topic-input">
 
-                    <form>
+                    <form onSubmit={createTopic}>
 
                         <input
                             id="topic"
@@ -145,12 +139,11 @@ const ChooseTopics = () => {
                             onChange={(e) =>
                                 setTopicName(e.target.value)
                             }
-                            onKeyDown={handleKeyDown}
                             placeholder="تاپیک خود را بنویسید..."
                         />
 
                         <button
-                            onClick={createTopic}
+                            type="submit"
                             disabled={
                                 creating ||
                                 !topicName.trim()

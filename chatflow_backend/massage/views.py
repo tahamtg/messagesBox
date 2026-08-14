@@ -90,25 +90,29 @@ def Pagination_data(request):
     })
 
 @api_view(['GET'])
-def show_another_messages(request, room_name):
+def show_another_messages(request, room_slug, topic_slug):
 
-    room = Room.objects.get(name=room_name)
-    massages = Massage.objects.filter(room=room)
+    room = Room.objects.get(slug=room_slug)
+
+    topic = room.topics.get(slug=topic_slug)
+
+    massages = Massage.objects.filter(
+        room=room,
+        topic=topic
+    )
 
     data = []
 
     for m in massages:
-        data.append(
-            {
-                "username": m.user.username,
-                "username_id": m.user.id,
-                "message": m.payam,
-                "publish_date": m.publish_date,
-                "id": m.id,
-                "media_URL": m.file.media.url if m.file else None,
-            }
-            )
-    
+        data.append({
+            "username": m.user.username,
+            "username_id": m.user.id,
+            "message": m.payam,
+            "publish_date": m.publish_date,
+            "id": m.id,
+            "media_URL": m.file.media.url if m.file else None,
+        })
+
     return Response(data)
 
 #for post user_account and if is unique username
