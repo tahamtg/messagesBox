@@ -33,8 +33,14 @@ const Login = ()=>{
             }
         );
 
+        console.log("LOGIN RESPONSE RECEIVED:", res.status);
+        console.log("LOGIN DATA:", res.data);
+
+        console.log("BEFORE AUTH");
+
         auth?.setIsAuth(true);
-        setError(null);
+
+        console.log("AFTER AUTH");
 
         console.log("BEFORE NAVIGATE");
 
@@ -44,20 +50,18 @@ const Login = ()=>{
 
         console.log(res.data);
 
-    } catch (e: any) {
-        auth?.setIsAuth(false);
-        setError("نام کاربری یا رمز عبور اشتباه است");
-        setMass(null);
+        } catch (e: any) {
+            console.log("LOGIN CATCH:", e);
+            console.log("LOGIN ERROR RESPONSE:", e.response?.data);
+            console.log("LOGIN ERROR STATUS:", e.response?.status);
 
-        console.error(
-            "something is wrong!",
-            e.response?.data
-        );
-
-    } finally {
-        setLoading(false);
-    }
-};
+            auth?.setIsAuth(false);
+            setError("نام کاربری یا رمز عبور اشتباه است");
+            setMass(null);
+        }finally {
+                setLoading(false);
+            }
+        };
 
     return(
         <>
