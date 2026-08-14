@@ -36,7 +36,7 @@ const Login = ()=>{
         auth?.setIsAuth(true);
         setError(null);
 
-        navigate("/", { replace: true });
+        navigate("/about", { replace: true });
 
         console.log(res.data);
 
