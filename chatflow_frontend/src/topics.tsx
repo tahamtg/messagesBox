@@ -2,6 +2,15 @@ import { useNavigate } from "react-router-dom";
 import "./topics.css";
 import history from '../public//Catopics/History.jpg'
 import personaldevelop from '../public/Catopics/self DEVELOP.jpg'
+import BUSSINESS from '../public/Catopics/BUSSINESS.jpg'
+import NEWS from '../public/Catopics/NEWS.jpg'
+import MOVIES from '../public/Catopics/MOVIES.jpg'
+import GAMES from '../public/Catopics/GAMES.jpg'
+import Programming from '../public/Catopics/Programming.jpg'
+import Poemsliterature from '../public/Catopics/Poems & literature.jpg'
+import AI from '../public/Catopics/AI.jpg'
+import ClindicalPsycology from '../public/Catopics/Clindical Psycology.jpg'
+
 
 const Topics = () => {
     const navigate = useNavigate();
@@ -15,26 +24,32 @@ const topics = [
     {
         title: "جعبه هوش مصنوعی",
         slug: "ai",
+        image: AI,
     },
     {
         title: "جعبه روانشناسی",
         slug: "psychology",
+        image: ClindicalPsycology,
     },
     {
         title: "جعبه فیلم و سریال",
         slug: "movies",
+        image: MOVIES,
     },
     {
         title: "جعبه اخبار",
         slug: "news",
+        image: NEWS,
     },
     {
         title: "جعبه شعر و ادبیات",
         slug: "poetry-literature",
+        image: Poemsliterature,
     },
     {
         title: "جعبه برنامه نویسی",
         slug: "programming",
+        image: Programming,
     },
     {
         title: "جعبه توسعه فردی",
@@ -44,17 +59,19 @@ const topics = [
     {
         title: "جعبه کتاب",
         slug: "books",
+        image: history, 
     },
     {
         title: "جعبه ویدیو گیم",
         slug: "video-games",
+        image: GAMES,
     },
     {
-        title: "جعبه علم",
-        slug: "science",
+        title: "جعبه کسب و کار",
+        slug: "bussiness",
+        image: BUSSINESS, 
     },
 ];
-
     return (
     <main className="topics-page">
 
