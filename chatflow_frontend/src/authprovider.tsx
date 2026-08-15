@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { number } from "yup";
 
 interface context_content{
-    isAuth : boolean,
-    setIsAuth: React.Dispatch<React.SetStateAction<boolean>>,
+    isAuth : boolean | null,
+    setIsAuth: React.Dispatch<React.SetStateAction<boolean | null>>,
     logOut: ()=> void
     currentUser: CurrentUser,
     setCurrentuser: React.Dispatch<React.SetStateAction<CurrentUser>>
@@ -27,7 +27,7 @@ export const authContext = createContext <context_content | null> (null)
         username_id: 0
     })
 
-    const [isAuth, setIsAuth] = useState(false)
+    const [isAuth, setIsAuth] = useState<boolean | null>(null)
     const navigate = useNavigate()
 
     useEffect(()=>{
@@ -47,14 +47,15 @@ export const authContext = createContext <context_content | null> (null)
             username_id: res.data.username_id
         })
 
-        if(res.data.authenticate === true){
-            setIsAuth(true)
-        }else{
-            setIsAuth(false)
-            return
-        }
+        
+            setIsAuth(res.data.authenticate === true)
+        
+ 
         }catch(e){
-            setIsAuth(false) 
+
+            console.log("Auth check failed:", e)
+            setIsAuth(false)
+            
         }
     }
 

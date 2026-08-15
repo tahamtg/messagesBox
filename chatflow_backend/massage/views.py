@@ -20,6 +20,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.core.paginator import Paginator
 from .models import Room
 from .serializers import UplaodMedia, TopicSerializer
+from django.shortcuts import get_object_or_404
 
 
 #get query from searching
@@ -42,19 +43,7 @@ def get_search(request):
 def get_topics(request, slug):
 
     try:
-
-        room, created = Room.objects.get_or_create(
-
-            slug=slug,
-            defaults={
-                "name": slug
-            }
-
-        )
-
-        print("ROOM:", room)
-        print("ROOM CREATED:", created)
-
+        room = get_object_or_404(Room, slug=slug)
 
         topics = room.topics.all()
 
@@ -136,13 +125,22 @@ def Pagination_data(request):
         "resualt": data,
     })
 
-@api_view(['GET'])
+@api_view(["GET"])
 def show_another_messages(request, room_slug, topic_slug):
-    print("ROOM SLUG RECEIVED:", room_slug)
-    print("QUERY PARAMS:", request.GET)
-    room = Room.objects.get(slug=room_slug)
 
-    topic = room.topics.get(slug=topic_slug)
+    print("ROOM SLUG RECEIVED:", room_slug)
+    print("TOPIC SLUG RECEIVED:", topic_slug)
+    print("QUERY PARAMS:", request.GET)
+
+    room = get_object_or_404(
+        Room,
+        slug=room_slug
+    )
+
+    topic = get_object_or_404(
+        room.topics,
+        slug=topic_slug
+    )
 
     massages = Massage.objects.filter(
         room=room,
