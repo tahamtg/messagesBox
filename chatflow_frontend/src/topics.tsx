@@ -14,55 +14,55 @@ const Topics = () => {
 
 const topics = [
     {
-    title: "جعبه تاریخ",
-    slug: "history",
-    image: history,
-},
-{
-    title: "جعبه هوش مصنوعی",
-    slug: "ai",
-    image: ai,
-},
-{
-    title: "جعبه روانشناسی",
-    slug: "psychology",
-    //image: clinicalPsychology,
-},
-{
-    title: "جعبه فیلم و سریال",
-    slug: "movies",
-    image: movies,
-},
-{
-    title: "جعبه اخبار",
-    slug: "news",
-    image: news,
-},
-{
-    title: "جعبه شعر و ادبیات",
-    slug: "poetry-literature",
-    //image: poemsLiterature,
-},
-{
-    title: "جعبه برنامه نویسی",
-    slug: "programming",
-    image: programming,
-},
-{
-    title: "جعبه توسعه فردی",
-    slug: "personal-development",
-    image: personalDevelop,
-},
-{
-    title: "جعبه ویدیو گیم",
-    slug: "video-games",
-    image: games,
-},
-{
-    title: "جعبه کسب‌وکار",
-    slug: "business",
-    image: business,
-},
+        title: "جعبه تاریخ",
+        slug: "history",
+        image: "/Catopics/History.jpg",
+    },
+    {
+        title: "جعبه هوش مصنوعی",
+        slug: "ai",
+        image: "/Catopics/AI.jpg",
+    },
+    {
+        title: "جعبه روانشناسی",
+        slug: "psychology",
+        image: "/Catopics/Clindical-Psycology.jpg",
+    },
+    {
+        title: "جعبه فیلم و سریال",
+        slug: "movies",
+        image: "/Catopics/MOVIES.jpg",
+    },
+    {
+        title: "جعبه اخبار",
+        slug: "news",
+        image: "/Catopics/NEWS.jpg",
+    },
+    {
+        title: "جعبه شعر و ادبیات",
+        slug: "poetry-literature",
+        image: "/Catopics/Poems-literature.jpg",
+    },
+    {
+        title: "جعبه برنامه نویسی",
+        slug: "programming",
+        image: "/Catopics/Programming.jpg",
+    },
+    {
+        title: "جعبه توسعه فردی",
+        slug: "personal-development",
+        image: "/Catopics/self-DEVELOP.jpg",
+    },
+    {
+        title: "جعبه ویدیو گیم",
+        slug: "video-games",
+        image: "/Catopics/GAMES.jpg",
+    },
+    {
+        title: "جعبه کسب‌وکار",
+        slug: "business",
+        image: "/Catopics/BUSSINESS.jpg",
+    },
 ];
     return (
     <main className="topics-page">
