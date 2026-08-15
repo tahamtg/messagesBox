@@ -11,17 +11,10 @@
 
     direction: rtl;
 
-    background:
-        radial-gradient(
-            circle at top,
-            #202020 0%,
-            #101010 45%,
-            #080808 100%
-        );
+    background: #0b0d10;
 
-    color: white;
+    color: #ffffff;
 }
-
 
 .topics-container {
     width: 100%;
@@ -29,103 +22,117 @@
 }
 
 
-/* Header */
+/* =========================
+   Header
+========================= */
 
 .topics-header {
     text-align: center;
     margin-bottom: 45px;
 }
 
-
 .topics-badge {
     display: inline-block;
 
     padding: 7px 15px;
 
-    border: 1px solid #333;
+    border: 1px solid #272c33;
     border-radius: 30px;
 
     font-size: 12px;
+    font-weight: 700;
 
-    color: #aaa;
+    color: #8b949e;
 
     letter-spacing: 2px;
 
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
-
 
 .topics-header h1 {
     margin: 0;
 
-    font-size: 38px;
+    font-size: clamp(32px, 5vw, 46px);
 
     font-weight: 800;
 
-    color: white;
-}
+    letter-spacing: -1.5px;
 
+    color: #ffffff;
+}
 
 .topics-header p {
-    margin-top: 15px;
+    max-width: 600px;
 
-    color: #888;
+    margin: 18px auto 0;
+
+    color: #8b949e;
 
     font-size: 16px;
+
+    line-height: 1.9;
 }
 
 
-/* Create topic */
+/* =========================
+   Create Topic
+========================= */
 
 .create-topic {
-    background: #151515;
+    background: #15181d;
 
-    border: 1px solid #292929;
+    border: 1px solid #272c33;
 
-    border-radius: 18px;
+    border-radius: 16px;
 
-    padding: 24px;
+    padding: 22px;
 
     margin-bottom: 40px;
 
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.25);
 }
-
 
 .create-topic label {
     display: block;
 
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 
-    font-size: 15px;
-
-    color: #ddd;
-
+    font-size: 14px;
     font-weight: 600;
+
+    color: #c9d1d9;
 }
 
 
-.topic-input {
+/* =========================
+   Input
+========================= */
+
+.topic-input form {
     display: flex;
 
     gap: 10px;
-}
 
+    width: 100%;
+}
 
 .topic-input input {
     flex: 1;
 
-    height: 52px;
+    min-width: 0;
 
-    border: 1px solid #333;
+    height: 50px;
+
+    border: 1px solid #272c33;
 
     border-radius: 12px;
 
     outline: none;
 
-    background: #0d0d0d;
+    background: #111419;
 
-    color: white;
+    color: #ffffff;
 
     padding: 0 16px;
 
@@ -133,49 +140,50 @@
 
     direction: rtl;
 
-    transition: 0.2s;
+    transition: 0.2s ease;
 }
-
 
 .topic-input input::placeholder {
-    color: #666;
+    color: #5f6873;
 }
-
 
 .topic-input input:focus {
-    border-color: #555;
+    border-color: #6c63ff;
 
-    background: #111;
+    box-shadow:
+        0 0 0 3px rgba(108, 99, 255, 0.12);
+
+    background: #15181d;
 }
-
 
 .topic-input button {
     width: 110px;
 
     border: none;
 
-    border-radius: 12px;
+    border-radius: 11px;
 
-    background: white;
+    background: #6c63ff;
 
-    color: #111;
+    color: #ffffff;
 
     font-size: 14px;
-
     font-weight: 700;
 
     cursor: pointer;
 
-    transition: 0.2s;
+    transition: 0.2s ease;
 }
-
 
 .topic-input button:hover {
-    transform: translateY(-2px);
+    background: #7a72ff;
 
-    background: #e8e8e8;
+    transform: translateY(-1px);
 }
 
+.topic-input button:active {
+    transform: translateY(0);
+}
 
 .topic-input button:disabled {
     opacity: 0.4;
@@ -186,27 +194,32 @@
 }
 
 
-/* Topics */
+/* =========================
+   Topics Section
+========================= */
 
 .topics-section h2 {
     font-size: 20px;
 
     margin-bottom: 18px;
 
-    color: #eee;
-}
+    color: #e6edf3;
 
+    font-weight: 700;
+}
 
 .topics-list {
     display: flex;
 
     flex-direction: column;
 
-    gap: 12px;
+    gap: 9px;
 }
 
 
-/* Topic Card */
+/* =========================
+   Topic Card
+========================= */
 
 .topic-card {
     width: 100%;
@@ -217,154 +230,276 @@
 
     justify-content: space-between;
 
-    padding: 18px 20px;
+    padding: 16px 18px;
 
-    border-radius: 16px;
+    border-radius: 13px;
 
-    border: 1px solid #292929;
+    border: 1px solid #22272e;
 
-    background: #151515;
+    background: #111419;
 
-    color: white;
+    color: #ffffff;
 
     cursor: pointer;
 
     text-align: right;
 
     transition:
-        transform 0.2s,
-        border-color 0.2s,
-        background 0.2s;
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
-
 
 .topic-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
 
-    border-color: #444;
+    background: #171a21;
 
-    background: #1b1b1b;
+    border-color: #6c63ff;
 }
 
+.topic-card:active {
+    transform: translateY(0);
+}
+
+
+/* =========================
+   Topic Content
+========================= */
 
 .topic-card-content {
     display: flex;
 
     align-items: center;
 
-    gap: 15px;
+    gap: 14px;
 }
 
-
 .topic-icon {
-    width: 45px;
-
-    height: 45px;
+    width: 44px;
+    height: 44px;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
-    border-radius: 12px;
+    border-radius: 11px;
 
-    background: #222;
+    background: #191c22;
 
-    color: #aaa;
+    border: 1px solid #272c33;
 
-    font-size: 22px;
+    color: #6c63ff;
 
-    font-weight: bold;
+    font-size: 21px;
+
+    font-weight: 700;
+
+    flex-shrink: 0;
 }
-
 
 .topic-card h3 {
     margin: 0 0 5px;
 
-    font-size: 17px;
+    font-size: 16px;
+
+    font-weight: 700;
+
+    color: #e6edf3;
 }
 
-
 .topic-card-content span:last-child {
-    color: #666;
+    color: #68717c;
 
     font-size: 12px;
 }
 
 
+/* =========================
+   Arrow
+========================= */
+
 .topic-arrow {
-    font-size: 22px;
+    font-size: 21px;
 
-    color: #666;
+    color: #555e69;
 
-    transition: 0.2s;
+    transition: 0.2s ease;
 }
 
-
 .topic-card:hover .topic-arrow {
-    color: white;
+    color: #6c63ff;
 
     transform: translateX(-4px);
 }
 
 
-/* Empty */
+/* =========================
+   Empty
+========================= */
 
 .no-topics {
     text-align: center;
 
     padding: 45px 20px;
 
-    border: 1px dashed #333;
+    border: 1px dashed #2b3038;
 
-    border-radius: 16px;
+    border-radius: 14px;
 
-    color: #666;
+    background: #111419;
+
+    color: #68717c;
 
     line-height: 2;
 }
 
 
-/* Loading */
+/* =========================
+   Loading
+========================= */
 
 .topics-loading {
     text-align: center;
 
     padding: 40px;
 
-    color: #666;
+    color: #68717c;
+
+    animation: topicLoading 1.2s ease-in-out infinite;
+}
+
+@keyframes topicLoading {
+    0% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.4;
+    }
 }
 
 
-/* Mobile */
+/* =========================
+   Mobile
+========================= */
 
 @media (max-width: 600px) {
 
     .topics-page {
-        padding: 40px 15px;
+        padding: 45px 15px;
+    }
+
+    .topics-header {
+        margin-bottom: 32px;
     }
 
     .topics-header h1 {
-        font-size: 28px;
+        font-size: 29px;
+
+        letter-spacing: -1px;
     }
 
     .topics-header p {
         font-size: 14px;
+
+        line-height: 1.8;
     }
 
-    .topic-input {
+    .create-topic {
+        padding: 17px;
+
+        border-radius: 14px;
+
+        margin-bottom: 30px;
+    }
+
+    .topic-input form {
         flex-direction: column;
+
+        gap: 8px;
+    }
+
+    .topic-input input {
+        height: 48px;
+
+        font-size: 14px;
     }
 
     .topic-input button {
         width: 100%;
 
-        height: 48px;
+        height: 47px;
+    }
+
+    .topics-section h2 {
+        font-size: 18px;
     }
 
     .topic-card {
-        padding: 15px;
+        padding: 14px;
+
+        border-radius: 12px;
     }
 
+    .topic-card-content {
+        gap: 11px;
+    }
+
+    .topic-icon {
+        width: 40px;
+        height: 40px;
+
+        font-size: 18px;
+    }
+
+    .topic-card h3 {
+        font-size: 14px;
+    }
+
+    .topic-card-content span:last-child {
+        font-size: 11px;
+    }
+
+    .topic-arrow {
+        font-size: 19px;
+    }
+}
+
+
+/* =========================
+   Small Mobile
+========================= */
+
+@media (max-width: 380px) {
+
+    .topics-page {
+        padding: 35px 12px;
+    }
+
+    .topics-header h1 {
+        font-size: 25px;
+    }
+
+    .topics-header p {
+        font-size: 13px;
+    }
+
+    .create-topic {
+        padding: 14px;
+    }
+
+    .topic-card {
+        padding: 12px;
+    }
+
+    .topic-icon {
+        width: 37px;
+        height: 37px;
+    }
 }
