@@ -44,7 +44,7 @@ const Login = ()=>{
 
         console.log("BEFORE NAVIGATE");
 
-        navigate("/about", { replace: true });
+        navigate("/", { replace: true });
 
         console.log("AFTER NAVIGATE");
 

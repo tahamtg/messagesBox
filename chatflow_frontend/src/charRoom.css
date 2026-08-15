@@ -367,13 +367,6 @@
 }
 
 
-/* Hide native file input */
-
-.upload-media input[type="file"] {
-    display: none;
-}
-
-
 /* General buttons */
 
 .media-btn,

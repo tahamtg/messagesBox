@@ -1,3 +1,15 @@
+@font-face {
+    font-family: yekan;
+    src: url('../src/assets/fonts/Yekan.woff');
+}
+
+
+*, body{
+    font-family: yekan;
+    direction: rtl;
+}
+
+
 .home-page {
     min-height: 100vh;
     display: flex;
