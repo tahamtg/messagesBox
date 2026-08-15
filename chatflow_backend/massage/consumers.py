@@ -27,26 +27,51 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         # Get Room
+    # Get or Create Room
         try:
-            self.room = await sync_to_async(
-                Room.objects.get
-            )(slug=self.room_slug)
+            self.room, room_created = await sync_to_async(
+                Room.objects.get_or_create
+            )(
+                slug=self.room_slug,
+                defaults={
+                    "name": self.room_slug
+                }
+            )
 
-        except Room.DoesNotExist:
+            print(
+                "ROOM:",
+                self.room.slug,
+                "CREATED:",
+                room_created
+            )
+
+        except Exception as e:
+            print("ROOM ERROR:", e)
             await self.close()
             return
 
-        # Get Topic
+        # Get Topic or Create
 
         try:
-            self.topic = await sync_to_async(
-                Topic.objects.get
+            self.topic, topic_created = await sync_to_async(
+                Topic.objects.get_or_create
             )(
                 slug=self.topic_slug,
-                room=self.room
+                room=self.room,
+                defaults={
+                    "name": self.topic_slug,
+                }
             )
 
-        except Topic.DoesNotExist:
+            print(
+                "TOPIC:",
+                self.topic.slug,
+                "CREATED:",
+                topic_created
+            )
+
+        except Exception as e:
+            print("TOPIC ERROR:", e)
             await self.close()
             return
 

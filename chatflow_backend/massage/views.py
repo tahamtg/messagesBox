@@ -42,7 +42,19 @@ def get_search(request):
 def get_topics(request, slug):
 
     try:
-        room = Room.objects.get(slug=slug)
+
+        room, created = Room.objects.get_or_create(
+
+            slug=slug,
+            defaults={
+                "name": slug
+            }
+
+        )
+
+        print("ROOM:", room)
+        print("ROOM CREATED:", created)
+
 
         topics = room.topics.all()
 
@@ -69,9 +81,16 @@ def get_topics(request, slug):
 def create_topic(request, slug):
 
     try:
+
         print("SLUG RECEIVED:", slug)
         print("DATA:", request.data)
-        room = Room.objects.get(slug=slug)
+        
+        room, created = Room.objects.get_or_create(
+            slug=slug,
+            defaults={
+                "name": slug
+            }
+        )
 
         serializer = TopicSerializer(data=request.data)
 
