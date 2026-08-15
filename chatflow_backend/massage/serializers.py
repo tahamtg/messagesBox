@@ -29,4 +29,5 @@ class Authenticate_User (serializers.ModelSerializer):
 class TopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
-        fields = ["id", "name", "slug"]
+        fields = ["id", "name"]
+        read_only_fields = ["slug"]
