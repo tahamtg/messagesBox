@@ -27,6 +27,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         # Get Room
+        
     # Get or Create Room
         try:
             self.room, room_created = await sync_to_async(

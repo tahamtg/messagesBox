@@ -1,370 +1,246 @@
 /* =========================
-        صفحه
+   Login
 ========================= */
 
-.total-login{
-    position:relative;
+.total-login {
+    min-height: 100vh;
 
-    width:100%;
-    min-height:100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    background: #0b0d10;
+    color: #ffffff;
 
-    overflow:hidden;
-    padding:40px;
+    padding: 30px 20px;
+
+    position: relative;
+    overflow: hidden;
 }
 
-/* =========================
-      نور پس زمینه
-========================= */
+/* subtle background glow */
 
-.radialback{
-    position:absolute;
+.radialback {
+    position: absolute;
 
-    left:-8%;
-    top:50%;
+    width: 500px;
+    height: 500px;
 
-    transform:translateY(-50%);
+    top: -250px;
+    right: -180px;
 
-    width:1100px;
-    height:1100px;
-
-    border-radius:50%;
-
-    background:radial-gradient(
+    background: radial-gradient(
         circle,
-
-        rgba(255,255,255,.95) 0%,
-        rgba(255,255,255,.55) 32%,
-        rgba(255,255,255,.22) 55%,
-        rgba(255,255,255,.10) 75%,
-        rgba(255,255,255,.04) 92%,
-        transparent 100%
+        rgba(108, 99, 255, 0.12),
+        transparent 65%
     );
 
-    filter:blur(130px);
-
-    z-index:0;
+    pointer-events: none;
 }
 
-/* =========================
-          فرم ورود
-========================= */
+.login {
+    width: 100%;
+    max-width: 420px;
 
-.login{
+    padding: 38px;
 
-    position:relative;
-    z-index:5;
+    background: #111419;
 
-    width:100%;
-    max-width:430px;
-
-    padding:45px 35px;
-
-    border-radius:24px;
-
-    background:rgba(255,255,255,.06);
-
-    border:1px solid rgba(255,255,255,.12);
-
-    backdrop-filter:blur(25px);
-    -webkit-backdrop-filter:blur(25px);
+    border: 1px solid #22272e;
+    border-radius: 18px;
 
     box-shadow:
-        0 25px 70px rgba(0,0,0,.55),
-        inset 0 1px rgba(255,255,255,.08);
+        0 20px 60px rgba(0, 0, 0, 0.25);
 }
 
-/* =========================
-         عنوان
-========================= */
+.logo-container {
+    display: flex;
+    justify-content: center;
 
-.login-title{
-
-    color:#fff;
-
-    text-align:center;
-
-    font-size:32px;
-
-    margin-bottom:10px;
+    margin-bottom: 25px;
 }
 
-.login-subtitle{
+.logo {
+    width: 72px;
+    height: 72px;
 
-    text-align:center;
+    object-fit: contain;
 
-    color:rgba(255,255,255,.55);
-
-    margin-bottom:35px;
-
-    font-size:14px;
+    border-radius: 16px;
 }
 
-/* =========================
-          پیام
-========================= */
+.login-title {
+    margin: 0;
 
-.massage{
+    text-align: center;
 
-    min-height:24px;
+    font-size: 38px;
+    font-weight: 800;
 
-    margin-bottom:18px;
-
-    text-align:center;
-
-    color:white;
+    letter-spacing: -1.5px;
 }
 
-/* =========================
-          فرم
-========================= */
+.login-subtitle {
+    margin: 12px 0 30px;
 
-.form form{
+    text-align: center;
 
-    display:flex;
+    color: #8b949e;
 
-    flex-direction:column;
-
-    gap:16px;
+    font-size: 14px;
+    line-height: 1.8;
 }
 
-/* =========================
-         Input
-========================= */
+.massage {
+    min-height: 24px;
 
-.form input{
+    margin-bottom: 12px;
 
-    width:100%;
+    text-align: center;
 
-    height:56px;
+    color: #ff6b81;
 
-    padding:0 18px;
-
-    border-radius:14px;
-
-    border:1px solid rgba(255,255,255,.08);
-
-    background:rgba(255,255,255,.04);
-
-    color:white;
-
-    font-size:15px;
-
-    transition:.3s;
+    font-size: 13px;
 }
 
-.form input::placeholder{
+.form form {
+    display: flex;
+    flex-direction: column;
 
-    color:rgba(255,255,255,.35);
+    gap: 12px;
 }
 
-.form input:focus{
+.form input {
+    width: 100%;
 
-    outline:none;
+    box-sizing: border-box;
 
-    border-color:rgba(255,255,255,.35);
+    padding: 14px 16px;
 
-    background:rgba(255,255,255,.07);
+    border: 1px solid #272c33;
+    border-radius: 11px;
 
-    box-shadow:0 0 18px rgba(255,255,255,.08);
+    outline: none;
+
+    background: #15181d;
+    color: #ffffff;
+
+    font-size: 14px;
+
+    transition: 0.2s ease;
 }
 
-/* =========================
-         Button
-========================= */
-
-.button-form{
-
-    margin-top:8px;
-
-    width:100%;
-
-    height:56px;
-
-    border:none;
-
-    border-radius:14px;
-
-    cursor:pointer;
-
-    background:white;
-
-    color:black;
-
-    font-size:16px;
-
-    font-weight:bold;
-
-    transition:.25s;
+.form input::placeholder {
+    color: #5f6873;
 }
 
-.button-form:hover{
+.form input:focus {
+    border-color: #6c63ff;
 
-    transform:translateY(-2px);
-
-    box-shadow:0 0 25px rgba(255,255,255,.22);
+    box-shadow:
+        0 0 0 3px rgba(108, 99, 255, 0.12);
 }
 
-.button-form:disabled{
+.button-form {
+    height: 48px;
 
-    opacity:.6;
+    margin-top: 5px;
 
-    cursor:not-allowed;
+    border: none;
+    border-radius: 11px;
+
+    background: #6c63ff;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
 }
 
-/* =========================
-          لینک
-========================= */
+.button-form:hover:not(:disabled) {
+    background: #7a72ff;
 
-.linkto{
-
-    display:block;
-
-    margin-top:22px;
-
-    text-align:center;
-
-    color:rgba(255,255,255,.65);
-
-    text-decoration:none;
-
-    transition:.3s;
+    transform: translateY(-1px);
 }
 
-.linkto:hover{
-
-    color:white;
+.button-form:active {
+    transform: translateY(0);
 }
 
-/* =========================
-         لوگو
-========================= */
-
-.logo-container{
-
-    text-align:center;
-
-    margin-bottom:20px;
+.button-form:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-.logo{
+.linkto {
+    display: block;
 
-    width:180px;
+    margin-top: 20px;
 
-    max-width:60%;
+    text-align: center;
 
-    height:auto;
+    color: #8b949e;
+
+    font-size: 13px;
+
+    text-decoration: none;
+
+    transition: 0.2s ease;
 }
 
-/* ==================================
-        لپ تاپ های کوچک
-================================== */
+.linkto:hover {
+    color: #6c63ff;
+}
 
-@media (max-width:1400px){
+@media (max-width: 600px) {
 
-    .radialback{
+    .total-login {
+        padding: 20px;
+        align-items: flex-start;
 
-        width:900px;
-        height:900px;
-
-        left:-25%;
-
-        filter:blur(120px);
+        padding-top: 60px;
     }
 
+    .login {
+        padding: 28px 22px;
+
+        border-radius: 15px;
+    }
+
+    .login-title {
+        font-size: 34px;
+    }
+
+    .login-subtitle {
+        font-size: 13px;
+        margin-bottom: 25px;
+    }
+
+    .logo {
+        width: 62px;
+        height: 62px;
+    }
 }
 
-/* ==================================
-          لپ تاپ
-================================== */
+@media (max-width: 380px) {
 
-@media (max-width:1200px){
-
-    .radialback{
-
-        width:820px;
-        height:820px;
-
-        left:-28%;
+    .total-login {
+        padding: 15px;
+        padding-top: 45px;
     }
 
-}
-
-/* ==================================
-             تبلت
-================================== */
-
-@media (max-width:900px){
-
-    .total-login{
-
-        padding:25px;
+    .login {
+        padding: 25px 18px;
     }
 
-    .radialback{
-
-        left:50%;
-        top:-300px;
-
-        transform:translateX(-50%);
-
-        width:850px;
-        height:850px;
-
-        filter:blur(120px);
+    .login-title {
+        font-size: 30px;
     }
 
-    .login{
-
-        max-width:420px;
+    .form input {
+        padding: 13px 14px;
     }
-
-}
-
-/* ==================================
-             موبایل
-================================== */
-
-@media (max-width:600px){
-
-    .total-login{
-
-        padding:18px;
-    }
-
-    .radialback{
-
-        top:-260px;
-
-        width:650px;
-        height:650px;
-
-        left:50%;
-
-        transform:translateX(-50%);
-
-        filter:blur(90px);
-    }
-
-    .login{
-
-        padding:35px 24px;
-
-        border-radius:20px;
-    }
-
-    .login-title{
-
-        font-size:28px;
-    }
-
-    .form input,
-    .button-form{
-
-        height:52px;
-    }
-
 }

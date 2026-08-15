@@ -1,208 +1,177 @@
+/* =========================
+   Header
+========================= */
 
 .header {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: space-between;
-    align-items: center;
-    padding: 18px 25px;
-    border-bottom: 1px solid #222;
-}
-
-.header h1 {
-    font-size: 1.7rem;
-    color: white;
-    font-family: font-Username;
-    filter: drop-shadow(rgba(255, 255, 255, .4), 5px, 0px, 10px);
-    animation: glow 1s linear infinite alternate 1s;
-}
-
-@keyframes glow {
-    from {
-        text-shadow: 0 0 5px rgba(255,255,255,.5);
-    }
-    to {
-        text-shadow:
-            0 0 10px rgba(255,255,255,.8),
-            0 0 20px rgba(255,255,255,1);
-    }
-}
-
-.title-logout button {
-    background: crimson;
-    color: white;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: .3s;
-}
-
-.forpopup {
-    background: white;
-    color: black;
-    border: 1px solid #ddd;
-    padding: 10px 24px;
-    border-radius: 10px;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    font-weight: 500;
-}
-
-.forpopup:hover {
-    background: black;
-    color: white;
-    border-color: black;
-}
-
-.forpopup:active {
-    transform: scale(0.96);
-}
-.title-logout button:hover {
-    background: rgb(170, 0, 34);
-}
-
-
-.tabs {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-
-    margin: 25px auto;
-    padding: 8px;
-
-    background: #000000;
-    border: 1px solid #e5e5e5;
-    border-radius: 14px;
-
-    width: fit-content;
-
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
-}
-
-
-.tabs > div button {
-    min-width: 160px;
-    padding: 12px 22px;
-
-    border: 1px solid #dcdcdc;
-    border-radius: 10px;
-
-    background: rgb(0, 0, 0);
-    color: #ffffff;
-
-    font-size: 15px;
-    font-weight: 500;
-
-    cursor: pointer;
-
-    transition: all .25s ease;
-}
-
-
-.tabs > div button:hover {
-    background: #f3f3f3;
-    border-color: #bbb;
-}
-
-/* تب فعال */
-.tabs .active button {
-    background: #111;
-    color: white;
-
-    border-color: #111;
-
-    box-shadow: 0 5px 15px rgba(0,0,0,.18);
-
-    transform: translateY(-2px);
-}
-
-/* وقتی فعاله هاورش تغییر نکنه */
-.tabs .active button:hover {
-    background: #111;
-}
-
-/* کلیک */
-.tabs button:active {
-    transform: scale(.98);
-}
-
-aside {
-    position: fixed;
-    top: 0;
-    right: 0;
-
-    width: 20vw;
-    height: 100vh;
-
-    background-color: #111;
-    color: white;
-
-    display: flex;
-    flex-direction: column;
-
-    padding: 20px 0;
-
-    box-shadow: -5px 0 20px rgba(0,0,0,0.2);
-
-    animation: slide 0.3s ease;
-}
-
-
-
-@media (max-width:768px) {
-
-    aside {
-    position: fixed;
-    top: 0;
-    right: 0;
-
-    width: 50vw;
-    height: 100vh;
-
-    background-color: #111;
-    color: white;
-
-    display: flex;
-    flex-direction: column;
-
-    padding: 20px 0;
-
-    box-shadow: -5px 0 20px rgba(0,0,0,0.2);
-
-    animation: slide 0.3s ease;
-    z-index: 1;
-}
-
-}
-
-
-aside span {
     width: 100%;
+    min-height: 72px;
 
-    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-    border-bottom: 1px solid rgba(255,255,255,0.15);
+    padding: 0 30px;
+
+    background: #0b0d10;
+    border-bottom: 1px solid #22272e;
+
+    color: #ffffff;
 
     box-sizing: border-box;
 
+    position: relative;
+    z-index: 100;
+}
+
+
+/* =========================
+   Logo
+========================= */
+
+.header h1 {
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: 800;
+
+    letter-spacing: -0.5px;
+
+    color: #ffffff;
+}
+
+.header h1::first-letter {
+    color: #6c63ff;
+}
+
+
+/* =========================
+   Buttons Container
+========================= */
+
+.title-logout,
+.header > div {
+    display: flex;
+    align-items: center;
+}
+
+
+/* =========================
+   General Buttons
+========================= */
+
+.title-logout button,
+.forpopup {
+    border: 1px solid #272c33;
+    outline: none;
+
+    background: #111419;
+    color: #c9d1d9;
+
+    padding: 9px 16px;
+
+    border-radius: 10px;
+
+    font-size: 13px;
+    font-weight: 600;
+
     cursor: pointer;
 
-    transition: 0.3s;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
 }
 
 
-aside span:hover {
-    background-color: #222;
+/* =========================
+   Logout
+========================= */
+
+.title-logout button:hover {
+    background: #171a21;
+
+    border-color: #6c63ff;
+
+    color: #ffffff;
+
+    transform: translateY(-1px);
 }
 
-@keyframes slide {
-    from {
-        transform: translateX(100%);
+
+/* =========================
+   Popup Button
+========================= */
+
+.forpopup {
+    background: #6c63ff;
+
+    border-color: #6c63ff;
+
+    color: #ffffff;
+}
+
+.forpopup:hover {
+    background: #7a72ff;
+
+    border-color: #7a72ff;
+
+    transform: translateY(-1px);
+}
+
+.title-logout button:active,
+.forpopup:active {
+    transform: translateY(0);
+}
+
+
+/* =========================
+   Mobile
+========================= */
+
+@media (max-width: 600px) {
+
+    .header {
+        min-height: 64px;
+
+        padding: 0 18px;
+
+        gap: 10px;
     }
 
-    to {
-        transform: translateX(0);
+    .header h1 {
+        font-size: 17px;
+    }
+
+    .title-logout button,
+    .forpopup {
+        padding: 8px 12px;
+
+        font-size: 12px;
+
+        border-radius: 9px;
+    }
+}
+
+
+/* =========================
+   Small Mobile
+========================= */
+
+@media (max-width: 380px) {
+
+    .header {
+        padding: 0 12px;
+    }
+
+    .header h1 {
+        font-size: 15px;
+    }
+
+    .title-logout button,
+    .forpopup {
+        padding: 7px 9px;
+
+        font-size: 11px;
     }
 }
