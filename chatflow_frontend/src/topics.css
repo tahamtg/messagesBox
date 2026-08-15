@@ -1,123 +1,304 @@
+/* =========================
+   Topics Page
+========================= */
+
+.topics-page {
+    min-height: 100vh;
+
+    padding: 60px 30px;
+
+    background: #0b0d10;
+    color: #ffffff;
+}
+
+
+/* =========================
+   Header
+========================= */
+
+.topics-header {
+    width: 100%;
+    max-width: 1000px;
+
+    margin: 0 auto 40px;
+
+    text-align: center;
+}
+
+.topics-header > span {
+    display: inline-block;
+
+    margin-bottom: 18px;
+
+    color: #8b949e;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    letter-spacing: 3px;
+}
+
+.topics-header h1 {
+    margin: 0;
+
+    font-size: clamp(36px, 6vw, 58px);
+
+    font-weight: 800;
+
+    letter-spacing: -2px;
+}
+
+.topics-header p {
+    margin: 18px auto 0;
+
+    max-width: 550px;
+
+    color: #8b949e;
+
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+
+/* =========================
+   Topics Grid
+========================= */
+
 .topics {
     width: 100%;
-    max-width: 1100px;
+    max-width: 1000px;
 
     margin: 0 auto;
-    padding: 25px 20px;
-
-    box-sizing: border-box;
 
     display: grid;
 
-    /* دسکتاپ: 3 ستون */
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns:
+        repeat(3, 1fr);
 
-    gap: 18px;
+    gap: 14px;
 }
 
 
-/* هر آیتم */
+/* =========================
+   Topic Card
+========================= */
 
 .topic {
-    width: 100%;
-}
+    position: relative;
 
+    min-height: 180px;
 
-/* دکمه */
+    padding: 0;
 
-.topic button {
-    width: 100%;
-    min-height: 110px;
+    overflow: hidden;
 
-    border: none;
-    border-radius: 18px;
+    border: 1px solid #272c33;
+    border-radius: 16px;
 
-    /* بک گراند موقت */
-    background: rgba(255, 255, 255, 0.08);
+    background-color: #111419;
+    background-size: cover;
+    background-position: center;
 
-    color: white;
-
-    font-size: 18px;
-    font-family: inherit;
-    font-weight: 600;
+    color: #ffffff;
 
     cursor: pointer;
 
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.topic:hover {
+    transform: translateY(-4px);
+
+    border-color: #6c63ff;
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.35),
+        0 0 20px rgba(108, 99, 255, 0.08);
+}
+
+
+/* =========================
+   Overlay
+========================= */
+
+.topic-overlay {
+    position: absolute;
+
+    inset: 0;
+
     display: flex;
-    align-items: center;
-    justify-content: center;
+
+    align-items: flex-end;
+
+    gap: 10px;
 
     padding: 20px;
 
-    box-sizing: border-box;
+    background:
+        linear-gradient(
+            to top,
+            rgba(7, 9, 12, 0.95),
+            rgba(7, 9, 12, 0.35),
+            rgba(7, 9, 12, 0.05)
+        );
+
+    text-align: right;
 
     transition:
-        transform 0.2s ease,
-        background-color 0.2s ease,
-        box-shadow 0.2s ease;
+        background 0.25s ease;
 }
 
-
-/* هاور */
-
-.topic button:hover {
-    background: rgba(255, 255, 255, 0.14);
-
-    transform: translateY(-4px);
-
-    box-shadow:
-        0 10px 25px rgba(0, 0, 0, 0.2);
-}
-
-
-/* کلیک */
-
-.topic button:active {
-    transform: scale(0.97);
+.topic:hover .topic-overlay {
+    background:
+        linear-gradient(
+            to top,
+            rgba(7, 9, 12, 0.98),
+            rgba(108, 99, 255, 0.15)
+        );
 }
 
 
 /* =========================
-   TABLET
-   ========================= */
+   Icon
+========================= */
 
-@media (max-width: 900px) {
+.topic-icon {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    border-radius: 9px;
+
+    background: rgba(108, 99, 255, 0.15);
+
+    border: 1px solid rgba(108, 99, 255, 0.35);
+
+    color: #8b84ff;
+
+    font-size: 18px;
+    font-weight: 800;
+}
+
+
+/* =========================
+   Title
+========================= */
+
+.topic-title {
+    flex: 1;
+
+    color: #ffffff;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    line-height: 1.5;
+}
+
+
+/* =========================
+   Arrow
+========================= */
+
+.topic-arrow {
+    color: #8b949e;
+
+    font-size: 18px;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.topic:hover .topic-arrow {
+    color: #8b84ff;
+
+    transform: translateX(-4px);
+}
+
+
+/* =========================
+   Mobile
+========================= */
+
+@media (max-width: 700px) {
+
+    .topics-page {
+        padding: 40px 18px;
+    }
+
+    .topics-header {
+        margin-bottom: 28px;
+    }
 
     .topics {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+            repeat(2, 1fr);
 
-        gap: 15px;
-
-        padding: 20px 15px;
+        gap: 10px;
     }
 
-    .topic button {
-        min-height: 100px;
+    .topic {
+        min-height: 150px;
 
-        font-size: 17px;
+        border-radius: 13px;
     }
+
+    .topic-overlay {
+        padding: 14px;
+
+        gap: 7px;
+    }
+
+    .topic-icon {
+        width: 30px;
+        height: 30px;
+
+        font-size: 16px;
+    }
+
+    .topic-title {
+        font-size: 13px;
+    }
+
 }
 
 
 /* =========================
-   MOBILE
-   ========================= */
+   Small Mobile
+========================= */
 
-@media (max-width: 600px) {
+@media (max-width: 420px) {
+
+    .topics-page {
+        padding: 30px 14px;
+    }
+
+    .topics-header h1 {
+        font-size: 34px;
+    }
+
+    .topics-header p {
+        font-size: 13px;
+    }
 
     .topics {
         grid-template-columns: 1fr;
 
-        gap: 12px;
-
-        padding: 15px 12px;
+        gap: 9px;
     }
 
-    .topic button {
-        min-height: 75px;
-
-        font-size: 16px;
-
-        border-radius: 14px;
+    .topic {
+        min-height: 130px;
     }
+
 }
