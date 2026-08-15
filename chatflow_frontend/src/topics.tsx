@@ -1,13 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import "./topics.css";
-import history from "../public/Catopics/History.jpg";
-import personalDevelop from "../public/Catopics/self DEVELOP.jpg";
-import business from "../public/Catopics/BUSSINESS.jpg"
-import news from "../public/Catopics/NEWS.jpg"
-import movies from "../public/Catopics/MOVIES.jpg"
-import games from "../public/Catopics/GAMES.jpg"
-import programming from "../public/Catopics/Programming.jpg"
-import ai from "../public/Catopics/AI.jpg"
+
 
 const Topics = () => {
     const navigate = useNavigate();
@@ -64,6 +57,7 @@ const topics = [
         image: "/Catopics/BUSSINESS.jpg",
     },
 ];
+
     return (
     <main className="topics-page">
 
