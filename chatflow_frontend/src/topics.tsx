@@ -2,15 +2,12 @@ import { useNavigate } from "react-router-dom";
 import "./topics.css";
 import history from "../public/Catopics/History.jpg";
 import personalDevelop from "../public/Catopics/self DEVELOP.jpg";
-import business from "../public/Catopics/BUSSINESS.jpg";
-import news from "../public/Catopics/NEWS.jpg";
-import movies from "../public/Catopics/MOVIES.jpg";
-import games from "../public/Catopics/GAMES.jpg";
-import programming from "../public/Catopics/Programming.jpg";
-import poemsLiterature from "../public/Catopics/Poems & literature.jpg";
-import ai from "../public/Catopics/AI.jpg";
-import clinicalPsychology from "../public/Catopics/Clindical Psycology.jpg";
-
+import business from "../public/Catopics/BUSSINESS.jpg"
+import news from "../public/Catopics/NEWS.jpg"
+import movies from "../public/Catopics/MOVIES.jpg"
+import games from "../public/Catopics/GAMES.jpg"
+import programming from "../public/Catopics/Programming.jpg"
+import ai from "../public/Catopics/AI.jpg"
 
 const Topics = () => {
     const navigate = useNavigate();
@@ -29,7 +26,7 @@ const topics = [
 {
     title: "جعبه روانشناسی",
     slug: "psychology",
-    image: clinicalPsychology,
+    //image: clinicalPsychology,
 },
 {
     title: "جعبه فیلم و سریال",
@@ -44,7 +41,7 @@ const topics = [
 {
     title: "جعبه شعر و ادبیات",
     slug: "poetry-literature",
-    image: poemsLiterature,
+    //image: poemsLiterature,
 },
 {
     title: "جعبه برنامه نویسی",
