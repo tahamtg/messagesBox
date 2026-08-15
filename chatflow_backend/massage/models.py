@@ -27,7 +27,7 @@ class Room (models.Model):
     
     slug = models.SlugField(
         max_length=120,
-        unique=True
+        unique=False,
     )
 
 
