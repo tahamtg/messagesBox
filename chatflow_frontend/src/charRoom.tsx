@@ -343,7 +343,7 @@ const ChatRoom: React.FC = () => {
                     }
                 );
 
-
+            console.log("OLD MESSAGES:", response.data);
             setMediaUrl(
                 response.data.mediaUrl
             );
