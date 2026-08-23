@@ -57,7 +57,7 @@ class Topic(models.Model):
 
 
 class MediaUpload(models.Model):
-    media = models.FileField(upload_to='image&videos', null=True, blank=True)
+    media = models.FileField(upload_to='uploads', null=True, blank=True)
 
 class Massage (models.Model):
     user = models.ForeignKey(User_Account, on_delete=models.CASCADE, null=True, blank=False)
