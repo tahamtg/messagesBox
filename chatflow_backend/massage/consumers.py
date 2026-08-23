@@ -263,7 +263,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             message = data.get("message")
 
-            if not message:
+            if not message and not data.get("mediaId"):
                 return
 
             my_model = await sync_to_async(
