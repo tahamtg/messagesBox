@@ -2,7 +2,7 @@ import json
 
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
-
+from channels.db import database_sync_to_async
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
@@ -50,7 +50,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             print("ROOM ERROR:", e)
             await self.close()
             return
-
+        
         # Get Topic or Create
 
         try:
@@ -117,6 +117,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "1001": event["1001"],
             })
         )
+
+ # For async file model
+    @database_sync_to_async
+    def get_media_url(self, message_id):
+
+        from .models import Massage
+
+        message = Massage.objects.select_related("file").get(
+            id=message_id
+        )
+
+        if message.file:
+            return message.file.media.url
+
+        return None
 
 ########DIRECT########
 
@@ -261,6 +276,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 file_id=data.get("mediaId"),
             )
 
+            media_url = await self.get_media_url(
+                my_model.id
+            )
+
             await self.channel_layer.group_send(
                 self.topic_group_name,
                 {
@@ -270,11 +289,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "date_massage": my_model.publish_date.isoformat(),
                     "massage_id": my_model.id,
                     "username_id": self.scope["user"].id,
-                    "media_URL": (
-                        my_model.file.media.url
-                        if my_model.file
-                        else None
-                    ),
+                    "media_URL": media_url,
                 }
             )
 
