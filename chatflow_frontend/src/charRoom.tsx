@@ -34,7 +34,10 @@ const ChatRoom: React.FC = () => {
 
     const navigate = useNavigate();
 
-    const { roomSlug, topicSlug } = useParams<{
+    const {
+        roomSlug,
+        topicSlug
+    } = useParams<{
         roomSlug: string;
         topicSlug: string;
     }>();
@@ -44,16 +47,20 @@ const ChatRoom: React.FC = () => {
     // STATE
     // =========================
 
-    const [message, setMessages] = useState<Message[]>([]);
+    const [message, setMessages] =
+        useState<Message[]>([]);
 
-    const [newMassage, setNewMassage] = useState<string>("");
+    const [newMassage, setNewMassage] =
+        useState<string>("");
 
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] =
+        useState<string | null>(null);
 
     const [disconnected, setDisconnected] =
         useState<string | null>(null);
 
-    const [isOpen, setIsopen] = useState(false);
+    const [isOpen, setIsopen] =
+        useState(false);
 
     const [posi, setPosi] = useState({
         x: 0,
@@ -72,6 +79,10 @@ const ChatRoom: React.FC = () => {
     const [mediaId, setMediaId] =
         useState<number | null>(null);
 
+
+    // =========================
+    // REFS
+    // =========================
 
     const socket =
         useRef<WebSocket | null>(null);
@@ -101,25 +112,37 @@ const ChatRoom: React.FC = () => {
             `wss://massagesbox.ir/ws/chat/${roomSlug}/${topicSlug}/`;
 
 
-        console.log("CONNECTING:", wsUrl);
+        console.log(
+            "CONNECTING:",
+            wsUrl
+        );
 
 
-        socket.current = new WebSocket(wsUrl);
+        socket.current =
+            new WebSocket(wsUrl);
 
 
         socket.current.onopen = () => {
 
-            console.log("WEBSOCKET CONNECTED");
+            console.log(
+                "WEBSOCKET CONNECTED"
+            );
 
             setDisconnected(null);
+            setError(null);
         };
 
 
         socket.current.onmessage = (event) => {
 
-            const data = JSON.parse(event.data);
+            const data =
+                JSON.parse(event.data);
 
-            console.log("RECEIVED:", data);
+
+            console.log(
+                "RECEIVED:",
+                data
+            );
 
 
             // =========================
@@ -128,7 +151,9 @@ const ChatRoom: React.FC = () => {
 
             if (data.type === "chat_ID") {
 
-                navigate(`/chat/${data.chat_id}`);
+                navigate(
+                    `/chat/${data.chat_id}`
+                );
 
                 return;
             }
@@ -138,12 +163,16 @@ const ChatRoom: React.FC = () => {
             // MESSAGE DELETED
             // =========================
 
-            if (data.type === "message_deleted") {
+            if (
+                data.type ===
+                "message_deleted"
+            ) {
 
                 setMessages((prev) =>
                     prev.filter(
                         (msg) =>
-                            msg.id !== data.mass_id
+                            msg.id !==
+                            data.mass_id
                     )
                 );
 
@@ -157,21 +186,30 @@ const ChatRoom: React.FC = () => {
             // TOPIC MESSAGE
             // =========================
 
-            if (data.type === "chat_topic_message") {
+            if (
+                data.type ===
+                "chat_topic_message"
+            ) {
 
                 const newMessage: Message = {
 
-                    message: data.message,
+                    message:
+                        data.message,
 
-                    username: data.username,
+                    username:
+                        data.username,
 
-                    date: data.date,
+                    date:
+                        data.date,
 
-                    username_id: data.username_id,
+                    username_id:
+                        data.username_id,
 
-                    id: data.id,
+                    id:
+                        data.id,
 
-                    media_URL: data.media_URL
+                    media_URL:
+                        data.media_URL
                 };
 
 
@@ -186,38 +224,42 @@ const ChatRoom: React.FC = () => {
         };
 
 
-        socket.current.onclose = (event) => {
+        socket.current.onclose =
+            (event) => {
 
-            console.log(
-                "WS CLOSED:",
-                event.code,
-                event.reason
-            );
-
-
-            if (event.code === 1006) {
-
-                setDisconnected(
-                    "ارتباط WebSocket قطع شد"
+                console.log(
+                    "WS CLOSED:",
+                    event.code,
+                    event.reason
                 );
-            }
-        };
 
 
-        socket.current.onerror = (event) => {
+                if (event.code === 1006) {
 
-            console.log(
-                "WS ERROR:",
-                event
-            );
-
-            setError(
-                "اتصال WebSocket قطع شد!"
-            );
-        };
+                    setDisconnected(
+                        "ارتباط WebSocket قطع شد"
+                    );
+                }
+            };
 
 
+        socket.current.onerror =
+            (event) => {
+
+                console.log(
+                    "WS ERROR:",
+                    event
+                );
+
+                setError(
+                    "اتصال WebSocket قطع شد!"
+                );
+            };
+
+
+        // =========================
         // CLEANUP
+        // =========================
 
         return () => {
 
@@ -230,32 +272,44 @@ const ChatRoom: React.FC = () => {
             socket.current = null;
         };
 
-
-    }, [roomSlug, topicSlug, navigate]);
+    }, [
+        roomSlug,
+        topicSlug,
+        navigate
+    ]);
 
 
     // =========================
     // SEND MESSAGE
     // =========================
 
-    const post_Massage = (
+    const post_Massage = async (
         event: React.FormEvent<HTMLFormElement>
     ) => {
 
         event.preventDefault();
 
 
+        // =========================
+        // CHECK INPUT
+        // =========================
+
         if (
             !newMassage.trim() &&
-            !mediaUrl
+            !resFile
         ) {
             return;
         }
 
 
+        // =========================
+        // CHECK WEBSOCKET
+        // =========================
+
         if (
             !socket.current ||
-            socket.current.readyState !== WebSocket.OPEN
+            socket.current.readyState !==
+                WebSocket.OPEN
         ) {
 
             console.error(
@@ -266,22 +320,122 @@ const ChatRoom: React.FC = () => {
         }
 
 
+        // =========================
+        // UPLOAD MEDIA
+        // =========================
+
+        let finalMediaUrl:
+            string | null = null;
+
+        let finalMediaId:
+            number | null = null;
+
+
+        if (resFile) {
+
+            const compressionOptions = {
+
+                maxSizeMB: 1,
+
+                maxWidthOrHeight: 1920,
+
+                useWebWorker: true
+            };
+
+
+            try {
+
+                const compressedFile =
+                    await imageCompression(
+                        resFile,
+                        compressionOptions
+                    );
+
+
+                const formData =
+                    new FormData();
+
+
+                formData.append(
+                    "media",
+                    compressedFile
+                );
+
+
+                const response =
+                    await axios.post(
+                        "https://massagesbox.ir/massage/Upload/",
+                        formData,
+                        {
+                            withCredentials: true
+                        }
+                    );
+
+
+                console.log(
+                    "UPLOAD RESPONSE:",
+                    response.data
+                );
+
+
+                finalMediaUrl =
+                    response.data.mediaUrl;
+
+
+                finalMediaId =
+                    response.data.mediaUrlid;
+
+
+                setMediaUrl(
+                    finalMediaUrl
+                );
+
+                setMediaId(
+                    finalMediaId
+                );
+
+
+            } catch (error) {
+
+                console.log(
+                    "UPLOAD ERROR:",
+                    error
+                );
+
+                return;
+            }
+        }
+
+
+        // =========================
+        // SEND THROUGH WEBSOCKET
+        // =========================
+
         socket.current.send(
             JSON.stringify({
 
                 type: "message",
 
-                message: newMassage.trim(),
+                message:
+                    newMassage.trim(),
 
-                mediaURL: mediaUrl,
+                mediaURL:
+                    finalMediaUrl,
 
-                mediaId: mediaId
+                mediaId:
+                    finalMediaId
 
             })
         );
 
 
+        // =========================
+        // CLEAR INPUT
+        // =========================
+
         setNewMassage("");
+
+        setResFile(null);
 
         setMediaUrl(null);
 
@@ -290,125 +444,54 @@ const ChatRoom: React.FC = () => {
 
 
     // =========================
-    // UPLOAD MEDIA
-    // =========================
-
-    const uploadMedia = async () => {
-
-        if (!resFile) {
-
-            alert(
-                "ابتدا یک فایل انتخاب کنید"
-            );
-
-            return;
-        }
-
-
-        const compressionOptions = {
-
-            maxSizeMB: 1,
-
-            maxWidthOrHeight: 1920,
-
-            useWebWorker: true
-        };
-
-
-        try {
-
-            const compressedFile =
-                await imageCompression(
-                    resFile,
-                    compressionOptions
-                );
-
-
-            const formData =
-                new FormData();
-
-
-            formData.append(
-                "media",
-                compressedFile
-            );
-
-
-            const response =
-                await axios.post(
-                    "https://massagesbox.ir/massage/Upload/",
-                    formData,
-                    {
-                        withCredentials: true
-                    }
-                );
-
-            console.log("OLD MESSAGES:", response.data);
-            setMediaUrl(
-                response.data.mediaUrl
-            );
-
-
-            setMediaId(
-                response.data.mediaUrlid
-            );
-
-
-            setResFile(null);
-
-
-        } catch (error) {
-
-            console.log(
-                "UPLOAD ERROR:",
-                error
-            );
-        }
-    };
-
-
-    // =========================
     // OLD MESSAGES
     // =========================
 
-    const getOldMessages = async () => {
+    const getOldMessages =
+        async () => {
 
-        if (!roomSlug || !topicSlug) {
-            return;
-        }
+            if (
+                !roomSlug ||
+                !topicSlug
+            ) {
+                return;
+            }
 
 
-        try {
+            try {
 
-            const response =
-                await axios.get(
-                    `https://massagesbox.ir/massage/${roomSlug}/${topicSlug}/`,
-                    {
-                        withCredentials: true
-                    }
+                const response =
+                    await axios.get(
+                        `https://massagesbox.ir/massage/${roomSlug}/${topicSlug}/`,
+                        {
+                            withCredentials: true
+                        }
+                    );
+
+
+                setMessages(
+                    response.data
                 );
 
 
-            setMessages(
-                response.data
-            );
+            } catch (error) {
 
-
-        } catch (error) {
-
-            console.log(
-                "GET OLD MESSAGES ERROR:",
-                error
-            );
-        }
-    };
+                console.log(
+                    "GET OLD MESSAGES ERROR:",
+                    error
+                );
+            }
+        };
 
 
     useEffect(() => {
 
         getOldMessages();
 
-    }, [roomSlug, topicSlug]);
+    }, [
+        roomSlug,
+        topicSlug
+    ]);
 
 
     // =========================
@@ -427,7 +510,8 @@ const ChatRoom: React.FC = () => {
 
         if (
             !socket.current ||
-            socket.current.readyState !== WebSocket.OPEN
+            socket.current.readyState !==
+                WebSocket.OPEN
         ) {
 
             console.error(
@@ -441,9 +525,11 @@ const ChatRoom: React.FC = () => {
         socket.current.send(
             JSON.stringify({
 
-                type: "delete_message",
+                type:
+                    "delete_message",
 
-                massageId: id_massage
+                massageId:
+                    id_massage
 
             })
         );
@@ -481,7 +567,9 @@ const ChatRoom: React.FC = () => {
         id: number
     ) => {
 
-        if (e.pointerType !== "touch") {
+        if (
+            e.pointerType !== "touch"
+        ) {
             return;
         }
 
@@ -605,7 +693,8 @@ const ChatRoom: React.FC = () => {
 
         if (
             !socket.current ||
-            socket.current.readyState !== WebSocket.OPEN
+            socket.current.readyState !==
+                WebSocket.OPEN
         ) {
             return;
         }
@@ -614,9 +703,11 @@ const ChatRoom: React.FC = () => {
         socket.current.send(
             JSON.stringify({
 
-                type: "create-direct",
+                type:
+                    "create-direct",
 
-                ID_user: userid
+                ID_user:
+                    userid
 
             })
         );
@@ -637,9 +728,11 @@ const ChatRoom: React.FC = () => {
         messageRef.current.scrollTo({
 
             top:
-                messageRef.current.scrollHeight,
+                messageRef.current
+                    .scrollHeight,
 
-            behavior: "smooth"
+            behavior:
+                "smooth"
         });
 
     }, [message]);
@@ -688,7 +781,10 @@ const ChatRoom: React.FC = () => {
 
 
                     {message.map(
-                        (messageText, index) => {
+                        (
+                            messageText,
+                            index
+                        ) => {
 
                             const showUsername =
                                 index === 0 ||
@@ -707,8 +803,11 @@ const ChatRoom: React.FC = () => {
                                     }
 
                                     className={
-                                        messageText.username_id ===
-                                        auth?.currentUser.username_id
+                                        messageText
+                                            .username_id ===
+                                        auth
+                                            ?.currentUser
+                                            .username_id
 
                                             ? "current-par-mass"
 
@@ -753,29 +852,35 @@ const ChatRoom: React.FC = () => {
                                             className="username"
 
                                             style={{
-                                                cursor: "pointer"
+                                                cursor:
+                                                    "pointer"
                                             }}
 
 
                                             onClick={() => {
 
                                                 if (
-                                                    messageText.username_id ===
-                                                    auth?.currentUser.username_id
+                                                    messageText
+                                                        .username_id ===
+                                                    auth
+                                                        ?.currentUser
+                                                        .username_id
                                                 ) {
                                                     return;
                                                 }
 
 
                                                 send_ID_user(
-                                                    messageText.username_id
+                                                    messageText
+                                                        .username_id
                                                 );
                                             }}
 
                                         >
 
                                             {
-                                                messageText.username
+                                                messageText
+                                                    .username
                                             }
 
                                         </span>
@@ -823,13 +928,17 @@ const ChatRoom: React.FC = () => {
 
                             style={{
 
-                                position: "absolute",
+                                position:
+                                    "absolute",
 
-                                top: posi.y,
+                                top:
+                                    posi.y,
 
-                                left: posi.x,
+                                left:
+                                    posi.x,
 
-                                width: "fit-content"
+                                width:
+                                    "fit-content"
                             }}
 
                         >
@@ -841,11 +950,14 @@ const ChatRoom: React.FC = () => {
                                 onClick={() => {
 
                                     if (
-                                        selectId !== null
+                                        selectId !==
+                                        null
                                     ) {
+
                                         copy_massage(
                                             selectId
                                         );
+
                                     }
 
                                 }}
@@ -862,11 +974,14 @@ const ChatRoom: React.FC = () => {
                                 onClick={() => {
 
                                     if (
-                                        selectId !== null
+                                        selectId !==
+                                        null
                                     ) {
+
                                         delete_massage(
                                             selectId
                                         );
+
                                     }
 
                                 }}
@@ -881,6 +996,10 @@ const ChatRoom: React.FC = () => {
                 </div>
 
 
+                {/* =========================
+                    MESSAGE INPUT
+                ========================= */}
+
                 <div className="massage-text">
 
                     <form
@@ -891,7 +1010,9 @@ const ChatRoom: React.FC = () => {
 
                             type="text"
 
-                            value={newMassage}
+                            value={
+                                newMassage
+                            }
 
                             onChange={(e) =>
                                 setNewMassage(
@@ -917,12 +1038,15 @@ const ChatRoom: React.FC = () => {
                                 onChange={(e) => {
 
                                     if (
-                                        e.target.files?.length
+                                        e.target.files
+                                            ?.length
                                     ) {
 
                                         setResFile(
-                                            e.target.files[0]
+                                            e.target
+                                                .files[0]
                                         );
+
                                     }
 
                                 }}
@@ -930,20 +1054,7 @@ const ChatRoom: React.FC = () => {
                             />
 
 
-                            <button
-
-                                type="button"
-
-                                className="media-btn"
-
-                                onClick={
-                                    uploadMedia
-                                }
-
-                            >
-                                ارسال مدیا
-                            </button>
-
+                            {/* فقط یک دکمه ارسال */}
 
                             <button
 
@@ -953,6 +1064,7 @@ const ChatRoom: React.FC = () => {
 
                             >
                                 ارسال
+
                             </button>
 
                         </div>
@@ -969,3 +1081,4 @@ const ChatRoom: React.FC = () => {
 
 
 export default ChatRoom;
+
