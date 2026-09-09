@@ -9,11 +9,10 @@ import './sign.css'
 import Logo from '../public/d862b856-2462-456f-ada2-8f3f8304c7c8.png'
 import imageCompression from 'browser-image-compression';
 
-
-
 interface api_sign{
     username : string,
     password : string
+    url_img: string | null,
 }
 
 
@@ -25,7 +24,7 @@ const Sign  = () =>{
     const [mass, setMass] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
-    const [profile, setProfile] = useState<File | null>(null)
+    const [profile, setProfile] = useState<string | null>(null)
 
   const schema = yup.object({
     username: yup
@@ -52,7 +51,7 @@ const Sign  = () =>{
       
         } catch (e) {
 
-            if(e instanceof yup.ValidationError){
+        if(e instanceof yup.ValidationError){
                 setError(e.errors)
         }else{
             setError(null)
@@ -111,6 +110,7 @@ const Sign  = () =>{
                 setError(null)
                 console.log("redirect is ok!")
                 navigate("/login", { replace: true });
+                setProfile(res.data.url_img)
         }
         }catch(e:any){
            console.log(e.response?.data)
@@ -156,7 +156,7 @@ return(
                 
                 <label htmlFor="profile" className="avatar">
                     <h2 className='titleprofile'>انتخاب پروفایل</h2>
-                    <img src="../public/images.png" alt="avatar" />
+                    <img src={profile || "../public/images.png"} alt="avatar" />
                 </label>
 
                 <input type="file" name="file" id="profile" accept="image/*" hidden onChange={(e)=> {
