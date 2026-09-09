@@ -167,6 +167,9 @@ def show_another_messages(request, room_slug, topic_slug):
 @parser_classes([MultiPartParser, FormParser])
 def Sign_Up(request):
 
+    print("DATA:", request.data)
+    print("FILES:", request.FILES)
+
     get_user = Authenticate_User(data=request.data)
     
     get_user.is_valid(raise_exception=True)
