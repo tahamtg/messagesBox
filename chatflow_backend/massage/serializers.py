@@ -23,7 +23,7 @@ class Authenticate_User (serializers.ModelSerializer):
         user = User_Account.objects.create_user(
             username= validated_data['username'],
             password= validated_data['password'],
-            
+            avatar= validated_data['avatar'],
         )
         return user
 
