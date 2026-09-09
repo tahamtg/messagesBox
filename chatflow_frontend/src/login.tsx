@@ -14,6 +14,7 @@ const Login = ()=>{
     const [mass, setMass] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+    const [profile, setProfile] = useState<string | null>(null)
     
 
     const toLogin = async (e: React.FormEvent) => {
@@ -92,6 +93,7 @@ const Login = ()=>{
 
         <section className="form">
             <form onSubmit={toLogin}>
+
                 <input
                     type="text"
                     placeholder="نام کاربری"

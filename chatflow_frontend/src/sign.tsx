@@ -7,6 +7,7 @@ import { authContext } from './authprovider';
 import { Link } from 'react-router-dom';
 import './sign.css'
 import Logo from '../public/d862b856-2462-456f-ada2-8f3f8304c7c8.png'
+import imageCompression from 'browser-image-compression';
 
 
 
@@ -24,6 +25,7 @@ const Sign  = () =>{
     const [mass, setMass] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+    const [profile, setProfile] = useState<File | null>(null)
 
   const schema = yup.object({
     username: yup
@@ -59,7 +61,7 @@ const Sign  = () =>{
 }
         
     }
-    
+
 
     const add_user =  async (event: React.FormEvent<HTMLFormElement>) =>{
 
@@ -71,18 +73,34 @@ const Sign  = () =>{
         const promis = await new Promise((isvalid)=> setTimeout(isvalid, 3000))
         setLoading(false)
 
+        const compressimg ={
+            maxSizeMB: 1,
+
+            maxWidthOrHeight: 1920,
+
+            useWebWorker: true
+        }
+
+        
+            const img : File | null = await imageCompression(
+                form.profile!,
+                compressimg
+            )
+            
+        const file = new FormData()
+
+        file.append("username", form.username)
+        file.append("password", form.password)
+        if(img){file.append("avatar", img)}
+        
         try{
                const res = await axios.post<api_sign>("https://massagesbox.ir/massage/sign-up/",
-                {
-                    
-                username : form.username,
-                password : form.password
                 
-                },
+                    file
+                ,
                 { 
                     headers: { 
                     Accept: "application/json",
-                    'Content-Type': 'application/json',
                 },  
             
             });
@@ -135,6 +153,21 @@ return(
 
             <section className='form'>
             <form action="" onSubmit={add_user}>
+                
+                <label htmlFor="profile" className="avatar">
+                    <h2 className='titleprofile'>انتخاب پروفایل</h2>
+                    <img src="../public/images.png" alt="avatar" />
+                </label>
+
+                <input type="file" name="file" id="profile" accept="image/*" hidden onChange={(e)=> {
+
+
+                    if(e.target.files && e.target.files[0]){
+                        setForm({...form, profile: e.target.files[0]})
+                    }
+                        
+                }}/>
+
                 <input type="text" placeholder='نام کاربری' value={form.username} onChange={(e)=> {setForm({...form, username: e.target.value})}} />
                 <input  type="password" placeholder='رمز عبور' value={form.password} onChange={(e)=> {setForm({...form, password: e.target.value})}} />
                 <button className='button-form' type="submit" disabled={loading}>{loading? (<span>در حال بررسی...</span>): <span>ثبت نام</span> }</button>

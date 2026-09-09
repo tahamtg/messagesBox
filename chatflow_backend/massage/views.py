@@ -164,16 +164,20 @@ def show_another_messages(request, room_slug, topic_slug):
 #for post user_account and if is unique username
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@parser_classes([MultiPartParser, FormParser])
 def Sign_Up(request):
-
-    access_cookie = request.COOKIES.get("access")
-    refresh_cookie = request.COOKIES.get("refresh")
 
     get_user = Authenticate_User(data=request.data)
     
     get_user.is_valid(raise_exception=True)
-    get_user.save()
-    return Response(get_user.data, status=status.HTTP_201_CREATED,)
+    user = get_user.save()
+    return Response(
+        {
+            "url_img": user.avatar.url if user.avatar else None,
+            "username": user.username,
+        },
+                    
+        status=status.HTTP_201_CREATED)
 
 
 @api_view(['PATCH'])

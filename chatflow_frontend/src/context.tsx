@@ -4,6 +4,7 @@ interface api_sign {
   username: string,
   password: string,
   userid : number | null
+  profile: File | null;
 }
 
 interface propsca {

@@ -14,7 +14,7 @@ class UplaodMedia (serializers.ModelSerializer):
 class Authenticate_User (serializers.ModelSerializer):
     class Meta:
         model = User_Account
-        fields = ["username", "password", "id"]
+        fields = ["username", "password", "id", "avatar"]
         extra_kwargs = {
             "password": {"write_only": True}
         }
@@ -22,7 +22,8 @@ class Authenticate_User (serializers.ModelSerializer):
     def create(self, validated_data):
         user = User_Account.objects.create_user(
             username= validated_data['username'],
-            password= validated_data['password']
+            password= validated_data['password'],
+            
         )
         return user
 
