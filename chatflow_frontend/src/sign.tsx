@@ -81,10 +81,14 @@ const Sign  = () =>{
         }
 
         
-            const img : File | null = await imageCompression(
-                form.profile!,
+        let img: File | null = null
+
+        if (form.profile instanceof File) {
+            img = await imageCompression(
+                form.profile,
                 compressimg
             )
+        }
             
         const file = new FormData()
 
