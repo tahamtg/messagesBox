@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import './sign.css'
 import Logo from '../public/d862b856-2462-456f-ada2-8f3f8304c7c8.png'
 import imageCompression from 'browser-image-compression';
+import avatar from '../public/images.png'
 
 interface api_sign{
     username : string,
@@ -80,7 +81,6 @@ const Sign  = () =>{
             useWebWorker: true
         }
 
-        
         let img: File | null = null
 
         if (form.profile instanceof File) {
@@ -161,7 +161,7 @@ return(
                 
                 <label htmlFor="profile" className="avatar">
                     <h2 className='titleprofile'>انتخاب پروفایل</h2>
-                    <img src={profile || "../public/images.png"} alt="avatar" />
+                    <img src={`https://massagesbox.ir${profile}` || avatar} alt="avatar" />
                 </label>
 
                 <input type="file" name="file" id="profile" accept="image/*" hidden onChange={(e)=> {
