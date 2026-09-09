@@ -113,7 +113,8 @@ const Sign  = () =>{
                 setProfile(res.data.url_img)
         }
         }catch(e:any){
-           console.log("SIGNUP ERROR:", e.response?.data)
+            console.log("SIGNUP ERROR:", e.response?.data)
+            console.log("STATUS:", e.response?.status)
         }
     }
 
