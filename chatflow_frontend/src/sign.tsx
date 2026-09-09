@@ -161,7 +161,7 @@ return(
                 
                 <label htmlFor="profile" className="avatar">
                     <h2 className='titleprofile'>انتخاب پروفایل</h2>
-                    <img src={`https://massagesbox.ir${profile}` || avatar} alt="avatar" />
+                    <img src={profile ? `https://massagesbox.ir${profile}` : avatar} alt="avatar" />
                 </label>
 
                 <input type="file" name="file" id="profile" accept="image/*" hidden onChange={(e)=> {
