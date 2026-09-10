@@ -14,6 +14,7 @@ import About from "./about";
 import Index from ".";
 import Topics from "./topics";
 import ChooseTopics from "./choosetopics";
+import Profile from "./profile";
 
 interface api_sign {
     username: string;
@@ -57,6 +58,11 @@ const App: React.FC = () => {
                                     <Index />
                                </ProtectedRoute>
                             }
+                        />
+
+                        <Route
+                            path="/profile"
+                            element={<Profile />}
                         />
 
                         <Route

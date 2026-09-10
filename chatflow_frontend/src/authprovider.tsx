@@ -13,7 +13,8 @@ interface context_content{
 
 interface CurrentUser{
     username: string,
-    username_id: number
+    username_id: number,
+    avatar?: string,
 }
 
 export const authContext = createContext <context_content | null> (null)
@@ -44,7 +45,8 @@ export const authContext = createContext <context_content | null> (null)
 
         setCurrentuser({
             username: res.data.username,
-            username_id: res.data.username_id
+            username_id: res.data.username_id,
+            avatar: res.data.iavatar,
         })
 
         
