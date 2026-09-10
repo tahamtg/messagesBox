@@ -1,5 +1,5 @@
 import avatar from '../public/images.png';
-import './Profile.css';
+import './profile.css';
 import { useContext } from 'react';
 import { authContext } from './authprovider';
 
