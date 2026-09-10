@@ -54,7 +54,7 @@ const auth = useContext(authContext)
                             </span>
 
                             <h2>
-                                username
+                                {auth?.currentUser.username}
                             </h2>
 
                             <span className="profile-status">
