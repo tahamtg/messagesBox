@@ -98,7 +98,6 @@ const Sign  = () =>{
                 setError(null)
                 console.log("redirect is ok!")
                 navigate("/login", { replace: true });
-                setProfile(res.data.url_img)
         }
         }catch(e:any){
             console.log("SIGNUP ERROR:", e.response?.data)
@@ -145,15 +144,19 @@ return(
                 
                 <label htmlFor="profile" className="avatar">
                     <h2 className='titleprofile'>انتخاب پروفایل</h2>
-                    <img src={profile ? `https://massagesbox.ir${profile}` : avatar} alt="avatar" />
+                    <img src={profile || avatar} alt="avatar" />
                 </label>
 
                 <input type="file" name="file" id="profile" accept="image/*" hidden onChange={(e)=> {
 
 
                     if(e.target.files && e.target.files[0]){
+                        const img = e.target.files[0]
                         setForm({...form, profile: e.target.files[0]})
-                    }
+                    
+
+                    setProfile(URL.createObjectURL(img))
+                }
                         
                 }}/>
 
