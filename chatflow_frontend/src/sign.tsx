@@ -73,28 +73,12 @@ const Sign  = () =>{
         const promis = await new Promise((isvalid)=> setTimeout(isvalid, 3000))
         setLoading(false)
 
-        const compressimg ={
-            maxSizeMB: 1,
-
-            maxWidthOrHeight: 1920,
-
-            useWebWorker: true
-        }
-
-        let img: File | null = null
-
-        if (form.profile instanceof File) {
-            img = await imageCompression(
-                form.profile,
-                compressimg
-            )
-        }
-            
+          
         const file = new FormData()
 
         file.append("username", form.username)
         file.append("password", form.password)
-        if(img){file.append("avatar", img)}
+        if(form.profile){file.append("avatar", form.profile)}
         
         try{
                const res = await axios.post<api_sign>("https://massagesbox.ir/massage/sign-up/",
