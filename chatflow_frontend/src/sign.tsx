@@ -143,8 +143,8 @@ return(
             <form action="" onSubmit={add_user}>
                 
                 <label htmlFor="profile" className="avatar">
-                    { avatar && <h2 className='titleprofile'>انتخاب پروفایل</h2>}
                     <img src={profile || avatar} alt="avatar" />
+                    { !profile && <h2 className='titleprofile'>انتخاب پروفایل</h2>}
                 </label>
 
                 <input type="file" name="file" id="profile" accept="image/*" hidden onChange={(e)=> {
