@@ -143,7 +143,7 @@ return(
             <form action="" onSubmit={add_user}>
                 
                 <label htmlFor="profile" className="avatar">
-                    <h2 className='titleprofile'>انتخاب پروفایل</h2>
+                    { avatar && <h2 className='titleprofile'>انتخاب پروفایل</h2>}
                     <img src={profile || avatar} alt="avatar" />
                 </label>
 
