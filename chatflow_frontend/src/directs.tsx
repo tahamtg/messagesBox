@@ -17,6 +17,8 @@ interface directProp {
     avatar: string,
 }
 
+import './directs.css'
+
 const Directs = () => {
 
 const [getDirect, setGetDirect] = useState<directProp[]>([])
