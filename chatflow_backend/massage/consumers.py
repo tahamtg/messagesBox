@@ -291,9 +291,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "username_id": self.scope["user"].id,
                     "media_URL": media_url,
                     "username_key": self.scope["user"].key,
+
+                    # اضافه کن
+                    "avatar_user": (
+                        self.scope["user"].avatar.url
+                        if self.scope["user"].avatar
+                        else None
+                    ),
                 }
             )
-
             return
 
     async def chat_topic_message(self, event):
@@ -308,5 +314,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "username_id": event["username_id"],
                 "username_key": event["username_key"],
                 "media_URL": event["media_URL"],
+                "avatar_user": event["avatar_user"],
             })
         )

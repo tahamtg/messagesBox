@@ -54,12 +54,10 @@ return (
 
 <div className="add_direct">
 
-    {
-    isAdd ? <button>
-        {add}<span>اضافه کردن چت یا مخاطب با پرایمکی!</span>
-    </button> : <input placeholder="پرایمری کی کاربر مورد نظر را بنویسید" type="text" 
-    name="text" id="text" value={usersKey!} onChange={(e)=> (setUsersKey(e.target.value))}/>
-    }
+<button>
+    <img src={add} alt="add" />
+    <span>اضافه کردن چت یا مخاطب با پرایمکی!</span>
+</button>
 
 </div>
 

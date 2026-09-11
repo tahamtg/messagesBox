@@ -1,35 +1,17 @@
 /* =========================
-   Directs
+   Directs Page
 ========================= */
 
 .directs-page {
     width: 100%;
-    max-width: 900px;
-    height: calc(100vh - 72px);
+    max-width: 850px;
     margin: 0 auto;
-    padding: 25px 22px;
+    padding: 20px;
     box-sizing: border-box;
 
-    background: #0b0d10;
-    color: #ffffff;
-
-    overflow-y: auto;
-}
-
-
-/* Scrollbar */
-
-.directs-page::-webkit-scrollbar {
-    width: 7px;
-}
-
-.directs-page::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.directs-page::-webkit-scrollbar-thumb {
-    background: #272c33;
-    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 
@@ -39,35 +21,34 @@
 
 .direct-item {
     width: 100%;
-    min-height: 64px;
+    min-height: 68px;
 
     display: flex;
     align-items: center;
+    gap: 14px;
 
-    padding: 10px 12px;
-    margin-bottom: 7px;
-
+    padding: 10px 14px;
     box-sizing: border-box;
 
-    background: #15181d;
-    border: 1px solid #272c33;
-    border-radius: 12px;
+    background: #111418;
+    border: 1px solid #1d2229;
+    border-radius: 14px;
 
     cursor: pointer;
 
     transition:
         background 0.2s ease,
         border-color 0.2s ease,
-        transform 0.2s ease;
+        transform 0.15s ease;
 }
 
-
-/* Hover */
-
 .direct-item:hover {
-    background: #1b1f26;
-    border-color: #3a414b;
-    transform: translateY(-1px);
+    background: #15191e;
+    border-color: #292f37;
+}
+
+.direct-item:active {
+    transform: scale(0.99);
 }
 
 
@@ -76,16 +57,18 @@
 ========================= */
 
 .direct-item img {
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    object-fit: cover;
 
     border-radius: 50%;
 
-    object-fit: cover;
-    display: block;
+    background: #0b0d10;
 
-    border: 1px solid #272c33;
+    border: 1px solid #252a31;
 }
 
 
@@ -94,72 +77,103 @@
 ========================= */
 
 .direct-item span {
-    margin-left: 12px;
+    color: #e7e9ec;
 
-    color: #e6edf3;
+    font-size: 15px;
+    font-weight: 500;
 
-    font-size: 14px;
-    font-weight: 600;
-
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 
 /* =========================
-   Mobile
+   Add Direct
 ========================= */
 
-@media (max-width: 700px) {
+.add_direct {
+    width: 100%;
+    max-width: 850px;
 
-    .directs-page {
-        height: calc(100vh - 64px);
-        padding: 18px 12px;
-    }
+    margin: 0 auto;
+    padding: 18px 20px 8px;
 
-    .direct-item {
-        min-height: 60px;
-        padding: 9px 10px;
-        border-radius: 11px;
-    }
-
-    .direct-item img {
-        width: 40px;
-        height: 40px;
-        min-width: 40px;
-    }
-
-    .direct-item span {
-        margin-left: 10px;
-        font-size: 13px;
-    }
+    box-sizing: border-box;
 }
 
 
 /* =========================
-   Small Mobile
+   Key Input
 ========================= */
 
-@media (max-width: 480px) {
+.add_direct input {
+    width: 100%;
+    height: 46px;
 
-    .directs-page {
-        padding: 14px 8px;
-    }
+    padding: 0 15px;
 
-    .direct-item {
-        min-height: 57px;
-        padding: 8px 9px;
-        border-radius: 10px;
-    }
+    box-sizing: border-box;
 
-    .direct-item img {
-        width: 38px;
-        height: 38px;
-        min-width: 38px;
-    }
+    background: #111418;
+    color: #e7e9ec;
 
-    .direct-item span {
-        font-size: 13px;
-    }
+    border: 1px solid #252a31;
+    border-radius: 12px;
+
+    outline: none;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.add_direct input::placeholder {
+    color: #666d76;
+}
+
+.add_direct input:focus {
+    background: #13171c;
+    border-color: #3a414a;
+}
+
+
+/* =========================
+   Add Button
+========================= */
+
+.add_direct button {
+    width: 100%;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    border: 1px solid #252a31;
+    border-radius: 12px;
+
+    background: #111418;
+    color: #e7e9ec;
+
+    cursor: pointer;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    transition: 0.2s ease;
+}
+
+.add_direct button:hover {
+    background: #15191e;
+    border-color: #30363e;
+}
+
+.add_direct button img {
+    width: 20px;
+    height: 20px;
 }
