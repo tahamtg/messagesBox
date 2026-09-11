@@ -1,0 +1,165 @@
+/* =========================
+   Directs
+========================= */
+
+.directs-page {
+    width: 100%;
+    max-width: 900px;
+    height: calc(100vh - 72px);
+    margin: 0 auto;
+    padding: 25px 22px;
+    box-sizing: border-box;
+
+    background: #0b0d10;
+    color: #ffffff;
+
+    overflow-y: auto;
+}
+
+
+/* Scrollbar */
+
+.directs-page::-webkit-scrollbar {
+    width: 7px;
+}
+
+.directs-page::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.directs-page::-webkit-scrollbar-thumb {
+    background: #272c33;
+    border-radius: 10px;
+}
+
+
+/* =========================
+   Direct Item
+========================= */
+
+.direct-item {
+    width: 100%;
+    min-height: 64px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 10px 12px;
+    margin-bottom: 7px;
+
+    box-sizing: border-box;
+
+    background: #15181d;
+    border: 1px solid #272c33;
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* Hover */
+
+.direct-item:hover {
+    background: #1b1f26;
+    border-color: #3a414b;
+    transform: translateY(-1px);
+}
+
+
+/* =========================
+   Avatar
+========================= */
+
+.direct-item img {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+    display: block;
+
+    border: 1px solid #272c33;
+}
+
+
+/* =========================
+   Username
+========================= */
+
+.direct-item span {
+    margin-left: 12px;
+
+    color: #e6edf3;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =========================
+   Mobile
+========================= */
+
+@media (max-width: 700px) {
+
+    .directs-page {
+        height: calc(100vh - 64px);
+        padding: 18px 12px;
+    }
+
+    .direct-item {
+        min-height: 60px;
+        padding: 9px 10px;
+        border-radius: 11px;
+    }
+
+    .direct-item img {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+    }
+
+    .direct-item span {
+        margin-left: 10px;
+        font-size: 13px;
+    }
+}
+
+
+/* =========================
+   Small Mobile
+========================= */
+
+@media (max-width: 480px) {
+
+    .directs-page {
+        padding: 14px 8px;
+    }
+
+    .direct-item {
+        min-height: 57px;
+        padding: 8px 9px;
+        border-radius: 10px;
+    }
+
+    .direct-item img {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+    }
+
+    .direct-item span {
+        font-size: 13px;
+    }
+}

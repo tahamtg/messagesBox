@@ -140,11 +140,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         from .models import User_Account, Direct
 
         current_user = self.scope["user"]
-        target_user_id = data["ID_user"]
+        target_user_key = data["KEY_user"]
 
         target_user = await sync_to_async(
             User_Account.objects.get
-        )(id=target_user_id)
+        )(key=target_user_key)
 
         chat = await sync_to_async(
             lambda: Direct.objects.filter(
@@ -169,8 +169,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.send(
             text_data=json.dumps({
-                "type": "chat_ID",
-                "chat_id": chat.id
+                "type": "chat_KEY",
+                "chat_key": chat.key
             })
         )
 
@@ -305,6 +305,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "date": event["date_massage"],
                 "id": event["massage_id"],
                 "username_id": event["username_id"],
+                "username_key": event["username_key"],
                 "media_URL": event["media_URL"],
             })
         )

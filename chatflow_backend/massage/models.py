@@ -2,11 +2,22 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .manager import Username_Manager
 from django.utils.text import slugify
+import secrets
+
+def generate_key():
+    return secrets.token_hex(10)
 
 class User_Account(AbstractBaseUser, PermissionsMixin):
+
     username = models.CharField(max_length=255, unique=True)
     avatar = models.ImageField(upload_to='media_avatar/', blank=True, null=True)
     name = models.CharField(max_length=255, null=True)
+    key = models.CharField(
+        max_length=20,
+        editable=False,
+        default=generate_key,
+        unique=True,
+    )
 
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -19,6 +30,12 @@ class User_Account(AbstractBaseUser, PermissionsMixin):
 class Direct (models.Model):
     user_Direct = models.ManyToManyField(User_Account)
     craeted_at = models.DateTimeField(auto_now_add=True)
+    key = models.CharField(
+            max_length=20,
+            editable=False,
+            default=generate_key,
+            unique=True,
+        )
 
 class Room (models.Model):
     name = models.CharField(max_length=50, unique=True)

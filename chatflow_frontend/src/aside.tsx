@@ -111,6 +111,18 @@ const Aside = ({ children }: { children: React.ReactNode }) => {
                             </Link>
                         </span>
 
+                         <span>
+                            <Link
+                                style={{
+                                    color: "white",
+                                    textDecoration: "none",
+                                }}
+                                to="/profile"
+                            >
+                              دایرکت ها
+                            </Link>
+                        </span>
+
                     </aside>
                 )}
 

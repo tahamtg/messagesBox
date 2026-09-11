@@ -13,4 +13,6 @@ urlpatterns = [
     path("<slug:room_slug>/<slug:topic_slug>/", views.show_another_messages),
     path("post-topic/", views.create_topic),
     path("searching/", views.get_search),
+    path("get_directs/", views.get_directs, name="get directs"),
+    path("get_my_key/", views.get_my_key, name="get primary key"),
 ]

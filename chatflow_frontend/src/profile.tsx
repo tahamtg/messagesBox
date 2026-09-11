@@ -1,12 +1,49 @@
 import avatar from '../public/images.png';
 import './profile.css';
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { authContext } from './authprovider';
-
+import copy from "../public/icons8-copy-48.png";
+import tick from "../public/icons8-check-48.png";
+import axios from 'axios';
 
 const Profile = () => {
 
-const auth = useContext(authContext)
+    const [getKey, setGetKey] = useState<string | null>(null);
+    const [isCopied, setIsCopied] = useState(false);
+
+    const auth = useContext(authContext);
+
+    const get_primary_key = async () => {
+
+        const res = await axios.get(
+            "https://massagesbox.ir/massage/get_my_key/",
+            {
+                withCredentials: true,
+            }
+        );
+
+        setGetKey(res.data.key);
+    };
+
+
+    useEffect(() => {
+        get_primary_key();
+    }, []);
+
+
+    const copyKey = async () => {
+
+        if (!getKey) return;
+
+        await navigator.clipboard.writeText(getKey);
+
+        setIsCopied(true);
+
+        setTimeout(() => {
+            setIsCopied(false);
+        }, 2000);
+    };
+
 
     return (
         <div className="profile-page">
@@ -56,6 +93,34 @@ const auth = useContext(authContext)
                             <h2>
                                 {auth?.currentUser.username}
                             </h2>
+
+                            <div className="profile-key">
+
+                                <span className="profile-key-label">
+                                    کد یکتا
+                                </span>
+
+                                <div className="profile-key-box">
+
+                                    <span className="profile-key-value">
+                                        {getKey || 'در حال دریافت...'}
+                                    </span>
+
+                                    <button
+                                        className="profile-key-copy"
+                                        onClick={copyKey}
+                                        disabled={!getKey}
+                                    >
+                                        <img
+                                            src={isCopied ? tick : copy}
+                                            alt={isCopied ? "copied" : "copy"}
+                                        />
+                                    </button>
+
+                                </div>
+
+                            </div>
+
 
                             <span className="profile-status">
                                 حساب کاربری فعال

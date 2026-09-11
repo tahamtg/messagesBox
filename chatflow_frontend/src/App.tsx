@@ -9,12 +9,12 @@ import ProtectedRoute from "./ProtectedRoute";
 
 import Layout from "./Layout";
 import ChatRoom from "./charRoom";
-import User_Direct from "./Direct";
 import About from "./about";
 import Index from ".";
 import Topics from "./topics";
 import ChooseTopics from "./choosetopics";
 import Profile from "./profile";
+import Directs from "./directs";
 
 interface api_sign {
     username: string;
@@ -66,13 +66,18 @@ const App: React.FC = () => {
                         />
 
                         <Route
+                            path="/directs"
+                            element={<Directs />}
+                        />
+
+                        <Route
                             path="/about"
                             element={<About />}
                         />
 
                         <Route
-                            path="/chat/:chat_id"
-                            element={<User_Direct />}
+                            path="/chat/:chat_key"
+                            element={<ChatRoom />}
                         />
 
                         <Route

@@ -18,7 +18,7 @@ from rest_framework.decorators import permission_classes
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
 from django.core.paginator import Paginator
-from .models import Room
+from .models import Room, Direct
 from .serializers import UplaodMedia, TopicSerializer
 from django.shortcuts import get_object_or_404
 
@@ -157,9 +157,54 @@ def show_another_messages(request, room_slug, topic_slug):
             "publish_date": m.publish_date,
             "id": m.id,
             "media_URL": m.file.media.url if m.file else None,
+            "avatar_user": m.user.avatar.url if m.user.avatar else None,
         })
 
     return Response(data)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_directs(request):
+
+    current_user = request.user
+
+    directs = Direct.objects.filter(
+        user_Direct=current_user
+    )
+
+    data = []
+
+    for direct in directs:
+
+        other_user = direct.user_Direct.exclude(
+            id=current_user.id
+        ).first()
+
+        if not other_user:
+            continue
+
+        data.append({
+            "chat_key": direct.key,
+            "username": other_user.username,
+            "username_key": other_user.key,
+            "avatar": (
+                other_user.avatar.url
+                if other_user.avatar
+                else None
+            )
+        })
+
+    return Response(data)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_my_key(request):
+
+    current_user = request.user
+
+    return Response({
+        "key": current_user.key
+    })
 
 #for post user_account and if is unique username
 @api_view(['POST'])

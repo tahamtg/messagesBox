@@ -10,15 +10,17 @@ import { useParams, useNavigate } from "react-router-dom";
 import "../src/charRoom.css";
 import axios from "axios";
 import imageCompression from "browser-image-compression";
-
+import avatar from '../public/images.png'
 
 interface Message {
     message: string;
     username: string;
     date: string;
     username_id: number;
+    username_key: string,
     id: number;
-    media_URL: string | null;
+    media_URL: string | null,
+    avatar_user: string,
 }
 
 
@@ -31,6 +33,8 @@ interface GetInfo {
 const ChatRoom: React.FC = () => {
 
     const auth = useContext(authContext);
+
+    const {chat_key} = useParams()
 
     const navigate = useNavigate();
 
@@ -146,13 +150,13 @@ const ChatRoom: React.FC = () => {
 
 
             // =========================
-            // DIRECT CHAT ID
+            // DIRECT CHAT KEY
             // =========================
 
-            if (data.type === "chat_ID") {
+            if (data.type === "chat_KEY") {
 
                 navigate(
-                    `/chat/${data.chat_id}`
+                    `/chat/${data.chat_key}`
                 );
 
                 return;
@@ -204,12 +208,18 @@ const ChatRoom: React.FC = () => {
 
                     username_id:
                         data.username_id,
+                    
+                    username_key:
+                        data.username_key,
 
                     id:
                         data.id,
 
+                    avatar_user:
+                        data.avatar_user,
+
                     media_URL:
-                        data.media_URL
+                        data.media_URL,
                 };
 
 
@@ -687,8 +697,8 @@ const ChatRoom: React.FC = () => {
     // SEND USER ID
     // =========================
 
-    const send_ID_user = (
-        userid: number
+    const send_KEY_user = (
+        userKey: string
     ) => {
 
         if (
@@ -706,8 +716,8 @@ const ChatRoom: React.FC = () => {
                 type:
                     "create-direct",
 
-                ID_user:
-                    userid
+                KEY_user:
+                    userKey
 
             })
         );
@@ -847,43 +857,41 @@ const ChatRoom: React.FC = () => {
 
                                     {showUsername && (
 
-                                        <span
+                                        <div className="user-info">
 
-                                            className="username"
-
-                                            style={{
-                                                cursor:
-                                                    "pointer"
-                                            }}
-
-
-                                            onClick={() => {
-
-                                                if (
-                                                    messageText
-                                                        .username_id ===
-                                                    auth
-                                                        ?.currentUser
-                                                        .username_id
-                                                ) {
-                                                    return;
+                                            <img
+                                                className="user-avatar"
+                                                src={
+                                                    messageText.avatar_user
+                                                        ? `https://massagesbox.ir${messageText.avatar_user}`
+                                                        : avatar
                                                 }
+                                                alt={messageText.username}
+                                            />
 
+                                            <span
+                                                className="username"
+                                                style={{
+                                                    cursor: "pointer"
+                                                }}
+                                                onClick={() => {
 
-                                                send_ID_user(
-                                                    messageText
-                                                        .username_id
-                                                );
-                                            }}
+                                                    if (
+                                                        messageText.username_id ===
+                                                        auth?.currentUser.username_id
+                                                    ) {
+                                                        return;
+                                                    }
 
-                                        >
+                                                    send_KEY_user(
+                                                        messageText.username_key
+                                                    );
+                                                }}
+                                            >
+                                                {messageText.username}
+                                            </span>
 
-                                            {
-                                                messageText
-                                                    .username
-                                            }
-
-                                        </span>
+                                        </div>
 
                                     )}
 
@@ -1052,9 +1060,6 @@ const ChatRoom: React.FC = () => {
                                 }}
 
                             />
-
-
-                            {/* فقط یک دکمه ارسال */}
 
                             <button
 
