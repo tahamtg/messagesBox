@@ -549,3 +549,39 @@
         height: 14px;
     }
 }
+
+.profile-header h2 {
+    text-align: center;
+    width: 100%;
+
+    margin: 14px auto 16px;
+
+    font-size: 23px;
+    font-weight: 500;
+    line-height: 1.8;
+
+    color: #f5f5f5;
+
+    letter-spacing: 0.4px;
+
+    text-shadow:
+        0 0 10px rgba(255, 255, 255, 0.08),
+        0 0 25px rgba(255, 80, 130, 0.08);
+
+    position: relative;
+}
+
+/* خط ظریف زیر جمله */
+.profile-header h2::after {
+    content: "";
+    display: block;
+
+    width: 55px;
+    height: 1px;
+
+    margin: 8px auto 0;
+
+    background: rgba(255, 255, 255, 0.25);
+
+    border-radius: 10px;
+}
