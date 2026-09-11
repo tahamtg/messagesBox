@@ -1036,29 +1036,21 @@ const ChatRoom: React.FC = () => {
                         <div className="upload-media">
 
                             <input
-
                                 type="file"
-
                                 name="file"
-
                                 id="file"
-
-                                onChange={(e) => {
-
-                                    if (
-                                        e.target.files
-                                            ?.length
-                                    ) {
-
-                                        setResFile(
-                                            e.target
-                                                .files[0]
-                                        );
-
-                                    }
-
+                                style={{
+                                    display: "block",
+                                    visibility: "visible",
+                                    opacity: 1,
+                                    width: "250px",
+                                    height: "40px"
                                 }}
-
+                                onChange={(e) => {
+                                    if (e.target.files?.length) {
+                                        setResFile(e.target.files[0]);
+                                    }
+                                }}
                             />
 
                             <button

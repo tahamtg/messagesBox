@@ -117,7 +117,7 @@ const Aside = ({ children }: { children: React.ReactNode }) => {
                                     color: "white",
                                     textDecoration: "none",
                                 }}
-                                to="/profile"
+                                to="/directs"
                             >
                               دایرکت ها
                             </Link>
