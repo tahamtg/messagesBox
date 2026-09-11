@@ -290,6 +290,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "massage_id": my_model.id,
                     "username_id": self.scope["user"].id,
                     "media_URL": media_url,
+                    "username_key": self.scope["user"].key,
                 }
             )
 
