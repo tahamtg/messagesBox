@@ -5,6 +5,7 @@ import { authContext } from './authprovider';
 import copy from "../public/icons8-copy-48.png";
 import tick from "../public/icons8-check-48.png";
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Profile = () => {
 
@@ -171,31 +172,22 @@ const Profile = () => {
 
                     <div className="profile-actions">
 
-                        <button className="profile-action">
+                        <Link className="editpROFLINK" to="/profile/editbox">
+                          <button className="profile-action">
                             <span className="action-icon">
                                 ✎
                             </span>
 
                             <span>
-                                ویرایش پروفایل
+                                ویرایش پروفایل و تنظیمات حساب کاربری
                             </span>
                         </button>
-
-
-                        <button className="profile-action">
-                            <span className="action-icon">
-                                ⚙
-                            </span>
-
-                            <span>
-                                تنظیمات حساب
-                            </span>
-                        </button>
+                        </Link>
 
                     </div>
 
                 </div>
-                
+
                 <div className="profile-section">
 
                     <h2>

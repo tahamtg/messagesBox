@@ -15,6 +15,7 @@ import Topics from "./topics";
 import ChooseTopics from "./choosetopics";
 import Profile from "./profile";
 import Directs from "./directs";
+import EditProfile from "./editprofile";
 
 interface api_sign {
     username: string;
@@ -93,6 +94,11 @@ const App: React.FC = () => {
                         <Route
                             path="/topics/:slug"
                             element={<ChooseTopics />}
+                        />
+
+                        <Route
+                            path="/profile/:editprofile"
+                            element={<EditProfile />}
                         />
 
                     </Route>
