@@ -18,7 +18,7 @@ from rest_framework.decorators import permission_classes
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
 from django.core.paginator import Paginator
-from .models import Room, Direct
+from .models import Room, Direct, MediaUpload
 from .serializers import UplaodMedia, TopicSerializer
 from django.shortcuts import get_object_or_404
 
@@ -301,6 +301,28 @@ def upload(request):
             {"error": str(e)},
             status=500
         )
+
+
+@api_view(['PATCH'])
+@parser_classes([MultiPartParser, FormParser])
+def Update_Photo(request):
+
+    photo = request.FILES.get('media')
+
+    if not photo:
+        return Response(
+            {"error": "عکسی ارسال نشده است"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    user = request.user
+    user.avatar = photo
+    user.save(update_fields=['avatar'])
+
+    return Response({
+        "message": "عکس پروفایل با موفقیت تغییر کرد",
+        "mediaUrl": request.build_absolute_uri(user.avatar.url)
+    })
 
 
 class CreateTokenCookie(TokenObtainPairView):

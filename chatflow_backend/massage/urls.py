@@ -8,6 +8,9 @@ urlpatterns = [
     path('logout/', views.LogOut, name='logout users'),
     path('showUsers/', views.Pagination_data, name='show users'),
     path('Upload/', views.upload, name='upload'),
+
+    path('update_photo/', views.Update_Photo, name='update_photo'),
+    
     path("<slug:slug>/topics/create/", views.create_topic),
     path("<slug:slug>/topics/", views.get_topics, name="get topics"),
     path("<slug:room_slug>/<slug:topic_slug>/", views.show_another_messages),

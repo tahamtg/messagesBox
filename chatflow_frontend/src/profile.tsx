@@ -10,6 +10,7 @@ const Profile = () => {
 
     const [getKey, setGetKey] = useState<string | null>(null);
     const [isCopied, setIsCopied] = useState(false);
+    const [newPhoto, setNewPhoto] = useState<File | null>(null)
 
     const auth = useContext(authContext);
 
@@ -26,9 +27,30 @@ const Profile = () => {
     };
 
 
-    useEffect(() => {
-        get_primary_key();
-    }, []);
+    const Update_Photo = async (photo: File) => {
+        const file = new FormData();
+
+        file.append("media", photo);
+
+        try {
+            const res = await axios.patch(
+                "https://massagesbox.ir/massage/update_photo/",
+                file,
+                {
+                    withCredentials: true,
+                }
+            );
+
+            auth?.setCurrentuser({
+                ...auth.currentUser,
+                avatar: res.data.mediaUrl,
+            });
+
+        } catch (e) {
+            console.log("Photo update failed:", e);
+        }
+    };
+
 
 
     const copyKey = async () => {
@@ -57,7 +79,6 @@ const Profile = () => {
                     </span>
 
                     <h1>پروفایل</h1>
-                    <h2>تو برای من خاصی همیشه❤</h2>
 
                     <p>
                         اطلاعات حساب کاربری و تنظیمات خود را مدیریت کنید.
@@ -78,11 +99,27 @@ const Profile = () => {
                                 className="profile-avatar"
                             />
 
-                            <div className="avatar-overlay">
-                                تغییر
-                            </div>
+                                <label className="avatar-overlay">
+                                     تغییر
+                                <input
+                                        type="file"
+                                        accept="image/*"
+                                        hidden
+                                        onChange={(e) => {
+                                            const photo = e.target.files?.[0];
+
+                                            if (photo) {
+                                                Update_Photo(photo);
+                                            }
+
+                                            e.target.value = "";
+                                        }}
+                                    />
+                            </label>
+
 
                         </div>
+
 
 
                         <div className="profile-user-info">
@@ -132,7 +169,6 @@ const Profile = () => {
                     </div>
 
 
-                    {/* Profile Actions */}
                     <div className="profile-actions">
 
                         <button className="profile-action">
@@ -159,9 +195,7 @@ const Profile = () => {
                     </div>
 
                 </div>
-
-
-                {/* Account Section */}
+                
                 <div className="profile-section">
 
                     <h2>
