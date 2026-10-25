@@ -24,6 +24,10 @@ const Profile = () => {
             }
         );
 
+        console.log("Full response:", res);
+        console.log("Response data:", res.data);
+        console.log("Key:", res.data.key);
+        
         setGetKey(res.data.key);
     };
 
@@ -132,6 +136,8 @@ const Profile = () => {
                             <h2>
                                 {auth?.currentUser.username}
                             </h2>
+
+                            <p>{auth?.currentUser.bio}</p>
 
                             <div className="profile-key">
 

@@ -14,6 +14,7 @@ interface api_sign{
     username : string,
     password : string
     url_img: string | null,
+    bio: string,
 }
 
 
@@ -78,6 +79,7 @@ const Sign  = () =>{
 
         file.append("username", form.username)
         file.append("password", form.password)
+        file.append("bio", form.bio)
         if(form.profile){file.append("avatar", form.profile)}
         
         try{
@@ -161,7 +163,8 @@ return(
                 }}/>
 
                 <input type="text" placeholder='نام کاربری' value={form.username} onChange={(e)=> {setForm({...form, username: e.target.value})}} />
-                <input  type="password" placeholder='رمز عبور' value={form.password} onChange={(e)=> {setForm({...form, password: e.target.value})}} />
+                <input  type="text" placeholder='درباره خود چیزی بنویسید!' value={form.bio} onChange={(e)=> {setForm({...form, bio: e.target.value})}} />
+                <input  type="password" placeholder='رمز عبور' value={form.password} onChange={(e)=> {setForm({...form, password: e.target.value})}} /> 
                 <button className='button-form' type="submit" disabled={loading}>{loading? (<span>در حال بررسی...</span>): <span>ثبت نام</span> }</button>
             </form>
                 <Link className='linkto' to={'../login'}>اکانت دارید؟ وارد بشید!</Link>

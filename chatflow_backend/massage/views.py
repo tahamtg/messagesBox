@@ -255,6 +255,7 @@ def Check_Auth(request):
         "username": request.user.username,
         "username_id": request.user.id,
         "iavatar": request.user.avatar.url if request.user.avatar else None,
+        "bio": request.user.bio,
     })
 
 @api_view(['POST'])

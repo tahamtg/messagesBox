@@ -15,6 +15,7 @@ interface CurrentUser{
     username: string,
     username_id: number,
     avatar?: string,
+    bio: string,
 }
 
 export const authContext = createContext <context_content | null> (null)
@@ -25,7 +26,8 @@ export const authContext = createContext <context_content | null> (null)
 
     const [currentUser, setCurrentuser] = useState<CurrentUser>({
         username:"",
-        username_id: 0
+        username_id: 0,
+        bio: "",
     })
 
     const [isAuth, setIsAuth] = useState<boolean | null>(null)
@@ -47,6 +49,7 @@ export const authContext = createContext <context_content | null> (null)
             username: res.data.username,
             username_id: res.data.username_id,
             avatar: res.data.iavatar,
+            bio: res.data.bio,
         })
 
         

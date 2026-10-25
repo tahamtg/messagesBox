@@ -24,6 +24,7 @@ class Authenticate_User (serializers.ModelSerializer):
             username= validated_data['username'],
             password= validated_data['password'],
             avatar= validated_data.get('avatar'),
+            bio= validated_data.get('bio'),
         )
         return user
 

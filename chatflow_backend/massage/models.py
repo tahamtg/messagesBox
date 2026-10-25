@@ -9,9 +9,23 @@ def generate_key():
 
 class User_Account(AbstractBaseUser, PermissionsMixin):
 
+    ACCOUNT_STATUS = [
+        ("active", "فعال"),
+        ("deactive", "فعال"),
+        ("balance", "متعادل")
+    ]  
+
     username = models.CharField(max_length=255, unique=True)
     avatar = models.ImageField(upload_to='media_avatar/', blank=True, null=True)
     name = models.CharField(max_length=255, null=True)
+    bio = models.TextField()
+
+    account_status = models.CharField(
+        max_length=10,
+        choices=ACCOUNT_STATUS,
+        default="pending",
+    )
+    
     key = models.CharField(
         max_length=20,
         editable=False,

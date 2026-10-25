@@ -22,6 +22,7 @@ interface api_sign {
     password: string;
     userid: number | null;
     profile: File | null;
+    bio: string;
 }
 
 const App: React.FC = () => {
@@ -31,6 +32,7 @@ const App: React.FC = () => {
         password: "",
         userid: null,
         profile: null,
+        bio: "",
     });
 
     return (

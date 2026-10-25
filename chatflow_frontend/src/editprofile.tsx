@@ -116,9 +116,9 @@ const EditProfile = () => {
                                 value={accountStatus}
                                 onChange={(e) => setAccountStatus(e.target.value)}
                             >
-                                <option value="active">فعال (Active)</option>
-                                <option value="not-active">غیرفعال (Not-active)</option>
-                                <option value="balanced">متعادل (Balanced)</option>
+                                <option value="active">فعال</option>
+                                <option value="deactive">غیرفعال</option>
+                                <option value="balanced">متعادل</option>
                             </select>
 
                             <span className="edit-profile-hint">
@@ -183,27 +183,6 @@ const EditProfile = () => {
                                 </span>
 
                                 <span className="edit-profile-status-dot offline"></span>
-
-                            </label>
-
-                            <label className={`edit-profile-radio ${onlineStatus === 'balanced' ? 'selected' : ''}`}>
-
-                                <input
-                                    type="radio"
-                                    name="online-status"
-                                    value="balanced"
-                                    checked={onlineStatus === 'balanced'}
-                                    onChange={(e) => setOnlineStatus(e.target.value)}
-                                />
-
-                                <span className="edit-profile-radio-dot"></span>
-
-                                <span className="edit-profile-radio-text">
-                                    <strong>متعادل</strong>
-                                    <small>وضعیت آنلاین مطابق فعالیت شما باشد.</small>
-                                </span>
-
-                                <span className="edit-profile-status-dot balanced"></span>
 
                             </label>
 
