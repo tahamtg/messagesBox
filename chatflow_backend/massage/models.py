@@ -18,7 +18,7 @@ class User_Account(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255, unique=True)
     avatar = models.ImageField(upload_to='media_avatar/', blank=True, null=True)
     name = models.CharField(max_length=255, null=True)
-    bio = models.TextField()
+    bio = models.TextField(blank=True, default="")
 
     account_status = models.CharField(
         max_length=10,
