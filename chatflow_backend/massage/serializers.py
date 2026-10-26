@@ -14,7 +14,7 @@ class UplaodMedia (serializers.ModelSerializer):
 class Authenticate_User (serializers.ModelSerializer):
     class Meta:
         model = User_Account
-        fields = ["username", "password", "id", "avatar"]
+        fields = ["username", "password", "id", "avatar", "bio"]
         extra_kwargs = {
             "password": {"write_only": True}
         }

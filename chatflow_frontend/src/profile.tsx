@@ -16,20 +16,27 @@ const Profile = () => {
     const auth = useContext(authContext);
 
     const get_primary_key = async () => {
+        try {
+            const res = await axios.get(
+                "https://massagesbox.ir/massage/get_my_key/",
+                {
+                    withCredentials: true,
+                }
+            );
 
-        const res = await axios.get(
-            "https://massagesbox.ir/massage/get_my_key/",
-            {
-                withCredentials: true,
-            }
-        );
+            console.log("Response data:", res.data);
+            console.log("Key:", res.data.key);
 
-        console.log("Full response:", res);
-        console.log("Response data:", res.data);
-        console.log("Key:", res.data.key);
-        
-        setGetKey(res.data.key);
+            setGetKey(res.data.key);
+
+        } catch (e) {
+            console.log("Get key failed:", e);
+        }
     };
+
+    useEffect(() => {
+        get_primary_key();
+    }, []);
 
 
     const Update_Photo = async (photo: File) => {
@@ -148,7 +155,7 @@ const Profile = () => {
                                 <div className="profile-key-box">
 
                                     <span className="profile-key-value">
-                                        {getKey || 'در حال دریافت...'}
+                                        {getKey}
                                     </span>
 
                                     <button

@@ -212,22 +212,23 @@ def get_my_key(request):
 @parser_classes([MultiPartParser, FormParser])
 def Sign_Up(request):
 
+    print("REQUEST DATA:", request.data)
+    print("BIO:", request.data.get("bio"))
     print("FILES:", request.FILES)
 
-    if "avatar" in request.FILES:
-        print("AVATAR NAME:", request.FILES["avatar"].name)
-    
     get_user = Authenticate_User(data=request.data)
-    
+
     get_user.is_valid(raise_exception=True)
     user = get_user.save()
+
     return Response(
         {
             "url_img": user.avatar.url if user.avatar else None,
             "username": user.username,
+            "bio": user.bio,
         },
-                    
-        status=status.HTTP_201_CREATED)
+        status=status.HTTP_201_CREATED
+    )
 
 
 @api_view(['PATCH'])
