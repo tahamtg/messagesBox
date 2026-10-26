@@ -6,6 +6,7 @@ interface api_sign {
   userid : number | null
   profile: File | null;
   bio: string;
+  account_status_online: boolean;
 }
 
 interface propsca {

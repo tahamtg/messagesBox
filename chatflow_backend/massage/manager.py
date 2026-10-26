@@ -2,10 +2,10 @@ from django.contrib.auth.models import BaseUserManager
 
 class Username_Manager(BaseUserManager):
 
-    def create_user (self, username, avatar=None, password=None, bio=None):
+    def create_user (self, username, avatar=None, password=None, bio=None, account_status_online=True):
         if not username:
             raise ValueError("username is required!")
-        user = self.model(username=username, avatar=avatar, bio=bio)
+        user = self.model(username=username, avatar=avatar, bio=bio, account_status_online=account_status_online)
         user.set_password(password)
         user.save(using= self._db)
         user.is_active = True

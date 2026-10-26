@@ -23,5 +23,6 @@ urlpatterns = [
     path("get_directs/", views.get_directs, name="get directs"),
     
     path("get_my_key/", views.get_my_key, name="get primary key"),
-
+    
+    path("Update_Info/", views.Update_Info_User, name="update info"),
 ]

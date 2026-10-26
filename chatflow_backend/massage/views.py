@@ -257,6 +257,7 @@ def Check_Auth(request):
         "username_id": request.user.id,
         "iavatar": request.user.avatar.url if request.user.avatar else None,
         "bio": request.user.bio,
+        "account_status_online": request.user.account_status_online,
     })
 
 @api_view(['POST'])
@@ -324,6 +325,19 @@ def Update_Photo(request):
     return Response({
         "message": "عکس پروفایل با موفقیت تغییر کرد",
         "mediaUrl": request.build_absolute_uri(user.avatar.url)
+    })
+
+
+@api_view(['PATCH'])
+def Update_Info_User(request):
+
+    user = Authenticate_User(data=request.data)
+
+    if user.is_valid(raise_exception=True):
+        user.save()
+
+    return Response({
+        "update_bio": "bio is update"
     })
 
 

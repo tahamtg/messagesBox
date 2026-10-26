@@ -1,25 +1,38 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import './editprofile.css';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { Usecontext } from './context';
+
+interface Update_User{
+    username: string,
+    bio: string,
+    account_status_online: boolean,
+}
 
 const EditProfile = () => {
-    const [username, setUsername] = useState('');
-    const [bio, setBio] = useState('');
-    const [accountStatus, setAccountStatus] = useState('active');
-    const [onlineStatus, setOnlineStatus] = useState('balanced');
+    const [info_for_update, setInfo_for_update] = useState<Update_User>({
+        username: "",
+        bio: "",
+        account_status_online: true,
+    })
+
     const { id } = useParams<{ id: string }>();
+    const bio_form = useContext(Usecontext)
     console.log(id);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        console.log({
-            username,
-            bio,
-            accountStatus,
-            onlineStatus,
-        });
+        const res = axios.patch("https://massagesbox.ir/massage/Update_Info",
+            info_for_update,
+            {
+                withCredentials: true,
+            }
+        )
+
     };
+
 
     return (
         <div className="edit-profile-page" dir="rtl">
@@ -63,8 +76,8 @@ const EditProfile = () => {
                                 id="edit-username"
                                 type="text"
                                 placeholder="نام کاربری جدید"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                value={info_for_update.username}
+                                onChange={(e) => setInfo_for_update((prev)=> ({...prev, username: e.target.value}))}
                             />
 
                         </div>
@@ -78,8 +91,8 @@ const EditProfile = () => {
                             <textarea
                                 id="edit-bio"
                                 placeholder="کمی درباره خودت بنویس..."
-                                value={bio}
-                                onChange={(e) => setBio(e.target.value)}
+                                value={bio_form?.form.bio}
+                                onChange={(e) => setInfo_for_update((prev)=> ({...prev, bio: e.target.value}))}
                                 rows={4}
                                 maxLength={250}
                             />
@@ -93,41 +106,6 @@ const EditProfile = () => {
                     </div>
 
                     <div className="edit-profile-divider"></div>
-
-                    <div className="edit-profile-section">
-
-                        <div className="edit-profile-section-title">
-                            <span className="edit-profile-icon">⚙</span>
-
-                            <div>
-                                <h2>تنظیمات حساب</h2>
-                                <p>وضعیت نمایش و دسترسی حساب خود را انتخاب کنید.</p>
-                            </div>
-                        </div>
-
-                        <div className="edit-profile-field">
-
-                            <label htmlFor="account-status">
-                                وضعیت حساب کاربری
-                            </label>
-
-                            <select
-                                id="account-status"
-                                value={accountStatus}
-                                onChange={(e) => setAccountStatus(e.target.value)}
-                            >
-                                <option value="active">فعال</option>
-                                <option value="deactive">غیرفعال</option>
-                                <option value="balanced">متعادل</option>
-                            </select>
-
-                            <span className="edit-profile-hint">
-                                وضعیت موردنظر خود را انتخاب کنید.
-                            </span>
-
-                        </div>
-
-                    </div>
 
                     <div className="edit-profile-divider"></div>
 
@@ -144,14 +122,14 @@ const EditProfile = () => {
 
                         <div className="edit-profile-radio-group">
 
-                            <label className={`edit-profile-radio ${onlineStatus === 'active' ? 'selected' : ''}`}>
+                            <label className={`edit-profile-radio ${info_for_update.account_status_online === true ? 'selected' : ''}`}>
 
                                 <input
                                     type="radio"
                                     name="online-status"
                                     value="active"
-                                    checked={onlineStatus === 'active'}
-                                    onChange={(e) => setOnlineStatus(e.target.value)}
+                                    checked={info_for_update.account_status_online === true}
+                                    onChange={(e) => setInfo_for_update((prev)=> ({...prev, account_status_online: true}))}
                                 />
 
                                 <span className="edit-profile-radio-dot"></span>
@@ -165,14 +143,14 @@ const EditProfile = () => {
 
                             </label>
 
-                            <label className={`edit-profile-radio ${onlineStatus === 'not-active' ? 'selected' : ''}`}>
+                            <label className={`edit-profile-radio ${info_for_update.account_status_online === false ? 'selected' : ''}`}>
 
                                 <input
                                     type="radio"
                                     name="online-status"
                                     value="not-active"
-                                    checked={onlineStatus === 'not-active'}
-                                    onChange={(e) => setOnlineStatus(e.target.value)}
+                                    checked={info_for_update.account_status_online === false}
+                                    onChange={(e) => setInfo_for_update((prev)=> ({...prev, account_status_online: false}))}
                                 />
 
                                 <span className="edit-profile-radio-dot"></span>

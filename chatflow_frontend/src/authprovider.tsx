@@ -16,6 +16,7 @@ interface CurrentUser{
     username_id: number,
     avatar?: string,
     bio: string,
+    account_status_online: boolean,
 }
 
 export const authContext = createContext <context_content | null> (null)
@@ -28,6 +29,7 @@ export const authContext = createContext <context_content | null> (null)
         username:"",
         username_id: 0,
         bio: "",
+        account_status_online: true,
     })
 
     const [isAuth, setIsAuth] = useState<boolean | null>(null)
@@ -50,6 +52,7 @@ export const authContext = createContext <context_content | null> (null)
             username_id: res.data.username_id,
             avatar: res.data.iavatar,
             bio: res.data.bio,
+            account_status_online: res.data.account_status_online,
         })
 
         

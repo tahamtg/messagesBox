@@ -78,6 +78,8 @@ const Profile = () => {
         }, 2000);
     };
 
+    const online_date = new Date();
+
 
     return (
         <div className="profile-page">
@@ -174,9 +176,15 @@ const Profile = () => {
                             </div>
 
 
-                            <span className="profile-status">
-                                حساب کاربری فعال
-                            </span>
+                               <span className="profile-status">
+                                    {auth?.currentUser.account_status_online === true
+                                        ? online_date.toLocaleTimeString("fa-IR", {
+                                            hour: "2-digit",
+                                            minute: "2-digit"
+                                        })
+                                        : "بازدید مخفی است"
+                                    }
+                                </span>
 
                         </div>
 
