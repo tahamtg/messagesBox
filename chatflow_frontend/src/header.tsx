@@ -1,5 +1,4 @@
 import { useContext } from "react";
-
 import { authContext } from "./authprovider";
 import { AsideContext } from "./aside";
 
@@ -12,12 +11,10 @@ const Header = () => {
     const { openPopUp, setOpenPopUP } =
         useContext(AsideContext)!;
 
-    const logout = () => {
-        auth?.logOut();
-    };
+
 
     const togglePopup = () => {
-        setOpenPopUP(!openPopUp);
+        setOpenPopUP(false);
     };
 
     return (
@@ -25,23 +22,15 @@ const Header = () => {
 
             <h1>messagesBOX</h1>
 
-            <section className="title-logout">
-                {auth?.isAuth && (
-                    <button onClick={logout}>
-                        <span>خروج</span>
-                    </button>
-                )}
-            </section>
-
             <div>
                 <button
                     className="forpopup"
                     onClick={togglePopup}
                 >
                     {openPopUp ? (
-                        <span>بستن</span>
+                        <span onClick={()=> setOpenPopUP(false)}>بستن</span>
                     ) : (
-                        <span>دسترسی</span>
+                        <span onClick={()=> setOpenPopUP(true)}>دسترسی</span>
                     )}
                 </button>
             </div>

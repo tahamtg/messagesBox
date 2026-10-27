@@ -4,7 +4,8 @@ import {
     useRef,
     useEffect,
 } from "react";
-
+import { useContext } from "react";
+import { authContext } from "./authprovider";
 import { Link } from "react-router-dom";
 import './aside.css'
 
@@ -18,8 +19,12 @@ export const AsideContext = createContext<AsideContextType | null>(null);
 const Aside = ({ children }: { children: React.ReactNode }) => {
 
     const [openPopUp, setOpenPopUP] = useState(false);
-
+    const auth = useContext(authContext);
     const aside = useRef<HTMLElement>(null);
+
+    const logout = () => {
+        auth?.logOut();
+    };
 
     useEffect(() => {
 
@@ -45,6 +50,7 @@ const Aside = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     return (
+
         <AsideContext.Provider
             value={{
                 openPopUp,
@@ -123,6 +129,15 @@ const Aside = ({ children }: { children: React.ReactNode }) => {
                             </Link>
                         </span>
 
+                        
+
+                {auth?.isAuth && (
+                    <button className="logout-button" onClick={logout}>
+                        <span>خروج</span>
+                    </button>
+                )}
+
+
                     </aside>
                 )}
 
@@ -131,6 +146,7 @@ const Aside = ({ children }: { children: React.ReactNode }) => {
             </div>
 
         </AsideContext.Provider>
+        
     );
 };
 

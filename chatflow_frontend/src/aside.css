@@ -5,7 +5,7 @@
 aside {
     position: fixed;
 
-    top: 72px;
+    top: 76px;
     right: 24px;
 
     width: 240px;
@@ -19,7 +19,7 @@ aside {
 
     border: 1px solid rgba(108, 99, 255, 0.25);
 
-    border-radius: 16px;
+    border-radius: 3px;
 
     box-shadow:
         0 20px 50px rgba(0, 0, 0, 0.45),
@@ -156,6 +156,40 @@ aside span:hover::after {
 
 }
 
+.logout-button {
+    display: block;
+    width: 100%;
+    padding: 15px 14px;
+
+    background: rgba(255, 65, 65, 0.08);
+    border: 1px solid rgba(255, 65, 65, 0.15);
+    border-radius: 10px;
+
+    color: #ff6b6b;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: right;
+
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.logout-button:hover {
+    background: rgba(255, 65, 65, 0.15);
+    border-color: rgba(255, 65, 65, 0.3);
+    color: #ff8585;
+}
+
+.logout-button span {
+    display: block;
+    padding: 0;
+    color: inherit;
+}
+
+.logout-button span::after {
+    display: none;
+}
 
 /* =========================
    Small Mobile

@@ -21,18 +21,23 @@ from django.core.paginator import Paginator
 from .models import Room, Direct, MediaUpload
 from .serializers import UplaodMedia, TopicSerializer
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 
 #get query from searching
 @api_view(["GET"])
 def get_search(request):
-    search = request.query_params.get("search")
-    get_data = Massage.objects.filter(topic__icontains=search)
+
+    search = request.query_params.get("search", "")
+
+    get_data = Massage.objects.filter(Q(topic__name__icontains=search) | 
+    Q(user__username__icontains=search))
+
     data = []
 
     for searching in get_data:
         data.append({
-            "title" : searching.topic
+            "title" : searching.topic.name if searching.topic else searching.user.username,
         })
     
     return Response(data)
