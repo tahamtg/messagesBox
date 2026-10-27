@@ -4,9 +4,8 @@ import React, { useState } from "react";
 import Sign from "./sign";
 import Login from "./login";
 import { Usecontext } from "./context";
-import AuthLayout from './AuthLayout '
+import AuthLayout from "./AuthLayout ";
 import ProtectedRoute from "./ProtectedRoute";
-
 import Layout from "./Layout";
 import ChatRoom from "./charRoom";
 import About from "./about";
@@ -16,6 +15,9 @@ import ChooseTopics from "./choosetopics";
 import Profile from "./profile";
 import Directs from "./directs";
 import EditProfile from "./editprofile";
+import { LoadingProvider } from "./LoadingContext";
+import GlobalAxios from "./GlobalAxios";
+import GlobalLoading from "./GlobalLoading";
 
 interface api_sign {
     username: string;
@@ -23,11 +25,10 @@ interface api_sign {
     userid: number | null;
     profile: File | null;
     bio: string;
-    account_status_online: boolean,
+    account_status_online: boolean;
 }
 
 const App: React.FC = () => {
-
     const [form, setForm] = useState<api_sign>({
         username: "",
         password: "",
@@ -39,78 +40,37 @@ const App: React.FC = () => {
 
     return (
         <Usecontext.Provider value={{ form, setForm }}>
+            <LoadingProvider>
+                <GlobalAxios />
+                <GlobalLoading />
 
-            <Routes>
+                <Routes>
+                    <Route path="/sign" element={<Sign />} />
+                    <Route path="/login" element={<Login />} />
 
-                <Route
-                    path="/sign"
-                    element={<Sign />}
-                />
+                    <Route element={<AuthLayout />}>
+                        <Route element={<Layout />}>
+                            <Route
+                                path="/"
+                                element={
+                                    <ProtectedRoute>
+                                        <Index />
+                                    </ProtectedRoute>
+                                }
+                            />
 
-                <Route
-                    path="/login"
-                    element={<Login />}
-                />
-
-                <Route element={<AuthLayout />}>
-
-                    <Route element={<Layout />}>
-
-                        <Route
-                            path="/"
-                            element={
-                               <ProtectedRoute>
-                                    <Index />
-                               </ProtectedRoute>
-                            }
-                        />
-
-                        <Route
-                            path="/profile"
-                            element={<Profile />}
-                        />
-
-                        <Route
-                            path="/directs"
-                            element={<Directs />}
-                        />
-
-                        <Route
-                            path="/about"
-                            element={<About />}
-                        />
-
-                        <Route
-                            path="/chat/:chat_key"
-                            element={<ChatRoom />}
-                        />
-
-                        <Route
-                            path="/topics/:roomSlug/:topicSlug"
-                            element={<ChatRoom />}
-                        />
-
-                        <Route
-                            path="/topics"
-                            element={<Topics />}
-                        />
-
-                        <Route
-                            path="/topics/:slug"
-                            element={<ChooseTopics />}
-                        />
-
-                        <Route
-                            path="/profile/:editprofile"
-                            element={<EditProfile />}
-                        />
-
+                            <Route path="/profile" element={<Profile />} />
+                            <Route path="/directs" element={<Directs />} />
+                            <Route path="/about" element={<About />} />
+                            <Route path="/chat/:chat_key" element={<ChatRoom />} />
+                            <Route path="/topics/:roomSlug/:topicSlug" element={<ChatRoom />} />
+                            <Route path="/topics" element={<Topics />} />
+                            <Route path="/topics/:slug" element={<ChooseTopics />} />
+                            <Route path="/profile/:editprofile" element={<EditProfile />} />
+                        </Route>
                     </Route>
-
-                </Route>
-
-            </Routes>
-
+                </Routes>
+            </LoadingProvider>
         </Usecontext.Provider>
     );
 };
