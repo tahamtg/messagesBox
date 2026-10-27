@@ -23,6 +23,7 @@ interface api_sign {
     userid: number | null;
     profile: File | null;
     bio: string;
+    account_status_online: boolean,
 }
 
 const App: React.FC = () => {
@@ -33,6 +34,7 @@ const App: React.FC = () => {
         userid: null,
         profile: null,
         bio: "",
+        account_status_online: true,
     });
 
     return (

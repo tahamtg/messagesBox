@@ -4,43 +4,47 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Usecontext } from './context';
 
-interface Update_User{
-    username: string,
-    bio: string,
-    account_status_online: boolean,
+interface Update_User {
+    username: string;
+    bio: string;
+    account_status_online: boolean;
 }
 
 const EditProfile = () => {
+    const bio_form = useContext(Usecontext);
+
     const [info_for_update, setInfo_for_update] = useState<Update_User>({
         username: "",
-        bio: "",
+        bio: bio_form?.form.bio || "",
         account_status_online: true,
-    })
+    });
 
     const { id } = useParams<{ id: string }>();
-    const bio_form = useContext(Usecontext)
+
     console.log(id);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const res = axios.patch("https://massagesbox.ir/massage/Update_Info",
-            info_for_update,
-            {
-                withCredentials: true,
-            }
-        )
+        try {
+            const res = await axios.patch(
+                "https://massagesbox.ir/massage/Update_Info",
+                info_for_update,
+                {
+                    withCredentials: true,
+                }
+            );
 
+            console.log(res.data);
+        } catch (error) {
+            console.log(error);
+        }
     };
-
 
     return (
         <div className="edit-profile-page" dir="rtl">
-
             <div className="edit-profile-container">
-
                 <div className="edit-profile-header">
-
                     <span className="edit-profile-badge">
                         تنظیمات حساب
                     </span>
@@ -50,13 +54,10 @@ const EditProfile = () => {
                     <p>
                         اطلاعات شخصی و وضعیت حساب کاربری خود را مدیریت کنید.
                     </p>
-
                 </div>
 
                 <form className="edit-profile-card" onSubmit={handleSubmit}>
-
                     <div className="edit-profile-section">
-
                         <div className="edit-profile-section-title">
                             <span className="edit-profile-icon">✎</span>
 
@@ -67,7 +68,6 @@ const EditProfile = () => {
                         </div>
 
                         <div className="edit-profile-field">
-
                             <label htmlFor="edit-username">
                                 نام کاربری
                             </label>
@@ -77,13 +77,16 @@ const EditProfile = () => {
                                 type="text"
                                 placeholder="نام کاربری جدید"
                                 value={info_for_update.username}
-                                onChange={(e) => setInfo_for_update((prev)=> ({...prev, username: e.target.value}))}
+                                onChange={(e) =>
+                                    setInfo_for_update((prev) => ({
+                                        ...prev,
+                                        username: e.target.value,
+                                    }))
+                                }
                             />
-
                         </div>
 
                         <div className="edit-profile-field">
-
                             <label htmlFor="edit-bio">
                                 بیوگرافی
                             </label>
@@ -91,8 +94,13 @@ const EditProfile = () => {
                             <textarea
                                 id="edit-bio"
                                 placeholder="کمی درباره خودت بنویس..."
-                                value={bio_form?.form.bio}
-                                onChange={(e) => setInfo_for_update((prev)=> ({...prev, bio: e.target.value}))}
+                                value={info_for_update.bio}
+                                onChange={(e) =>
+                                    setInfo_for_update((prev) => ({
+                                        ...prev,
+                                        bio: e.target.value,
+                                    }))
+                                }
                                 rows={4}
                                 maxLength={250}
                             />
@@ -100,17 +108,12 @@ const EditProfile = () => {
                             <span className="edit-profile-hint">
                                 حداکثر ۲۵۰ کاراکتر
                             </span>
-
                         </div>
-
                     </div>
 
                     <div className="edit-profile-divider"></div>
 
-                    <div className="edit-profile-divider"></div>
-
                     <div className="edit-profile-section">
-
                         <div className="edit-profile-section-title">
                             <span className="edit-profile-icon">◷</span>
 
@@ -121,15 +124,24 @@ const EditProfile = () => {
                         </div>
 
                         <div className="edit-profile-radio-group">
-
-                            <label className={`edit-profile-radio ${info_for_update.account_status_online === true ? 'selected' : ''}`}>
-
+                            <label
+                                className={`edit-profile-radio ${
+                                    info_for_update.account_status_online
+                                        ? 'selected'
+                                        : ''
+                                }`}
+                            >
                                 <input
                                     type="radio"
                                     name="online-status"
                                     value="active"
                                     checked={info_for_update.account_status_online === true}
-                                    onChange={(e) => setInfo_for_update((prev)=> ({...prev, account_status_online: true}))}
+                                    onChange={() =>
+                                        setInfo_for_update((prev) => ({
+                                            ...prev,
+                                            account_status_online: true,
+                                        }))
+                                    }
                                 />
 
                                 <span className="edit-profile-radio-dot"></span>
@@ -140,17 +152,26 @@ const EditProfile = () => {
                                 </span>
 
                                 <span className="edit-profile-status-dot online"></span>
-
                             </label>
 
-                            <label className={`edit-profile-radio ${info_for_update.account_status_online === false ? 'selected' : ''}`}>
-
+                            <label
+                                className={`edit-profile-radio ${
+                                    !info_for_update.account_status_online
+                                        ? 'selected'
+                                        : ''
+                                }`}
+                            >
                                 <input
                                     type="radio"
                                     name="online-status"
                                     value="not-active"
                                     checked={info_for_update.account_status_online === false}
-                                    onChange={(e) => setInfo_for_update((prev)=> ({...prev, account_status_online: false}))}
+                                    onChange={() =>
+                                        setInfo_for_update((prev) => ({
+                                            ...prev,
+                                            account_status_online: false,
+                                        }))
+                                    }
                                 />
 
                                 <span className="edit-profile-radio-dot"></span>
@@ -161,15 +182,11 @@ const EditProfile = () => {
                                 </span>
 
                                 <span className="edit-profile-status-dot offline"></span>
-
                             </label>
-
                         </div>
-
                     </div>
 
                     <div className="edit-profile-footer">
-
                         <span className="edit-profile-footer-hint">
                             تغییرات پس از ذخیره اعمال خواهند شد.
                         </span>
@@ -181,13 +198,9 @@ const EditProfile = () => {
                             ذخیره تغییرات
                             <span>←</span>
                         </button>
-
                     </div>
-
                 </form>
-
             </div>
-
         </div>
     );
 };
