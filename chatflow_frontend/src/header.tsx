@@ -1,12 +1,10 @@
 import { useContext } from "react";
-import { authContext } from "./authprovider";
 import { AsideContext } from "./aside";
 
 import "./header.css";
 
 const Header = () => {
 
-    const auth = useContext(authContext);
 
     const { openPopUp, setOpenPopUP } =
         useContext(AsideContext)!;
@@ -14,7 +12,7 @@ const Header = () => {
 
 
     const togglePopup = () => {
-        setOpenPopUP(false);
+        setOpenPopUP(!openPopUp);
     };
 
     return (
@@ -28,9 +26,9 @@ const Header = () => {
                     onClick={togglePopup}
                 >
                     {openPopUp ? (
-                        <span onClick={()=> setOpenPopUP(false)}>بستن</span>
+                        <span>بستن</span>
                     ) : (
-                        <span onClick={()=> setOpenPopUP(true)}>دسترسی</span>
+                        <span>دسترسی</span>
                     )}
                 </button>
             </div>
