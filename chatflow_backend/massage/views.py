@@ -331,7 +331,11 @@ def Update_Photo(request):
 @api_view(['PATCH'])
 def Update_Info_User(request):
 
-    user = Authenticate_User(data=request.data)
+    user = Authenticate_User(
+            request.user,
+            data=request.data,
+            partial=True,
+        )
 
     if user.is_valid(raise_exception=True):
         user.save()

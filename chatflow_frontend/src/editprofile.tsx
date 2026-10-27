@@ -37,7 +37,11 @@ const EditProfile = () => {
 
             console.log(res.data);
         } catch (error) {
-            console.log(error);
+            if(axios.isAxiosError(error)){
+                console.log(error.response?.status)
+                console.log(error.response?.data)
+                console.log(error.message)
+            }
         }
     };
 
