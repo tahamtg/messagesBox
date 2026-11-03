@@ -136,43 +136,45 @@ class ChatConsumer(AsyncWebsocketConsumer):
 ########DIRECT########
 
     async def create_direct(self, data):
-
         from .models import User_Account, Direct
 
         current_user = self.scope["user"]
-        target_user_key = data["KEY_user"]
+        target_user_key = data.get("KEY_user")
 
-        target_user = await sync_to_async(
-            User_Account.objects.get
-        )(key=target_user_key)
+        if not target_user_key:
+            await self.send(text_data=json.dumps({
+                "type": "error", "message": "کد کاربر ارسال نشده"
+            }))
+            return
+
+        try:
+            target_user = await sync_to_async(User_Account.objects.get)(key=target_user_key)
+        except User_Account.DoesNotExist:
+            await self.send(text_data=json.dumps({
+                "type": "error", "message": "کاربری با این کد پیدا نشد"
+            }))
+            return
+
+        if target_user.pk == current_user.pk:
+            await self.send(text_data=json.dumps({
+                "type": "error", "message": "نمی‌تونی با خودت چت بسازی"
+            }))
+            return
 
         chat = await sync_to_async(
-            lambda: Direct.objects.filter(
-                user_Direct=current_user
-            ).filter(
-                user_Direct=target_user
-            ).distinct().first()
+            lambda: Direct.objects.filter(user_Direct=current_user)
+                                .filter(user_Direct=target_user)
+                                .first()
         )()
 
         if not chat:
+            chat = await sync_to_async(Direct.objects.create)()
+            await sync_to_async(chat.user_Direct.add)(current_user, target_user)
 
-            chat = await sync_to_async(
-                Direct.objects.create
-            )()
-
-            await sync_to_async(
-                chat.user_Direct.add
-            )(
-                current_user,
-                target_user
-            )
-
-        await self.send(
-            text_data=json.dumps({
-                "type": "chat_KEY",
-                "chat_key": chat.key
-            })
-        )
+        await self.send(text_data=json.dumps({
+            "type": "chat_KEY",
+            "chat_key": chat.key
+        }))
 
 ########Delete Messages########
 

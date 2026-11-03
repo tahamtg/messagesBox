@@ -20,69 +20,80 @@ interface directProp {
 import './directs.css'
 
 const Directs = () => {
+    const [getDirect, setGetDirect] = useState<directProp[]>([])
+    const [isAdd, setIsAdd] = useState(false)
+    const [usersKey, setUsersKey] = useState("")
+    const [error, setError] = useState("")
+    const socket = useRef<WebSocket | null>(null)
+    const navigate = useNavigate()
 
-const [getDirect, setGetDirect] = useState<directProp[]>([])
-const navigate = useNavigate()
-const [isAdd, setIsAdd] = useState<boolean | null>(false)
-const [usersKey, setUsersKey] = useState<string | null>(null)
-const socket = useRef(null)
-
-
-try{
-
-    const getINFO = async ()=>{
-
-        const res = await axios.get<directProp[]>("https://massagesbox.ir/massage/get_directs/",
-            {
-                withCredentials:true
-            }
-        );
-
-        setGetDirect(res.data);
-
+    const getINFO = async () => {
+        try {
+            const res = await axios.get<directProp[]>(
+                "https://massagesbox.ir/massage/get_directs/",
+                { withCredentials: true }
+            )
+            setGetDirect(res.data)
+        } catch (e) {
+            console.log(e)
+        }
     }
 
-}catch(e:any){
+    useEffect(() => {
+        getINFO()
 
-    console.log(e)
-    
-}
+        // آدرس سوکت خودت رو بذار
+        const ws = new WebSocket("wss://massagesbox.ir/ws/YOUR_PATH/")
+        socket.current = ws
 
-return ( 
+        ws.onmessage = (e) => {
+            const data = JSON.parse(e.data)
+            if (data.type === "chat_KEY") {
+                navigate(`/chat/${data.chat_key}`)
+            } else if (data.type === "error") {
+                setError(data.message)
+            }
+        }
 
-<> 
+        return () => ws.close()
+    }, [])
 
-<div className="add_direct">
+    const handleCreate = () => {
+        if (!usersKey.trim()) return
+        if (socket.current?.readyState !== WebSocket.OPEN) {
+            setError("اتصال برقرار نیست")
+            return
+        }
+        socket.current.send(JSON.stringify({
+            type: "create_direct",   // با چیزی که توی receive چک می‌کنی یکی باشه
+            KEY_user: usersKey.trim()
+        }))
+    }
 
-<button>
-    <img src={add} alt="add" />
-    <span>اضافه کردن چت یا مخاطب با پرایمکی!</span>
-</button>
+    return (
+        <>
+            <div className="add_direct">
+                <button onClick={() => setIsAdd(!isAdd)}>
+                    <img src={add} alt="add" />
+                    <span>اضافه کردن چت یا مخاطب با پرایمکی!</span>
+                </button>
 
-</div>
+                {isAdd && (
+                    <div>
+                        <input
+                            value={usersKey}
+                            onChange={(e) => setUsersKey(e.target.value)}
+                            placeholder="کد کاربر رو وارد کن"
+                        />
+                        <button onClick={handleCreate}>ساخت چت</button>
+                        {error && <p>{error}</p>}
+                    </div>
+                )}
+            </div>
 
-<div className="directs-page">
-
-{getDirect.map((direct) => 
-
-    ( 
-    <div className="direct-item" key={direct.chat_key} onClick={()=> navigate( `/chat/${direct.chat_key}`)}> 
-
-    <img src={ direct.avatar ? `https://massagesbox.ir${direct.avatar}` : avatar } alt={direct.username} /> 
-
-    <span> {direct.username} </span> 
-    
-    </div> 
+            {/* لیست directها مثل قبل */}
+        </>
     )
-
-)} 
-
-</div>
-
-</> 
-
-);
-
 }
  
 export default Directs;
