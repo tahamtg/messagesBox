@@ -5,6 +5,9 @@ WORKDIR /frontend
 
 COPY chatflow_frontend/package*.json ./
 
+RUN npm config set registry https://registry.npmjs.org/ \
+    && npm install
+
 RUN npm install
 
 COPY chatflow_frontend/ .
