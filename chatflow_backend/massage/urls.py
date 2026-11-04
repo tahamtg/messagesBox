@@ -10,14 +10,19 @@ urlpatterns = [
     path('check-auth/', views.Check_Auth, name='authenticate users'),
     
     path('logout/', views.LogOut, name='logout users'),
+
     path('showUsers/', views.Pagination_data, name='show users'),
+
     path('Upload/', views.upload, name='upload'),
 
     path('update_photo/', views.Update_Photo, name='update_photo'),
     
     path("<slug:slug>/topics/create/", views.create_topic),
+
     path("<slug:slug>/topics/", views.get_topics, name="get topics"),
+
     path("<slug:room_slug>/<slug:topic_slug>/", views.show_another_messages),
+
     path("post-topic/", views.create_topic),
 
     path("searching/", views.get_search),
@@ -27,4 +32,5 @@ urlpatterns = [
     path("get_my_key/", views.get_my_key, name="get primary key"),
     
     path("Update_Info/", views.Update_Info_User, name="update info"),
+    
 ]

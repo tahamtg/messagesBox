@@ -77,33 +77,20 @@ const ChatRoom: React.FC = () => {
     const [resFile, setResFile] =
         useState<File | null>(null);
 
-    const [mediaUrl, setMediaUrl] =
-        useState<string | null>(null);
+    const [mediaUrl, setMediaUrl] = useState<string | null>(null);
 
-    const [mediaId, setMediaId] =
-        useState<number | null>(null);
+    const [mediaId, setMediaId] = useState<number | null>(null);
 
 
-    // =========================
-    // REFS
-    // =========================
+    const socket = useRef<WebSocket | null>(null);
 
-    const socket =
-        useRef<WebSocket | null>(null);
+    const time = useRef<number | null>(null);
 
-    const time =
-        useRef<number | null>(null);
+    const menuref = useRef<HTMLDivElement>(null);
 
-    const menuref =
-        useRef<HTMLDivElement>(null);
-
-    const messageRef =
-        useRef<HTMLDivElement>(null);
+    const messageRef = useRef<HTMLDivElement>(null);
 
 
-    // =========================
-    // WEBSOCKET
-    // =========================
 
     useEffect(() => {
 

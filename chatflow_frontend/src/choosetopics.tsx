@@ -158,8 +158,6 @@ const ChooseTopics = () => {
 
                 </div>
 
-
-                {/* Topics */}
                 <div className="topics-section">
 
                     <h2>

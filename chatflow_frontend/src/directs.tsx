@@ -1,12 +1,6 @@
 import axios from "axios";
-import React, {
-    useState,
-    useEffect,
-    useContext,
-    useRef
-} from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { string } from "yup";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import avatar from '../public/images.png'
 import add from '../public/icons8-plus-24.png'
 
@@ -42,8 +36,7 @@ const Directs = () => {
     useEffect(() => {
         getINFO()
 
-        // آدرس سوکت خودت رو بذار
-        const ws = new WebSocket("wss://massagesbox.ir/ws/YOUR_PATH/")
+        const ws = new WebSocket("wss://massagesbox.ir/ws/direct/")
         socket.current = ws
 
         ws.onmessage = (e) => {
@@ -55,18 +48,31 @@ const Directs = () => {
             }
         }
 
-        return () => ws.close()
+        ws.onclose = () => {
+
+            setError((prev) => prev || "اتصال بسته شد، صفحه را دوباره باز کن")
+        }
+
+        return () => {
+            ws.onclose = null 
+            ws.close()
+        }
     }, [])
 
     const handleCreate = () => {
-        if (!usersKey.trim()) return
+        const key = usersKey.trim()
+        if (!key) return
+
+        setError("")
+
         if (socket.current?.readyState !== WebSocket.OPEN) {
             setError("اتصال برقرار نیست")
             return
         }
+
         socket.current.send(JSON.stringify({
-            type: "create_direct",   // با چیزی که توی receive چک می‌کنی یکی باشه
-            KEY_user: usersKey.trim()
+            type: "create_direct",   
+            KEY_user: key
         }))
     }
 
@@ -83,6 +89,7 @@ const Directs = () => {
                         <input
                             value={usersKey}
                             onChange={(e) => setUsersKey(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                             placeholder="کد کاربر رو وارد کن"
                         />
                         <button onClick={handleCreate}>ساخت چت</button>
@@ -91,9 +98,8 @@ const Directs = () => {
                 )}
             </div>
 
-            {/* لیست directها مثل قبل */}
         </>
     )
 }
- 
+
 export default Directs;
