@@ -11,20 +11,32 @@ interface directProp {
     avatar: string,
 }
 
+interface foundUserProp {
+    username: string,
+    name: string | null,
+    bio: string,
+    username_key: string,
+    avatar: string | null,
+}
+
 import './directs.css'
+
+const BASE_URL = "https://massagesbox.ir"
 
 const Directs = () => {
     const [getDirect, setGetDirect] = useState<directProp[]>([])
     const [isAdd, setIsAdd] = useState(false)
     const [usersKey, setUsersKey] = useState("")
     const [error, setError] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [foundUser, setFoundUser] = useState<foundUserProp | null>(null)
     const socket = useRef<WebSocket | null>(null)
     const navigate = useNavigate()
 
     const getINFO = async () => {
         try {
             const res = await axios.get<directProp[]>(
-                "https://massagesbox.ir/massage/get_directs/",
+                `${BASE_URL}/massage/get_directs/`,
                 { withCredentials: true }
             )
             setGetDirect(res.data)
@@ -41,39 +53,59 @@ const Directs = () => {
 
         ws.onmessage = (e) => {
             const data = JSON.parse(e.data)
-            if (data.type === "chat_KEY") {
+
+            if (data.type === "user_found") {
+                setLoading(false)
+                setError("")
+                setFoundUser({
+                    username: data.username,
+                    name: data.name,
+                    bio: data.bio,
+                    username_key: data.username_key,
+                    avatar: data.avatar,
+                })
+            } else if (data.type === "chat_KEY") {
                 navigate(`/chat/${data.chat_key}`)
             } else if (data.type === "error") {
+                setLoading(false)
+                setFoundUser(null)
                 setError(data.message)
             }
         }
 
         ws.onclose = () => {
-
+            setLoading(false)
             setError((prev) => prev || "اتصال بسته شد، صفحه را دوباره باز کن")
         }
 
         return () => {
-            ws.onclose = null 
+            ws.onclose = null
             ws.close()
         }
     }, [])
 
-    const handleCreate = () => {
+    const handleSearch = () => {
         const key = usersKey.trim()
-        if (!key) return
+        if (!key || loading) return
 
         setError("")
+        setFoundUser(null)
 
         if (socket.current?.readyState !== WebSocket.OPEN) {
             setError("اتصال برقرار نیست")
             return
         }
 
+        setLoading(true)
         socket.current.send(JSON.stringify({
-            type: "create_direct",   
+            type: "search_user",
             KEY_user: key
         }))
+    }
+
+    const avatarSrc = (url: string | null) => {
+        if (!url) return avatar
+        return url.startsWith("http") ? url : `${BASE_URL}${url}`
     }
 
     return (
@@ -89,15 +121,35 @@ const Directs = () => {
                         <input
                             value={usersKey}
                             onChange={(e) => setUsersKey(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+                            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                             placeholder="کد کاربر رو وارد کن"
                         />
-                        <button onClick={handleCreate}>ساخت چت</button>
+                        <button onClick={handleSearch} disabled={loading}>
+                            {loading ? (
+                                <span className="spinner" />
+                            ) : (
+                                "پیدا کردن کاربر"
+                            )}
+                        </button>
+
                         {error && <p>{error}</p>}
+
+                        {foundUser && (
+                            <div className="found_user">
+                                <img
+                                    src={avatarSrc(foundUser.avatar)}
+                                    alt={foundUser.username}
+                                />
+                                <div className="found_user_info">
+                                    <strong>{foundUser.name || foundUser.username}</strong>
+                                    <span>@{foundUser.username}</span>
+                                    {foundUser.bio && <p>{foundUser.bio}</p>}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
-
         </>
     )
 }

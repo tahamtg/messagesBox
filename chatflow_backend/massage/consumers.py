@@ -5,7 +5,6 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.core.exceptions import ValidationError
 
-
 class ChatConsumer(AsyncWebsocketConsumer):
 
     ########Connect########
@@ -196,6 +195,41 @@ class ChatConsumer(AsyncWebsocketConsumer):
             })
         )
 
+        async def search_user(self, data):
+
+            from .models import User_Account
+
+            target_key = (data.get("KEY_user") or "").strip()
+
+            if not target_key:
+                await self.send(text_data=json.dumps({
+                    "type": "error", "message": "کد کاربر ارسال نشده"
+                }))
+                return
+
+            try:
+                target = await sync_to_async(User_Account.objects.get)(key=target_key)
+            except (User_Account.DoesNotExist, ValidationError, ValueError):
+                await self.send(text_data=json.dumps({
+                    "type": "error", "message": "کاربری با این کد پیدا نشد"
+                }))
+                return
+
+            if target.pk == self.scope["user"].pk:
+                await self.send(text_data=json.dumps({
+                    "type": "error", "message": "این کد خودته!"
+                }))
+                return
+
+            await self.send(text_data=json.dumps({
+                "type": "user_found",
+                "username": target.username,
+                "name": target.name,
+                "bio": target.bio,
+                "username_key": target.key,
+                "avatar": target.avatar.url if target.avatar else None,
+            }))
+
     ########Receive Items########
 
     async def receive(self, text_data):
@@ -207,6 +241,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message_type = data.get("type")
 
   
+        if message_type == "create_direct":
+            await self.create_direct(data)
+            return
+
+        if message_type == "search_user":
+            await self.search_user(data)
+            return
+
         if message_type == "create_direct":
             await self.create_direct(data)
             return
