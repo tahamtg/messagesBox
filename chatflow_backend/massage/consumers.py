@@ -1,18 +1,17 @@
-
 import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from django.core.exceptions import ValidationError
+from django.db import transaction
+from django.db.models import Count
 from .models import User_Account
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
-        from .models import Room, Topic
-
         kwargs = self.scope["url_route"]["kwargs"]
+
         self.room_slug = kwargs.get("room_slug")
         self.topic_slug = kwargs.get("topic_slug")
 
@@ -32,14 +31,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         try:
             self.room = await self.get_room(self.room_slug)
-            self.topic = await self.get_topic(self.topic_slug, self.room)
+            self.topic = await self.get_topic(
+                self.topic_slug,
+                self.room
+            )
 
         except Exception as e:
             print("ROOM ERROR:", e)
             await self.close()
             return
 
-        self.topic_group_name = f"chat_room_{self.room_slug}_topic_{self.topic_slug}"
+        self.topic_group_name = (
+            f"chat_room_{self.room_slug}_topic_{self.topic_slug}"
+        )
 
         await self.channel_layer.group_add(
             self.topic_group_name,
@@ -79,22 +83,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return topic
 
     @database_sync_to_async
-    def get_media_url(self, message_id):
-        from .models import Massage
-
-        message = Massage.objects.select_related("file").get(id=message_id)
-
-        if message.file:
-            return message.file.media.url
-
-        return None
-
-    @database_sync_to_async
     def find_user(self, target_key):
+        try:
+            user = User_Account.objects.get(key=target_key)
 
-        from .models import User_Account
+            return {
+                "id": user.id,
+                "username": user.username,
+                "name": user.name,
+                "bio": user.bio,
+                "key": user.key,
+                "avatar": user.avatar.url if user.avatar else None
+            }
 
-        return User_Account.objects.get(key=target_key)
+        except User_Account.DoesNotExist:
+            return None
 
     async def search_user(self, data):
         target_key = (data.get("KEY_user") or "").strip()
@@ -106,63 +109,78 @@ class ChatConsumer(AsyncWebsocketConsumer):
             })
             return
 
-        try:
-            target = await self.find_user(target_key)
+        target = await self.find_user(target_key)
 
-        except (User_Account.DoesNotExist, ValidationError, ValueError):
+        if not target:
             await self.send_json({
                 "type": "error",
                 "message": "کاربری با این کد پیدا نشد"
             })
             return
 
-        if target.pk == self.scope["user"].pk:
+        if target["id"] == self.scope["user"].id:
             await self.send_json({
                 "type": "error",
-                "message": "این کد خودته!"
+                "message": "شما نمی‌توانید کد خودتان را وارد کنید!"
             })
             return
 
-        avatar = await self.get_avatar_url(target)
-
         await self.send_json({
             "type": "user_found",
-            "username": target.username,
-            "name": target.name,
-            "bio": target.bio,
-            "username_key": target.key,
-            "avatar": avatar
+            "username": target["username"],
+            "name": target["name"],
+            "bio": target["bio"],
+            "username_key": target["key"],
+            "avatar": target["avatar"]
         })
 
     @database_sync_to_async
-    def get_avatar_url(self, user):
-        if user.avatar:
-            return user.avatar.url
-
-        return None
-
-    @database_sync_to_async
-    def find_direct(self, current_user, target_user):
+    def get_or_create_direct(self, current_user_id, target_key):
         from .models import Direct
 
-        return Direct.objects.filter(
-            user_Direct=current_user
-        ).filter(
-            user_Direct=target_user
-        ).first()
+        with transaction.atomic():
 
-    @database_sync_to_async
-    def create_direct_chat(self, current_user, target_user):
-        from .models import Direct
+            try:
+                target_user = User_Account.objects.get(key=target_key)
+            except User_Account.DoesNotExist:
+                return None
 
-        chat = Direct.objects.create()
-        chat.user_Direct.add(current_user, target_user)
+            if target_user.id == current_user_id:
+                return None
 
-        return chat.key
+            user_ids = sorted([
+                current_user_id,
+                target_user.id
+            ])
+
+            list(
+                User_Account.objects.select_for_update()
+                .filter(id__in=user_ids)
+                .order_by("id")
+            )
+
+            chat = (
+                Direct.objects
+                .annotate(user_count=Count("user_Direct"))
+                .filter(user_Direct__id=current_user_id)
+                .filter(user_Direct__id=target_user.id)
+                .filter(user_count=2)
+                .first()
+            )
+
+            if chat:
+                return chat.key
+
+            chat = Direct.objects.create()
+
+            chat.user_Direct.add(
+                current_user_id,
+                target_user.id
+            )
+
+            return chat.key
 
     async def create_direct(self, data):
-        from .models import User_Account
-
         target_key = (data.get("KEY_user") or "").strip()
 
         if not target_key:
@@ -172,36 +190,35 @@ class ChatConsumer(AsyncWebsocketConsumer):
             })
             return
 
-        try:
-            target_user = await self.find_user(target_key)
+        chat_key = await self.get_or_create_direct(
+            self.scope["user"].id,
+            target_key
+        )
 
-        except (User_Account.DoesNotExist, ValidationError, ValueError):
+        if not chat_key:
             await self.send_json({
                 "type": "error",
-                "message": "کاربری با این کد پیدا نشد"
+                "message": "کاربر پیدا نشد یا امکان ساخت چت وجود ندارد"
             })
             return
-
-        current_user = self.scope["user"]
-
-        if target_user.pk == current_user.pk:
-            await self.send_json({
-                "type": "error",
-                "message": "نمی‌تونی با خودت چت بسازی"
-            })
-            return
-
-        chat = await self.find_direct(current_user, target_user)
-
-        if not chat:
-            chat_key = await self.create_direct_chat(current_user, target_user)
-        else:
-            chat_key = chat.key
 
         await self.send_json({
             "type": "chat_KEY",
             "chat_key": str(chat_key)
         })
+
+    @database_sync_to_async
+    def get_media_url(self, message_id):
+        from .models import Massage
+
+        message = Massage.objects.select_related("file").get(
+            id=message_id
+        )
+
+        if message.file:
+            return message.file.media.url
+
+        return None
 
     @database_sync_to_async
     def delete_message_from_db(self, message_id):
@@ -249,16 +266,38 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "mass_id": event["id_massage"]
         })
 
-    async def receive(self, text_data):
-        from .models import Massage, User_Account
+    @database_sync_to_async
+    def create_message(self, message, media_id):
+        from .models import Massage
 
+        obj = Massage.objects.create(
+            payam=message,
+            room_id=self.room.id,
+            user_id=self.scope["user"].id,
+            topic_id=self.topic.id,
+            file_id=media_id
+        )
+
+        return {
+            "id": obj.id,
+            "date": obj.publish_date.isoformat()
+        }
+
+    @database_sync_to_async
+    def get_avatar_url(self, user):
+        return user.avatar.url if user.avatar else None
+
+    async def receive(self, text_data):
         try:
             data = json.loads(text_data)
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, TypeError):
             await self.send_json({
                 "type": "error",
                 "message": "فرمت پیام نامعتبر است"
             })
+            return
+
+        if not isinstance(data, dict):
             return
 
         message_type = data.get("type")
@@ -279,18 +318,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         if message_type == "message":
-            message = data.get("message")
+            message = data.get("message") or ""
+            media_id = data.get("mediaId")
 
-            if not message and not data.get("mediaId"):
+            if not message and not media_id:
                 return
 
             my_model = await self.create_message(
                 message,
-                data.get("mediaId")
+                media_id
             )
 
-            media_url = await self.get_media_url(my_model.id)
-            avatar_url = await self.get_avatar_url(self.scope["user"])
+            media_url = await self.get_media_url(my_model["id"])
+            avatar_url = await self.get_avatar_url(
+                self.scope["user"]
+            )
 
             await self.channel_layer.group_send(
                 self.topic_group_name,
@@ -298,26 +340,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "type": "chat_topic_message",
                     "message": message,
                     "username": self.scope["user"].username,
-                    "date_massage": my_model.publish_date.isoformat(),
-                    "massage_id": my_model.id,
+                    "date_massage": my_model["date"],
+                    "massage_id": my_model["id"],
                     "username_id": self.scope["user"].id,
                     "media_URL": media_url,
                     "username_key": self.scope["user"].key,
                     "avatar_user": avatar_url
                 }
             )
-
-    @database_sync_to_async
-    def create_message(self, message, media_id):
-        from .models import Massage
-
-        return Massage.objects.create(
-            payam=message,
-            room=self.room,
-            user=self.scope["user"],
-            topic=self.topic,
-            file_id=media_id
-        )
 
     async def chat_topic_message(self, event):
         await self.send_json({
