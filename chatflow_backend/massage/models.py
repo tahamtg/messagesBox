@@ -32,15 +32,14 @@ class User_Account(AbstractBaseUser, PermissionsMixin):
 
     objects = Username_Manager()
 
-class Direct (models.Model):
+class Direct(models.Model):
     user_Direct = models.ManyToManyField(User_Account)
-    craeted_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     key = models.CharField(
-            max_length=20,
-            editable=False,
-            default=generate_key,
-            unique=True,
-        )
+        max_length=64,
+        editable=False,
+        unique=True,
+    )
 
 class Room (models.Model):
     name = models.CharField(max_length=50, unique=True)

@@ -1,10 +1,18 @@
 import json
-
-from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.db import database_sync_to_async
+import hashlib
 from django.db import transaction
 from django.db.models import Count
+from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
 from .models import User_Account
+
+
+def generate_direct_key(user1, user2):
+
+    keys = sorted([user1.key, user2.key])
+    value = f"{keys[0]}:{keys[1]}"
+
+    return hashlib.sha256(value.encode()).hexdigest()
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -142,14 +150,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             try:
                 target_user = User_Account.objects.get(key=target_key)
+                current_user = User_Account.objects.get(id=current_user_id)
+
             except User_Account.DoesNotExist:
                 return None
 
-            if target_user.id == current_user_id:
+            if target_user.id == current_user.id:
                 return None
 
             user_ids = sorted([
-                current_user_id,
+                current_user.id,
                 target_user.id
             ])
 
@@ -159,23 +169,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 .order_by("id")
             )
 
-            chat = (
-                Direct.objects
-                .annotate(user_count=Count("user_Direct"))
-                .filter(user_Direct__id=current_user_id)
-                .filter(user_Direct__id=target_user.id)
-                .filter(user_count=2)
-                .first()
+            chat_key = generate_direct_key(
+                current_user,
+                target_user
             )
+
+            chat = Direct.objects.filter(key=chat_key).first()
 
             if chat:
                 return chat.key
 
-            chat = Direct.objects.create()
+            chat = Direct.objects.create(key=chat_key)
 
             chat.user_Direct.add(
-                current_user_id,
-                target_user.id
+                current_user,
+                target_user
             )
 
             return chat.key
@@ -230,6 +238,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 room=self.room,
                 topic=self.topic
             )
+
         except Massage.DoesNotExist:
             return False
 
@@ -290,6 +299,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         try:
             data = json.loads(text_data)
+
         except (json.JSONDecodeError, TypeError):
             await self.send_json({
                 "type": "error",

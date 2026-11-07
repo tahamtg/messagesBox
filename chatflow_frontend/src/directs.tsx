@@ -68,12 +68,13 @@ const Directs = () => {
                 });
             }
 
-            else if (data.type === "chat_KEY") {
+            if (data.type === "chat_KEY") {
                 setLoading(false);
+                getINFO();
                 navigate(`/chat/${data.chat_key}`);
             }
 
-            else if (data.type === "error") {
+            if (data.type === "error") {
                 setLoading(false);
                 setFoundUser(null);
                 setError(data.message);
@@ -87,7 +88,7 @@ const Directs = () => {
 
         ws.onclose = () => {
             setLoading(false);
-            setError((prev) => prev || "اتصال بسته شد، صفحه را دوباره باز کن");
+            setError((prev) => prev || "اتصال بسته شد");
         };
 
         return () => {
@@ -142,43 +143,36 @@ const Directs = () => {
     };
 
     return (
-        <>
-            <div className="add_direct">
+        <div className="directs_container">
 
-                <button onClick={() => setIsAdd(!isAdd)}>
+            <div className="add_direct">
+                <button onClick={() => {
+                    setIsAdd(!isAdd);
+                    setError("");
+                    setFoundUser(null);
+                }}>
                     <img src={add} alt="add" />
                     <span>اضافه کردن چت یا مخاطب با پرایمکی!</span>
                 </button>
 
                 {isAdd && (
-                    <div>
+                    <div className="add_direct_form">
                         <input
                             value={usersKey}
                             onChange={(e) => setUsersKey(e.target.value)}
-                            onKeyDown={(e) =>
-                                e.key === "Enter" && handleSearch()
-                            }
+                            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                             placeholder="کد کاربر رو وارد کن"
                         />
 
-                        <button
-                            onClick={handleSearch}
-                            disabled={loading}
-                        >
-                            {loading ? (
-                                <span className="spinner" />
-                            ) : (
-                                "پیدا کردن کاربر"
-                            )}
+                        <button onClick={handleSearch} disabled={loading}>
+                            {loading ? <span className="spinner" /> : "پیدا کردن کاربر"}
                         </button>
 
-                        {error && <p>{error}</p>}
+                        {error && <p className="direct_error">{error}</p>}
 
                         {foundUser && (
                             <div
-                                onClick={() =>
-                                    create_direct(foundUser.username_key)
-                                }
+                                onClick={() => create_direct(foundUser.username_key)}
                                 className="found_user"
                             >
                                 <img
@@ -187,24 +181,43 @@ const Directs = () => {
                                 />
 
                                 <div className="found_user_info">
-                                    <strong>
-                                        {foundUser.name || foundUser.username}
-                                    </strong>
-
-                                    <span>
-                                        @{foundUser.username}
-                                    </span>
-
-                                    {foundUser.bio && (
-                                        <p>{foundUser.bio}</p>
-                                    )}
+                                    <strong>{foundUser.name || foundUser.username}</strong>
+                                    <span>@{foundUser.username}</span>
+                                    {foundUser.bio && <p>{foundUser.bio}</p>}
                                 </div>
                             </div>
                         )}
                     </div>
                 )}
             </div>
-        </>
+
+            <div className="directs_list">
+                {getDirect.length > 0 ? (
+                    getDirect.map((direct) => (
+                        <div
+                            className="direct_item"
+                            key={direct.chat_key}
+                            onClick={() => navigate(`/chat/${direct.chat_key}`)}
+                        >
+                            <img
+                                src={avatarSrc(direct.avatar)}
+                                alt={direct.username}
+                            />
+
+                            <div className="direct_info">
+                                <strong>{direct.username}</strong>
+                                <span>@{direct.username}</span>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className="empty_directs">
+                        هنوز هیچ گفتگویی نداری!
+                    </div>
+                )}
+            </div>
+
+        </div>
     );
 };
 
