@@ -18,6 +18,6 @@ application = ProtocolTypeRouter({
         JWTAuthMiddleware(
             URLRouter(websocket_urlpatterns)
         ),
-        settings.ALLOWED_ORIGINS
+        settings.CORS_ALLOWED_ORIGINS
     ),
 })
