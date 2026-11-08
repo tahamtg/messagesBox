@@ -7,90 +7,77 @@ import React, {
 
 import { authContext } from "./authprovider";
 import { useParams, useNavigate } from "react-router-dom";
-import "../src/charRoom.css";
+import "./charRoom.css";
 import axios from "axios";
 import imageCompression from "browser-image-compression";
 import avatar from '../public/images.png'
 
 interface Message {
     message: string;
-    username: string;
-    date: string;
-    username_id: number;
-    username_key: string,
+    username: string | null;
+    date?: string;
+    username_id: number | null;
+    username_key: string | null;
     id: number;
     media_URL: string | null,
-    avatar_user: string,
+    avatar_user: string | null,
 }
 
+type Status = "connecting" | "open" | "reconnecting" | "failed";
 
-interface GetInfo {
-    username: string;
-    userid: number | null;
-}
+const BASE_URL = "https://massagesbox.ir";
+const WS_URL = "wss://massagesbox.ir";
+const PING_INTERVAL = 25000;
+const PONG_TIMEOUT = 10000;
+const MAX_RECONNECT = 10;
 
+const toUrl = (path: string | null) => {
+    if (!path) return null;
+
+    return path.startsWith("http") ? path : `${BASE_URL}${path}`;
+};
+
+const mergeMessages = (history: Message[], current: Message[]) => {
+    const lastId = history.length ? history[history.length - 1].id : 0;
+
+    return [
+        ...history,
+        ...current.filter((msg) => msg.id > lastId)
+    ];
+};
 
 const ChatRoom: React.FC = () => {
 
     const auth = useContext(authContext);
 
-    const {chat_key} = useParams()
-
-    const navigate = useNavigate();
-
-    const {
-        roomSlug,
-        topicSlug
-    } = useParams<{
+    const { chat_key, roomSlug, topicSlug } = useParams<{
+        chat_key: string;
         roomSlug: string;
         topicSlug: string;
     }>();
 
+    const navigate = useNavigate();
+    const navigateRef = useRef(navigate);
 
-    // =========================
-    // STATE
-    // =========================
-
-    const [message, setMessages] =
-        useState<Message[]>([]);
-
-    const [newMassage, setNewMassage] =
-        useState<string>("");
-
-    const [error, setError] =
-        useState<string | null>(null);
-
-    const [disconnected, setDisconnected] =
-        useState<string | null>(null);
-
-    const [isOpen, setIsopen] =
-        useState(false);
-
-    const [posi, setPosi] = useState({
-        x: 0,
-        y: 0
-    });
-
-    const [selectId, setSelectId] =
-        useState<number | null>(null);
-
-    const [resFile, setResFile] =
-        useState<File | null>(null);
-
-    const [mediaUrl, setMediaUrl] = useState<string | null>(null);
-
-    const [mediaId, setMediaId] = useState<number | null>(null);
-
+    const [message, setMessages] = useState<Message[]>([]);
+    const [newMassage, setNewMassage] = useState<string>("");
+    const [error, setError] = useState<string | null>(null);
+    const [status, setStatus] = useState<Status>("connecting");
+    const [sending, setSending] = useState(false);
+    const [isOpen, setIsopen] = useState(false);
+    const [posi, setPosi] = useState({ x: 0, y: 0 });
+    const [selectId, setSelectId] = useState<number | null>(null);
+    const [resFile, setResFile] = useState<File | null>(null);
 
     const socket = useRef<WebSocket | null>(null);
-
     const time = useRef<number | null>(null);
-
     const menuref = useRef<HTMLDivElement>(null);
-
     const messageRef = useRef<HTMLDivElement>(null);
+    const fileRef = useRef<HTMLInputElement>(null);
 
-
+    useEffect(() => {
+        navigateRef.current = navigate;
+    }, [navigate]);
 
     useEffect(() => {
 
@@ -98,187 +85,224 @@ const ChatRoom: React.FC = () => {
             return;
         }
 
+        const wsUrl = `${WS_URL}/ws/chat/${roomSlug}/${topicSlug}/`;
 
-        const wsUrl =
-            `wss://massagesbox.ir/ws/chat/${roomSlug}/${topicSlug}/`;
+        let ws: WebSocket | null = null;
+        let closedByUs = false;
+        let loadedOnce = false;
+        let attempts = 0;
+        let reconnectTimer: number | undefined;
+        let pingTimer: number | undefined;
+        let pongTimer: number | undefined;
 
+        setMessages([]);
+        setStatus("connecting");
+        setError(null);
 
-        console.log(
-            "CONNECTING:",
-            wsUrl
-        );
+        const loadHistory = async () => {
+            try {
+                const response = await axios.get<Message[]>(
+                    `${BASE_URL}/massage/${encodeURIComponent(roomSlug)}/${encodeURIComponent(topicSlug)}/`,
+                    {
+                        withCredentials: true,
+                        silent: loadedOnce
+                    }
+                );
 
+                loadedOnce = true;
 
-        socket.current =
-            new WebSocket(wsUrl);
+                if (!closedByUs) {
+                    setMessages((prev) => mergeMessages(response.data, prev));
+                }
 
-
-        socket.current.onopen = () => {
-
-            console.log(
-                "WEBSOCKET CONNECTED"
-            );
-
-            setDisconnected(null);
-            setError(null);
+            } catch (e) {
+                if (!closedByUs) {
+                    setError("دریافت پیام‌های قبلی انجام نشد");
+                }
+            }
         };
 
-
-        socket.current.onmessage = (event) => {
-
-            const data =
-                JSON.parse(event.data);
-
-
-            console.log(
-                "RECEIVED:",
-                data
-            );
-
-
-            // =========================
-            // DIRECT CHAT KEY
-            // =========================
-
-            if (data.type === "chat_KEY") {
-
-                navigate(
-                    `/chat/${data.chat_key}`
-                );
-
-                return;
-            }
-
-
-            // =========================
-            // MESSAGE DELETED
-            // =========================
-
-            if (
-                data.type ===
-                "message_deleted"
-            ) {
-
-                setMessages((prev) =>
-                    prev.filter(
-                        (msg) =>
-                            msg.id !==
-                            data.mass_id
-                    )
-                );
-
-                setIsopen(false);
-
-                return;
-            }
-
-
-            // =========================
-            // TOPIC MESSAGE
-            // =========================
-
-            if (
-                data.type ===
-                "chat_topic_message"
-            ) {
-
-                const newMessage: Message = {
-
-                    message:
-                        data.message,
-
-                    username:
-                        data.username,
-
-                    date:
-                        data.date,
-
-                    username_id:
-                        data.username_id,
-                    
-                    username_key:
-                        data.username_key,
-
-                    id:
-                        data.id,
-
-                    avatar_user:
-                        data.avatar_user,
-
-                    media_URL:
-                        data.media_URL,
-                };
-
-
-                setMessages((prev) => [
-                    ...prev,
-                    newMessage
-                ]);
-
-                return;
-            }
-
+        const stopHeartbeat = () => {
+            window.clearInterval(pingTimer);
+            window.clearTimeout(pongTimer);
         };
 
+        const detach = (target: WebSocket) => {
+            target.onopen = null;
+            target.onmessage = null;
+            target.onclose = null;
+            target.onerror = null;
+            target.close();
+        };
 
-        socket.current.onclose =
-            (event) => {
+        const scheduleReconnect = () => {
+            if (closedByUs) return;
 
-                console.log(
-                    "WS CLOSED:",
-                    event.code,
-                    event.reason
-                );
+            if (attempts >= MAX_RECONNECT) {
+                setStatus("failed");
+                return;
+            }
 
+            attempts += 1;
 
-                if (event.code === 1006) {
+            setStatus("reconnecting");
 
-                    setDisconnected(
-                        "ارتباط WebSocket قطع شد"
+            const delay = Math.min(1000 * 2 ** attempts, 30000);
+
+            reconnectTimer = window.setTimeout(connect, delay);
+        };
+
+        const startHeartbeat = (current: WebSocket) => {
+            stopHeartbeat();
+
+            pingTimer = window.setInterval(() => {
+                if (current.readyState !== WebSocket.OPEN) return;
+
+                current.send(JSON.stringify({ type: "ping" }));
+
+                window.clearTimeout(pongTimer);
+
+                pongTimer = window.setTimeout(() => {
+                    stopHeartbeat();
+                    detach(current);
+                    scheduleReconnect();
+                }, PONG_TIMEOUT);
+
+            }, PING_INTERVAL);
+        };
+
+        const connect = () => {
+            const current = new WebSocket(wsUrl);
+
+            ws = current;
+            socket.current = current;
+
+            current.onopen = () => {
+                attempts = 0;
+
+                setStatus("open");
+                setError(null);
+
+                startHeartbeat(current);
+                loadHistory();
+            };
+
+            current.onmessage = (event) => {
+
+                let data;
+
+                try {
+                    data = JSON.parse(event.data);
+
+                } catch {
+                    return;
+                }
+
+                if (data.type === "pong") {
+                    window.clearTimeout(pongTimer);
+                    return;
+                }
+
+                if (data.type === "chat_KEY") {
+                    navigateRef.current(`/chat/${data.chat_key}`);
+                    return;
+                }
+
+                if (data.type === "error") {
+                    setError(data.message);
+                    return;
+                }
+
+                if (data.type === "message_deleted") {
+                    setMessages((prev) =>
+                        prev.filter((msg) => msg.id !== data.mass_id)
+                    );
+
+                    setIsopen(false);
+
+                    return;
+                }
+
+                if (data.type === "chat_topic_message") {
+
+                    const newMessage: Message = {
+                        message: data.message,
+                        username: data.username,
+                        date: data.date,
+                        username_id: data.username_id,
+                        username_key: data.username_key,
+                        id: data.id,
+                        avatar_user: data.avatar_user,
+                        media_URL: data.media_URL,
+                    };
+
+                    setMessages((prev) =>
+                        prev.some((msg) => msg.id === newMessage.id)
+                            ? prev
+                            : [...prev, newMessage]
                     );
                 }
             };
 
-
-        socket.current.onerror =
-            (event) => {
-
-                console.log(
-                    "WS ERROR:",
-                    event
-                );
-
-                setError(
-                    "اتصال WebSocket قطع شد!"
-                );
+            current.onclose = () => {
+                stopHeartbeat();
+                scheduleReconnect();
             };
 
+            current.onerror = () => {
+                current.close();
+            };
+        };
 
-        // =========================
-        // CLEANUP
-        // =========================
+        const revive = () => {
+            if (closedByUs) return;
+
+            if (
+                ws &&
+                (ws.readyState === WebSocket.OPEN ||
+                    ws.readyState === WebSocket.CONNECTING)
+            ) {
+                return;
+            }
+
+            window.clearTimeout(reconnectTimer);
+
+            attempts = 0;
+
+            setStatus("reconnecting");
+
+            connect();
+        };
+
+        const onVisible = () => {
+            if (document.visibilityState === "visible") {
+                revive();
+            }
+        };
+
+        window.addEventListener("online", revive);
+        document.addEventListener("visibilitychange", onVisible);
+
+        connect();
 
         return () => {
+            closedByUs = true;
 
-            console.log(
-                "CLOSING WEBSOCKET"
-            );
+            window.clearTimeout(reconnectTimer);
 
-            socket.current?.close();
+            stopHeartbeat();
+
+            window.removeEventListener("online", revive);
+            document.removeEventListener("visibilitychange", onVisible);
+
+            if (ws) {
+                detach(ws);
+            }
 
             socket.current = null;
         };
 
-    }, [
-        roomSlug,
-        topicSlug,
-        navigate
-    ]);
-
-
-    // =========================
-    // SEND MESSAGE
-    // =========================
+    }, [roomSlug, topicSlug]);
 
     const post_Massage = async (
         event: React.FormEvent<HTMLFormElement>
@@ -286,256 +310,113 @@ const ChatRoom: React.FC = () => {
 
         event.preventDefault();
 
-
-        // =========================
-        // CHECK INPUT
-        // =========================
-
-        if (
-            !newMassage.trim() &&
-            !resFile
-        ) {
+        if (sending) {
             return;
         }
 
+        const text = newMassage.trim();
 
-        // =========================
-        // CHECK WEBSOCKET
-        // =========================
+        if (!text && !resFile) {
+            return;
+        }
 
         if (
             !socket.current ||
-            socket.current.readyState !==
-                WebSocket.OPEN
+            socket.current.readyState !== WebSocket.OPEN
         ) {
-
-            console.error(
-                "WEBSOCKET IS NOT OPEN"
-            );
-
+            setError("اتصال برقرار نیست، کمی صبر کن");
             return;
         }
 
+        setSending(true);
+        setError(null);
 
-        // =========================
-        // UPLOAD MEDIA
-        // =========================
+        let finalMediaId: number | null = null;
 
-        let finalMediaUrl:
-            string | null = null;
+        try {
 
-        let finalMediaId:
-            number | null = null;
+            if (resFile) {
 
+                if (!resFile.type.startsWith("image/")) {
+                    setError("فقط تصویر قابل ارسال است");
+                    return;
+                }
 
-        if (resFile) {
-
-            const compressionOptions = {
-
-                maxSizeMB: 1,
-
-                maxWidthOrHeight: 1920,
-
-                useWebWorker: true
-            };
-
-
-            try {
-
-                const compressedFile =
-                    await imageCompression(
-                        resFile,
-                        compressionOptions
-                    );
-
-
-                const formData =
-                    new FormData();
-
-
-                formData.append(
-                    "media",
-                    compressedFile
+                const compressedFile = await imageCompression(
+                    resFile,
+                    {
+                        maxSizeMB: 1,
+                        maxWidthOrHeight: 1920,
+                        useWebWorker: true
+                    }
                 );
 
+                const formData = new FormData();
 
-                const response =
-                    await axios.post(
-                        "https://massagesbox.ir/massage/Upload/",
-                        formData,
-                        {
-                            withCredentials: true
-                        }
-                    );
+                formData.append("media", compressedFile);
 
-
-                console.log(
-                    "UPLOAD RESPONSE:",
-                    response.data
+                const response = await axios.post(
+                    `${BASE_URL}/massage/Upload/`,
+                    formData,
+                    {
+                        withCredentials: true
+                    }
                 );
 
+                finalMediaId = response.data.mediaUrlid;
+            }
 
-                finalMediaUrl =
-                    response.data.mediaUrl;
+            const current = socket.current;
 
-
-                finalMediaId =
-                    response.data.mediaUrlid;
-
-
-                setMediaUrl(
-                    finalMediaUrl
-                );
-
-                setMediaId(
-                    finalMediaId
-                );
-
-
-            } catch (error) {
-
-                console.log(
-                    "UPLOAD ERROR:",
-                    error
-                );
-
+            if (!current || current.readyState !== WebSocket.OPEN) {
+                setError("اتصال قطع شد، دوباره ارسال کن");
                 return;
             }
+
+            current.send(
+                JSON.stringify({
+                    type: "message",
+                    message: text,
+                    mediaId: finalMediaId
+                })
+            );
+
+            setNewMassage("");
+            setResFile(null);
+
+            if (fileRef.current) {
+                fileRef.current.value = "";
+            }
+
+        } catch (e) {
+            setError("ارسال پیام انجام نشد");
+
+        } finally {
+            setSending(false);
         }
-
-
-        // =========================
-        // SEND THROUGH WEBSOCKET
-        // =========================
-
-        socket.current.send(
-            JSON.stringify({
-
-                type: "message",
-
-                message:
-                    newMassage.trim(),
-
-                mediaURL:
-                    finalMediaUrl,
-
-                mediaId:
-                    finalMediaId
-
-            })
-        );
-
-
-        // =========================
-        // CLEAR INPUT
-        // =========================
-
-        setNewMassage("");
-
-        setResFile(null);
-
-        setMediaUrl(null);
-
-        setMediaId(null);
     };
-
-
-    // =========================
-    // OLD MESSAGES
-    // =========================
-
-    const getOldMessages =
-        async () => {
-
-            if (
-                !roomSlug ||
-                !topicSlug
-            ) {
-                return;
-            }
-
-
-            try {
-
-                const response =
-                    await axios.get(
-                        `https://massagesbox.ir/massage/${roomSlug}/${topicSlug}/`,
-                        {
-                            withCredentials: true
-                        }
-                    );
-
-
-                setMessages(
-                    response.data
-                );
-
-
-            } catch (error) {
-
-                console.log(
-                    "GET OLD MESSAGES ERROR:",
-                    error
-                );
-            }
-        };
-
-
-    useEffect(() => {
-
-        getOldMessages();
-
-    }, [
-        roomSlug,
-        topicSlug
-    ]);
-
-
-    // =========================
-    // DELETE MESSAGE
-    // =========================
 
     const delete_massage = (
         id_massage: number
     ) => {
 
-        console.log(
-            "DELETE ID:",
-            id_massage
-        );
-
+        setIsopen(false);
 
         if (
             !socket.current ||
-            socket.current.readyState !==
-                WebSocket.OPEN
+            socket.current.readyState !== WebSocket.OPEN
         ) {
-
-            console.error(
-                "WEBSOCKET IS NOT OPEN"
-            );
-
+            setError("اتصال برقرار نیست");
             return;
         }
 
-
         socket.current.send(
             JSON.stringify({
-
-                type:
-                    "delete_message",
-
-                massageId:
-                    id_massage
-
+                type: "delete_message",
+                massageId: id_massage
             })
         );
     };
-
-
-    // =========================
-    // CONTEXT MENU
-    // =========================
 
     const contextMenu = (
         e: React.MouseEvent,
@@ -554,166 +435,109 @@ const ChatRoom: React.FC = () => {
         setIsopen(true);
     };
 
-
-    // =========================
-    // TOUCH LONG PRESS
-    // =========================
-
     const pressFin = (
         e: React.PointerEvent,
         id: number
     ) => {
 
-        if (
-            e.pointerType !== "touch"
-        ) {
+        if (e.pointerType !== "touch") {
             return;
         }
 
+        const x = e.clientX;
+        const y = e.clientY;
 
-        time.current =
-            window.setTimeout(() => {
+        time.current = window.setTimeout(() => {
 
-                setSelectId(id);
+            setSelectId(id);
 
-                setPosi({
-                    x: e.clientX,
-                    y: e.clientY
-                });
+            setPosi({ x: x, y: y });
 
-                setIsopen(true);
+            setIsopen(true);
 
-            }, 500);
+        }, 500);
     };
-
 
     const setTimeOut = () => {
 
         if (time.current) {
 
-            clearTimeout(
-                time.current
-            );
+            clearTimeout(time.current);
 
             time.current = null;
         }
     };
 
-
-    // =========================
-    // CLOSE MENU
-    // =========================
-
-    const handler = (
-        e: MouseEvent | TouchEvent
-    ) => {
-
-        const target =
-            e.target as Node;
-
-
-        if (
-            menuref.current &&
-            !menuref.current.contains(target)
-        ) {
-
-            setIsopen(false);
-        }
-    };
-
-
     useEffect(() => {
 
-        document.addEventListener(
-            "mousedown",
-            handler
-        );
+        const handler = (e: MouseEvent | TouchEvent) => {
 
-        document.addEventListener(
-            "touchstart",
-            handler
-        );
+            const target = e.target as Node;
 
+            if (
+                menuref.current &&
+                !menuref.current.contains(target)
+            ) {
+                setIsopen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handler);
+        document.addEventListener("touchstart", handler);
 
         return () => {
 
-            document.removeEventListener(
-                "mousedown",
-                handler
-            );
+            document.removeEventListener("mousedown", handler);
+            document.removeEventListener("touchstart", handler);
 
-            document.removeEventListener(
-                "touchstart",
-                handler
-            );
+            if (time.current) {
+                clearTimeout(time.current);
+            }
         };
 
     }, []);
 
-
-    // =========================
-    // COPY MESSAGE
-    // =========================
-
-    const copy_massage = (
+    const copy_massage = async (
         id: number
     ) => {
 
-        const cp_mass =
-            message.find(
-                (msg) =>
-                    msg.id === id
-            );
+        const cp_mass = message.find(
+            (msg) => msg.id === id
+        );
 
+        setIsopen(false);
 
         if (!cp_mass) {
             return;
         }
 
+        try {
+            await navigator.clipboard.writeText(cp_mass.message);
 
-        navigator.clipboard.writeText(
-            cp_mass.message
-        );
-
-
-        setIsopen(false);
+        } catch (e) {
+            setError("کپی انجام نشد");
+        }
     };
 
-
-    // =========================
-    // SEND USER ID
-    // =========================
-
     const send_KEY_user = (
-        userKey: string
+        userKey: string | null
     ) => {
 
         if (
+            !userKey ||
             !socket.current ||
-            socket.current.readyState !==
-                WebSocket.OPEN
+            socket.current.readyState !== WebSocket.OPEN
         ) {
             return;
         }
 
-
         socket.current.send(
             JSON.stringify({
-
-                type:
-                    "create-direct",
-
-                KEY_user:
-                    userKey
-
+                type: "create_direct",
+                KEY_user: userKey
             })
         );
     };
-
-
-    // =========================
-    // AUTO SCROLL
-    // =========================
 
     useEffect(() => {
 
@@ -721,197 +545,147 @@ const ChatRoom: React.FC = () => {
             return;
         }
 
-
         messageRef.current.scrollTo({
-
-            top:
-                messageRef.current
-                    .scrollHeight,
-
-            behavior:
-                "smooth"
+            top: messageRef.current.scrollHeight,
+            behavior: "smooth"
         });
 
     }, [message]);
 
+    if (!roomSlug || !topicSlug) {
+        return (
+            <div className="back-chat">
+                <span>
+                    {chat_key
+                        ? "چت مستقیم هنوز فعال نشده"
+                        : "گفتگویی انتخاب نشده"}
+                </span>
+            </div>
+        );
+    }
 
-    // =========================
-    // UI
-    // =========================
+    const selectedMessage = message.find(
+        (msg) => msg.id === selectId
+    );
+
+    const isMine =
+        !!selectedMessage &&
+        selectedMessage.username_id === auth?.currentUser.username_id;
 
     return (
         <>
 
             <div className="back-chat">
 
-
-                {disconnected && (
-
-                    <span
-                        style={{
-                            color: "red"
-                        }}
-                    >
-                        {disconnected}
+                {status === "reconnecting" && (
+                    <span style={{ color: "red" }}>
+                        ارتباط قطع شد، در حال اتصال مجدد...
                     </span>
-
                 )}
 
+                {status === "failed" && (
+                    <span style={{ color: "red" }}>
+                        اتصال برقرار نشد، صفحه را دوباره باز کن
+                    </span>
+                )}
 
                 {error && (
-
-                    <span
-                        style={{
-                            color: "red"
-                        }}
-                    >
+                    <span style={{ color: "red" }}>
                         {error}
                     </span>
-
                 )}
-
 
                 <div
                     ref={messageRef}
                     className="massages"
                 >
 
+                    {message.map((messageText, index) => {
 
-                    {message.map(
-                        (
-                            messageText,
-                            index
-                        ) => {
+                        const showUsername =
+                            index === 0 ||
+                            message[index - 1].username !== messageText.username;
 
-                            const showUsername =
-                                index === 0 ||
-                                message[
-                                    index - 1
-                                ].username !==
-                                    messageText.username;
+                        const mediaSrc = toUrl(messageText.media_URL);
 
+                        return (
 
-                            return (
+                            <section
 
-                                <section
+                                key={messageText.id}
 
-                                    key={
-                                        messageText.id
-                                    }
+                                className={
+                                    messageText.username_id ===
+                                        auth?.currentUser.username_id
+                                        ? "current-par-mass"
+                                        : "par-mass"
+                                }
 
-                                    className={
-                                        messageText
-                                            .username_id ===
-                                        auth
-                                            ?.currentUser
-                                            .username_id
+                                onContextMenu={(e) =>
+                                    contextMenu(e, messageText.id)
+                                }
 
-                                            ? "current-par-mass"
+                                onPointerDown={(e) =>
+                                    pressFin(e, messageText.id)
+                                }
 
-                                            : "par-mass"
-                                    }
+                                onPointerUp={setTimeOut}
 
+                                onPointerCancel={setTimeOut}
 
-                                    onContextMenu={
-                                        (e) =>
-                                            contextMenu(
-                                                e,
-                                                messageText.id
-                                            )
-                                    }
+                                onPointerLeave={setTimeOut}
 
+                            >
 
-                                    onPointerDown={
-                                        (e) =>
-                                            pressFin(
-                                                e,
-                                                messageText.id
-                                            )
-                                    }
+                                {showUsername && (
 
-
-                                    onPointerUp={
-                                        setTimeOut
-                                    }
-
-
-                                    onPointerCancel={
-                                        setTimeOut
-                                    }
-
-                                >
-
-
-                                    {showUsername && (
-
-                                        <div className="user-info">
-
-                                            <img
-                                                className="user-avatar"
-                                                src={
-                                                    messageText.avatar_user
-                                                        ? `https://massagesbox.ir${messageText.avatar_user}`
-                                                        : avatar
-                                                }
-                                                alt={messageText.username}
-                                            />
-
-                                            <span
-                                                className="username"
-                                                style={{
-                                                    cursor: "pointer"
-                                                }}
-                                                onClick={() => {
-
-                                                    if (
-                                                        messageText.username_id ===
-                                                        auth?.currentUser.username_id
-                                                    ) {
-                                                        return;
-                                                    }
-
-                                                    send_KEY_user(
-                                                        messageText.username_key
-                                                    );
-                                                }}
-                                            >
-                                                {messageText.username}
-                                            </span>
-
-                                        </div>
-
-                                    )}
-
-
-                                    {messageText.media_URL && (
+                                    <div className="user-info">
 
                                         <img
-
-                                            className="message-media"
-
-                                            src={
-                                                `https://massagesbox.ir${messageText.media_URL}`
-                                            }
-
-                                            alt="imageBOX"
-
+                                            className="user-avatar"
+                                            src={toUrl(messageText.avatar_user) || avatar}
+                                            alt={messageText.username ?? ""}
                                         />
 
-                                    )}
+                                        <span
+                                            className="username"
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() => {
 
+                                                if (
+                                                    messageText.username_id ===
+                                                    auth?.currentUser.username_id
+                                                ) {
+                                                    return;
+                                                }
 
-                                    <p>
-                                        {
-                                            messageText.message
-                                        }
-                                    </p>
+                                                send_KEY_user(messageText.username_key);
+                                            }}
+                                        >
+                                            {messageText.username}
+                                        </span>
 
+                                    </div>
 
-                                </section>
-                            );
-                        }
-                    )}
+                                )}
 
+                                {mediaSrc && (
+
+                                    <img
+                                        className="message-media"
+                                        src={mediaSrc}
+                                        alt="imageBOX"
+                                    />
+
+                                )}
+
+                                <p>
+                                    {messageText.message}
+                                </p>
+
+                            </section>
+                        );
+                    })}
 
                     {isOpen && (
 
@@ -922,18 +696,10 @@ const ChatRoom: React.FC = () => {
                             className="menudetails"
 
                             style={{
-
-                                position:
-                                    "absolute",
-
-                                top:
-                                    posi.y,
-
-                                left:
-                                    posi.x,
-
-                                width:
-                                    "fit-content"
+                                position: "fixed",
+                                top: posi.y,
+                                left: posi.x,
+                                width: "fit-content"
                             }}
 
                         >
@@ -944,15 +710,8 @@ const ChatRoom: React.FC = () => {
 
                                 onClick={() => {
 
-                                    if (
-                                        selectId !==
-                                        null
-                                    ) {
-
-                                        copy_massage(
-                                            selectId
-                                        );
-
+                                    if (selectId !== null) {
+                                        copy_massage(selectId);
                                     }
 
                                 }}
@@ -961,71 +720,59 @@ const ChatRoom: React.FC = () => {
                                 کپی
                             </button>
 
+                            {isMine && (
 
-                            <button
+                                <button
 
-                                className="delete"
+                                    className="delete"
 
-                                onClick={() => {
+                                    onClick={() => {
 
-                                    if (
-                                        selectId !==
-                                        null
-                                    ) {
+                                        if (selectId !== null) {
+                                            delete_massage(selectId);
+                                        }
 
-                                        delete_massage(
-                                            selectId
-                                        );
+                                    }}
 
-                                    }
+                                >
+                                    حذف
+                                </button>
 
-                                }}
-
-                            >
-                                حذف
-                            </button>
+                            )}
 
                         </section>
                     )}
 
                 </div>
 
-
-                {/* =========================
-                    MESSAGE INPUT
-                ========================= */}
-
                 <div className="massage-text">
 
-                    <form
-                        onSubmit={post_Massage}
-                    >
+                    <form onSubmit={post_Massage}>
 
                         <input
 
                             type="text"
 
-                            value={
-                                newMassage
-                            }
+                            value={newMassage}
+
+                            maxLength={4000}
 
                             onChange={(e) =>
-                                setNewMassage(
-                                    e.target.value
-                                )
+                                setNewMassage(e.target.value)
                             }
 
                             placeholder="چیزی بنویسید"
 
                         />
 
-
                         <div className="upload-media">
 
                             <input
+                                ref={fileRef}
                                 type="file"
                                 name="file"
                                 id="file"
+                                accept="image/*"
                                 style={{
                                     display: "block",
                                     visibility: "visible",
@@ -1034,9 +781,7 @@ const ChatRoom: React.FC = () => {
                                     height: "40px"
                                 }}
                                 onChange={(e) => {
-                                    if (e.target.files?.length) {
-                                        setResFile(e.target.files[0]);
-                                    }
+                                    setResFile(e.target.files?.[0] ?? null);
                                 }}
                             />
 
@@ -1046,9 +791,10 @@ const ChatRoom: React.FC = () => {
 
                                 className="send-btn"
 
-                            >
-                                ارسال
+                                disabled={sending}
 
+                            >
+                                {sending ? "در حال ارسال..." : "ارسال"}
                             </button>
 
                         </div>
@@ -1063,6 +809,4 @@ const ChatRoom: React.FC = () => {
     );
 };
 
-
 export default ChatRoom;
-

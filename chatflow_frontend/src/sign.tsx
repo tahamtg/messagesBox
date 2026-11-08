@@ -1,35 +1,14 @@
-import {Routes, Route, Await, useNavigate} from 'react-router-dom'
-import React, { useState, useEffect, useContext} from 'react'
-import axios, {type AxiosResponse, type AxiosError, isAxiosError} from "axios";
-import { Usecontext } from './context';
+import { useState, useEffect, useContext } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import axios from "axios";
 import * as yup from "yup";
-import { authContext } from './authprovider';
-import { Link } from 'react-router-dom';
+import imageCompression from 'browser-image-compression';
+import { Usecontext } from './context';
 import './sign.css'
 import Logo from '../public/d862b856-2462-456f-ada2-8f3f8304c7c8.png'
-import imageCompression from 'browser-image-compression';
 import avatar from '../public/images.png'
 
-
-interface api_sign{
-    username : string,
-    password : string
-    url_img: string | null,
-    bio: string,
-}
-
-
-const Sign  = () =>{
-
-    const {form, setForm} = useContext(Usecontext)!
-    const auth = useContext(authContext)
-    const [error, setError] = useState<string[] | null>([])
-    const [mass, setMass] = useState<string | null>(null)
-    const [loading, setLoading] = useState(false)
-    const navigate = useNavigate()
-    const [profile, setProfile] = useState<string | null>(null)
-
-  const schema = yup.object({
+const schema = yup.object({
     username: yup
         .string()
         .required("نام کاربری الزامی میباشد")
@@ -46,137 +25,200 @@ const Sign  = () =>{
         .min(8, "رمز عبور باید حداقل ۸ کاراکتر باشد")
 });
 
-    const submit_Form = async () => {
-        
-       try {
-        await schema.validate(form, {abortEarly:false})
-        return schema;
-      
-        } catch (e) {
+const translate = (text: string) => {
+    if (text.includes("already exists")) return "این نام کاربری قبلاً گرفته شده"
+    if (text.includes("too common")) return "این رمز عبور خیلی رایج است"
+    if (text.includes("entirely numeric")) return "رمز عبور نباید فقط عدد باشد"
+    if (text.includes("too similar")) return "رمز عبور خیلی شبیه نام کاربری است"
+    if (text.includes("too short")) return "رمز عبور خیلی کوتاه است"
+    return text
+}
 
-        if(e instanceof yup.ValidationError){
-                setError(e.errors)
-        }else{
-            setError(null)
+const readErrors = (e: unknown): string[] => {
+    if (axios.isAxiosError(e) && e.response) {
+        const data = e.response.data
+
+        if (data && typeof data === "object") {
+            const messages = Object.values(data).flat().map((item) => translate(String(item)))
+
+            if (messages.length) return messages
         }
 
-}
-        
+        return ["ثبت نام انجام نشد، دوباره تلاش کن"]
     }
 
+    return ["ارتباط با سرور برقرار نشد"]
+}
 
-    const add_user =  async (event: React.FormEvent<HTMLFormElement>) =>{
+const Sign = () => {
+
+    const { form, setForm } = useContext(Usecontext)!
+    const [error, setError] = useState<string[]>([])
+    const [loading, setLoading] = useState(false)
+    const [profile, setProfile] = useState<string | null>(null)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        return () => {
+            if (profile) URL.revokeObjectURL(profile)
+        }
+    }, [profile])
+
+    const add_user = async (event: React.FormEvent<HTMLFormElement>) => {
 
         event.preventDefault()
 
-        const isvalid = await submit_Form()
-        if(!isvalid){return}
-        setLoading(true)
-        const promis = await new Promise((isvalid)=> setTimeout(isvalid, 3000))
-        setLoading(false)
+        if (loading) return
 
-          
-        const file = new FormData()
-
-        file.append("username", form.username)
-        file.append("password", form.password)
-        file.append("bio", form.bio)
-        if(form.profile){file.append("avatar", form.profile)}
-        
-        try{
-               const res = await axios.post<api_sign>("https://massagesbox.ir/massage/sign-up/",
-                
-                    file
-                ,
-                { 
-                    headers: { 
-                    Accept: "application/json",
-                },  
-            
-            });
-            
-            console.log("signup success:", res.status, res.data);              
-            if (res.status === 201 || res.status === 200) {
-                setMass("نام کاربری و پسورد با موفقیت ذخیره شد")
-                setError(null)
-                console.log("redirect is ok!")
-                navigate("/login", { replace: true });
+        try {
+            await schema.validate(form, { abortEarly: false })
+        } catch (e) {
+            if (e instanceof yup.ValidationError) {
+                setError(e.errors)
+            } else {
+                setError(["مشکلی پیش آمد، دوباره تلاش کن"])
+            }
+            return
         }
-        }catch(e:any){
-            console.log("SIGNUP ERROR:", e.response?.data)
-            console.log("STATUS:", e.response?.status)
+
+        setLoading(true)
+        setError([])
+
+        try {
+            const file = new FormData()
+
+            file.append("username", form.username)
+            file.append("password", form.password)
+            file.append("bio", form.bio)
+
+            if (form.profile) {
+                let avatarFile: File = form.profile
+
+                try {
+                    avatarFile = await imageCompression(form.profile, {
+                        maxSizeMB: 1,
+                        maxWidthOrHeight: 1024,
+                        useWebWorker: true
+                    })
+                } catch {
+                    avatarFile = form.profile
+                }
+
+                file.append("avatar", avatarFile)
+            }
+
+            await axios.post(
+                "https://massagesbox.ir/massage/sign-up/",
+                file,
+                {
+                    headers: {
+                        Accept: "application/json",
+                    },
+                }
+            );
+
+            setForm({ ...form, password: "", bio: "", profile: null })
+
+            navigate("/login", { replace: true });
+
+        } catch (e) {
+            setError(readErrors(e))
+        } finally {
+            setLoading(false)
         }
     }
 
+    return (
+        <>
 
-return(
-    <>
+            <div className="total-sign">
 
-        <div className="total-sign">
+                <div className="radialback"></div>
 
-        <div className="radialback"></div>
-            
-        <div className='sign'>
+                <div className='sign'>
 
-
-            <div className="logo-container">
-                <img src={Logo} className="logo" alt="massagesbox" />
-            </div>
-            <h1 className='signup-title'>ثبت نام</h1>
-            <div className="info-box"> 
-                <p>شرایط ثبت نام:</p> 
-                <ul> <li>نام کاربری حداقل ۳ کاراکتر باشد.</li> 
-                <li>نام کاربری فقط شامل حروف، عدد و _ باشد.</li> 
-                <li>رمز عبور حداقل ۸ کاراکتر باشد.</li>
-                <li>نام کاربری تکراری قابل استفاده نیست.</li>
-                </ul> 
-                </div>
-
-            <section className='massage'>
-                {error &&
-                    error.map((err,index)=>(
-                    <div key={index}>
-                    <span>{err}</span>
+                    <div className="logo-container">
+                        <img src={Logo} className="logo" alt="massagesbox" />
                     </div>
-                    ))
-                }
-            </section>
 
-            <section className='form'>
-            <form action="" onSubmit={add_user}>
-                
-                <label htmlFor="profile" className="avatar">
-                    <img src={profile || avatar} alt="avatar" />
-                    { !profile && <h2 className='titleprofile'>انتخاب پروفایل</h2>}
-                </label>
+                    <h1 className='signup-title'>ثبت نام</h1>
 
-                <input type="file" name="file" id="profile" accept="image/*" hidden onChange={(e)=> {
+                    <div className="info-box">
+                        <p>شرایط ثبت نام:</p>
+                        <ul>
+                            <li>نام کاربری حداقل ۳ کاراکتر باشد.</li>
+                            <li>نام کاربری فقط شامل حروف، عدد و _ باشد.</li>
+                            <li>رمز عبور حداقل ۸ کاراکتر باشد.</li>
+                            <li>نام کاربری تکراری قابل استفاده نیست.</li>
+                        </ul>
+                    </div>
 
+                    <section className='massage'>
+                        {error.map((err, index) => (
+                            <div key={index}>
+                                <span>{err}</span>
+                            </div>
+                        ))}
+                    </section>
 
-                    if(e.target.files && e.target.files[0]){
-                        const img = e.target.files[0]
-                        setForm({...form, profile: e.target.files[0]})
-                    
+                    <section className='form'>
+                        <form onSubmit={add_user}>
 
-                    setProfile(URL.createObjectURL(img))
-                }
-                        
-                }}/>
+                            <label htmlFor="profile" className="avatar">
+                                <img src={profile || avatar} alt="avatar" />
+                                {!profile && <h2 className='titleprofile'>انتخاب پروفایل</h2>}
+                            </label>
 
-                <input type="text" placeholder='نام کاربری' value={form.username} onChange={(e)=> {setForm({...form, username: e.target.value})}} />
-                <input  type="text" placeholder='درباره خود چیزی بنویسید!' value={form.bio} onChange={(e)=> {setForm({...form, bio: e.target.value})}} />
-                <input  type="password" placeholder='رمز عبور' value={form.password} onChange={(e)=> {setForm({...form, password: e.target.value})}} /> 
-                <button className='button-form' type="submit" disabled={loading}>{loading? (<span>در حال بررسی...</span>): <span>ثبت نام</span> }</button>
-            </form>
-                <Link className='linkto' to={'../login'}>اکانت دارید؟ وارد بشید!</Link>
-            </section>
-            
-        </div>
-        </div>
- 
-    </>
-)
+                            <input
+                                type="file"
+                                name="file"
+                                id="profile"
+                                accept="image/*"
+                                hidden
+                                onChange={(e) => {
+                                    const img = e.target.files?.[0]
 
-} 
+                                    if (img) {
+                                        setForm({ ...form, profile: img })
+                                        setProfile(URL.createObjectURL(img))
+                                    }
+                                }}
+                            />
+
+                            <input
+                                type="text"
+                                placeholder='نام کاربری'
+                                value={form.username}
+                                onChange={(e) => { setForm({ ...form, username: e.target.value }) }}
+                            />
+
+                            <input
+                                type="text"
+                                placeholder='درباره خود چیزی بنویسید!'
+                                value={form.bio}
+                                onChange={(e) => { setForm({ ...form, bio: e.target.value }) }}
+                            />
+
+                            <input
+                                type="password"
+                                placeholder='رمز عبور'
+                                value={form.password}
+                                onChange={(e) => { setForm({ ...form, password: e.target.value }) }}
+                            />
+
+                            <button className='button-form' type="submit" disabled={loading}>
+                                {loading ? (<span>در حال بررسی...</span>) : <span>ثبت نام</span>}
+                            </button>
+                        </form>
+
+                        <Link className='linkto' to='/login'>اکانت دارید؟ وارد بشید!</Link>
+                    </section>
+
+                </div>
+            </div>
+
+        </>
+    )
+}
 
 export default Sign

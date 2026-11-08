@@ -1,6 +1,9 @@
+from http.cookies import SimpleCookie, CookieError
+from django.contrib.auth.models import AnonymousUser
 from channels.db import database_sync_to_async
 from rest_framework_simplejwt.exceptions import TokenError
-
+from rest_framework_simplejwt.tokens import AccessToken
+from .models import User_Account
 
 
 class JWTAuthMiddleware:
@@ -8,46 +11,41 @@ class JWTAuthMiddleware:
     def __init__(self, app):
         self.app = app
 
-    async def __call__(self, scope, receive, send):
-        from django.contrib.auth.models import AnonymousUser
-        from rest_framework_simplejwt.tokens import AccessToken
-        from .models import User_Account
+    @database_sync_to_async
+    def get_user(self, user_id):
+        return User_Account.objects.filter(
+            id=user_id,
+            is_active=True
+        ).first()
 
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "websocket":
+            return await self.app(scope, receive, send)
 
         scope["user"] = AnonymousUser()
 
-        if scope["type"] == "websocket":
+        headers = dict(scope["headers"])
+        raw_cookie = headers.get(b"cookie", b"").decode()
 
-            headers = dict(scope["headers"])
+        cookies = SimpleCookie()
 
-            cookie = headers.get(b"cookie")
+        try:
+            cookies.load(raw_cookie)
 
-            if not cookie:
-                return await self.app(scope, receive, send)
+        except CookieError:
+            return await self.app(scope, receive, send)
 
-            cookie = cookie.decode()
+        token = cookies.get("access")
 
-            cookies = {}
+        if token:
+            try:
+                access = AccessToken(token.value)
+                user = await self.get_user(access.get("user_id"))
 
-            for item in cookie.split(";"):
-                key, value = item.strip().split("=", 1)
-                cookies[key] = value
+            except TokenError:
+                user = None
 
-            token = cookies.get("access")
-
-            if token:
-                try:
-                    access = AccessToken(token)
-
-                    user_id = access.get("user_id")
-
-                    user = await database_sync_to_async(
-                        User_Account.objects.get
-                    )(id=user_id)
-
-                    scope["user"] = user
-
-                except (TokenError, User_Account.DoesNotExist):
-                    scope["user"] = AnonymousUser()
+            if user:
+                scope["user"] = user
 
         return await self.app(scope, receive, send)

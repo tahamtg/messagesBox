@@ -3,15 +3,21 @@ import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "massagebox.settings")
 
 from django.core.asgi import get_asgi_application
-from massage.middleware import JWTAuthMiddleware
+
 django_asgi_app = get_asgi_application()
 
+from django.conf import settings
 from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.security.websocket import OriginValidator
+from massage.middleware import JWTAuthMiddleware
 from massage.routing import websocket_urlpatterns
-print("ASGI STARTED")
+
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
-    "websocket": JWTAuthMiddleware(
-        URLRouter(websocket_urlpatterns)
+    "websocket": OriginValidator(
+        JWTAuthMiddleware(
+            URLRouter(websocket_urlpatterns)
+        ),
+        settings.ALLOWED_ORIGINS
     ),
 })

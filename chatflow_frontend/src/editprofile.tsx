@@ -1,8 +1,7 @@
-import { useContext, useState } from 'react';
-import './editprofile.css';
-import { useParams } from 'react-router-dom';
+import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
-import { Usecontext } from './context';
+import { authContext } from './authprovider';
+import './editprofile.css';
 
 interface Update_User {
     username: string;
@@ -10,38 +9,92 @@ interface Update_User {
     account_status_online: boolean;
 }
 
+interface Status {
+    type: "ok" | "error";
+    text: string;
+}
+
 const EditProfile = () => {
-    const bio_form = useContext(Usecontext);
+    const auth = useContext(authContext);
 
     const [info_for_update, setInfo_for_update] = useState<Update_User>({
-        username: "",
-        bio: bio_form?.form.bio || "",
-        account_status_online: true,
+        username: auth?.currentUser.username || "",
+        bio: auth?.currentUser.bio || "",
+        account_status_online: auth?.currentUser.account_status_online ?? true,
     });
 
-    const { id } = useParams<{ id: string }>();
+    const [saving, setSaving] = useState(false);
+    const [status, setStatus] = useState<Status | null>(null);
 
-    console.log(id);
+    useEffect(() => {
+        if (!auth?.currentUser) return;
+
+        setInfo_for_update({
+            username: auth.currentUser.username || "",
+            bio: auth.currentUser.bio || "",
+            account_status_online: auth.currentUser.account_status_online ?? true,
+        });
+    }, [
+        auth?.currentUser.username,
+        auth?.currentUser.bio,
+        auth?.currentUser.account_status_online
+    ]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        if (saving) return;
+
+        const username = info_for_update.username.trim();
+
+        if (username && !/^[a-zA-Z0-9_]{3,255}$/.test(username)) {
+            setStatus({
+                type: "error",
+                text: "نام کاربری باید حداقل ۳ کاراکتر و فقط شامل حروف انگلیسی، عدد و _ باشد"
+            });
+            return;
+        }
+
+        const payload: Partial<Update_User> = {
+            bio: info_for_update.bio,
+            account_status_online: info_for_update.account_status_online,
+        };
+
+        if (username && username !== auth?.currentUser.username) {
+            payload.username = username;
+        }
+
         try {
-            const res = await axios.patch(
-                "https://massagesbox.ir/massage/Update_Info",
-                info_for_update,
+            setSaving(true);
+            setStatus(null);
+
+            await axios.patch(
+                "https://massagesbox.ir/massage/Update_Info/",
+                payload,
                 {
                     withCredentials: true,
                 }
             );
 
-            console.log(res.data);
-        } catch (error) {
-            if(axios.isAxiosError(error)){
-                console.log(error.response?.status)
-                console.log(error.response?.data)
-                console.log(error.message)
+            if (auth) {
+                auth.setCurrentuser({
+                    ...auth.currentUser,
+                    ...payload,
+                });
             }
+
+            setStatus({ type: "ok", text: "تغییرات ذخیره شد" });
+
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.data?.username) {
+                setStatus({ type: "error", text: "این نام کاربری قبلاً گرفته شده" });
+            } else if (axios.isAxiosError(error) && error.response) {
+                setStatus({ type: "error", text: "ذخیره تغییرات انجام نشد" });
+            } else {
+                setStatus({ type: "error", text: "ارتباط با سرور برقرار نشد" });
+            }
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -191,15 +244,16 @@ const EditProfile = () => {
                     </div>
 
                     <div className="edit-profile-footer">
-                        <span className="edit-profile-footer-hint">
-                            تغییرات پس از ذخیره اعمال خواهند شد.
+                        <span className="edit-profile-footer-hint" role="status">
+                            {status ? status.text : "تغییرات پس از ذخیره اعمال خواهند شد."}
                         </span>
 
                         <button
                             type="submit"
                             className="edit-profile-save"
+                            disabled={saving}
                         >
-                            ذخیره تغییرات
+                            {saving ? "در حال ذخیره..." : "ذخیره تغییرات"}
                             <span>←</span>
                         </button>
                     </div>

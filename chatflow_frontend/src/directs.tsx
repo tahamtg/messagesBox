@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import avatar from "../public/images.png";
 import add from "../public/icons8-plus-24.png";
@@ -9,7 +9,7 @@ interface directProp {
     chat_key: string;
     username: string;
     username_key: string;
-    avatar: string;
+    avatar: string | null;
 }
 
 interface foundUserProp {
@@ -91,6 +91,8 @@ const Directs = () => {
         };
 
         return () => {
+            ws.onmessage = null;
+            ws.onerror = null;
             ws.onclose = null;
             ws.close();
             socket.current = null;
@@ -203,6 +205,23 @@ const Directs = () => {
                         )}
                     </div>
                 )}
+            </div>
+
+            <div className="directs-page">
+                {getDirect.map((direct) => (
+                    <div
+                        key={direct.chat_key}
+                        className="direct-item"
+                        onClick={() => navigate(`/chat/${direct.chat_key}`)}
+                    >
+                        <img
+                            src={avatarSrc(direct.avatar)}
+                            alt={direct.username}
+                        />
+
+                        <span>{direct.username}</span>
+                    </div>
+                ))}
             </div>
         </>
     );

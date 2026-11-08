@@ -1,131 +1,126 @@
-import { useState, useEffect } from "react";
-import axios, {type AxiosResponse, AxiosError, isAxiosError} from "axios";
-import {AuthProvider, authContext} from "./authprovider";
-import { useContext } from "react";
+import { useState, useContext } from "react";
+import axios from "axios";
+import { authContext } from "./authprovider";
 import { Usecontext } from "./context";
-import { replace, useNavigate, Link } from "react-router-dom"
+import { useNavigate, useLocation, Link } from "react-router-dom"
 import './login.css'
 import Logo from '../public/d862b856-2462-456f-ada2-8f3f8304c7c8.png'
 
-const Login = ()=>{
-    const {form, setForm} = useContext(Usecontext)!
+const Login = () => {
+    const { form, setForm } = useContext(Usecontext)!
     const auth = useContext(authContext)
     const [error, setError] = useState<string | null>(null)
-    const [mass, setMass] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
-    const [profile, setProfile] = useState<string | null>(null)
-    
+    const location = useLocation()
 
     const toLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    try {
-        setLoading(true);
+        if (loading) return
 
-        const res = await axios.post(
-            "https://massagesbox.ir/massage/login/",
-            {
-                username: form.username,
-                password: form.password
-            },
-            {
-                withCredentials: true,
+        const username = form.username.trim()
+
+        if (!username || !form.password) {
+            setError("نام کاربری و رمز عبور را وارد کنید")
+            return
+        }
+
+        try {
+            setLoading(true);
+            setError(null)
+
+            await axios.post(
+                "https://massagesbox.ir/massage/login/",
+                {
+                    username: username,
+                    password: form.password
+                },
+                {
+                    withCredentials: true,
+                }
+            );
+
+            auth?.setIsAuth(true);
+
+            setForm({ ...form, username: username, password: "" })
+
+            const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname
+
+            navigate(from || "/", { replace: true });
+
+        } catch (e) {
+            auth?.setIsAuth(false);
+
+            if (axios.isAxiosError(e) && e.response?.status === 401) {
+                setError("نام کاربری یا رمز عبور اشتباه است")
+            } else if (axios.isAxiosError(e) && e.response) {
+                setError("مشکلی در سرور پیش آمد، کمی بعد دوباره تلاش کن")
+            } else {
+                setError("ارتباط با سرور برقرار نشد")
             }
-        );
-
-        console.log("LOGIN RESPONSE RECEIVED:", res.status);
-        console.log("LOGIN DATA:", res.data);
-
-        console.log("BEFORE AUTH");
-
-        auth?.setIsAuth(true);
-
-        console.log("AFTER AUTH");
-
-        console.log("BEFORE NAVIGATE");
-
-        navigate("/", { replace: true });
-
-        console.log("AFTER NAVIGATE");
-
-        console.log(res.data);
-
-    } catch (e: any) {
-        console.log("LOGIN CATCH:", e);
-        console.log("LOGIN ERROR RESPONSE:", e.response?.data);
-        console.log("LOGIN ERROR STATUS:", e.response?.status);
-
-        auth?.setIsAuth(false);
-        setError("نام کاربری یا رمز عبور اشتباه است");
-        setMass(null);
-    }finally {
+        } finally {
             setLoading(false);
         }
     };
 
-    return(
+    return (
         <>
+            <div className="total-login">
 
-      <div className="total-login">
+                <div className="radialback"></div>
 
-    <div className="radialback"></div>
+                <div className="login">
 
-    <div className="login">
+                    <div className="logo-container">
+                        <img src={Logo} className="logo" alt="Messages Box" />
+                    </div>
 
-        <div className="logo-container">
-            <img src={Logo} className="logo" alt="Messages Box" />
-        </div>
+                    <h1 className="login-title">ورود</h1>
 
-        <h1 className="login-title">ورود</h1>
+                    <p className="login-subtitle">
+                        به حساب کاربری خود وارد شوید.
+                    </p>
 
-        <p className="login-subtitle">
-            به حساب کاربری خود وارد شوید.
-        </p>
+                    <section className="massage">
+                        {error && <span>{error}</span>}
+                    </section>
 
-        <section className="massage">
-            {error ? (
-                <span>{error}</span>
-            ) : mass ? (
-                <span>{mass}</span>
-            ) : null}
-        </section>
+                    <section className="form">
+                        <form onSubmit={toLogin}>
 
-        <section className="form">
-            <form onSubmit={toLogin}>
+                            <input
+                                type="text"
+                                placeholder="نام کاربری"
+                                value={form.username}
+                                onChange={(e) => setForm({ ...form, username: e.target.value })}
+                            />
 
-                <input
-                    type="text"
-                    placeholder="نام کاربری"
-                    value={form.username}
-                    onChange={(e)=>setForm({...form,username:e.target.value})}
-                />
+                            <input
+                                type="password"
+                                placeholder="رمز عبور"
+                                value={form.password}
+                                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                            />
 
-                <input
-                    type="password"
-                    placeholder="رمز عبور"
-                    value={form.password}
-                    onChange={(e)=>setForm({...form,password:e.target.value})}
-                />
+                            <button
+                                type="submit"
+                                className="button-form"
+                                disabled={loading}
+                            >
+                                {loading ? "در حال بررسی..." : "ورود"}
+                            </button>
 
-                <button
-                    type="submit"
-                    className="button-form"
-                    disabled={loading}
-                >
-                    {loading ? "در حال بررسی..." : "ورود"}
-                </button>
+                            <Link className="linkto" to="/sign">
+                                اکانت ندارید؟ ثبت نام کنید!
+                            </Link>
 
-                <Link className="linkto" to="../sign">
-                    اکانت ندارید؟ ثبت نام کنید!
-                </Link>
+                        </form>
+                    </section>
 
-            </form>
-        </section>
+                </div>
 
-    </div>
-
-</div>
+            </div>
         </>
     )
 }

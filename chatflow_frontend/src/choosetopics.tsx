@@ -9,100 +9,112 @@ interface Topic {
     slug: string;
 }
 
+const BASE_URL = "https://massagesbox.ir/massage";
+
 const ChooseTopics = () => {
 
     const navigate = useNavigate();
-    const {slug} = useParams()
+    const { slug } = useParams()
     const [topics, setTopics] = useState<Topic[]>([]);
     const [topicName, setTopicName] = useState("");
     const [loading, setLoading] = useState(true);
     const [creating, setCreating] = useState(false);
-
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+
+        if (!slug) {
+            return;
+        }
+
+        let cancelled = false;
 
         const getTopics = async () => {
 
             try {
 
-                const res = await axios.get(
-                    `https://massagesbox.ir/massage/${slug}/topics/`
+                setLoading(true);
+                setError(null);
+
+                const res = await axios.get<Topic[]>(
+                    `${BASE_URL}/${encodeURIComponent(slug)}/topics/`,
+                    { withCredentials: true }
                 );
 
-                setTopics(res.data);
+                if (!cancelled) {
+                    setTopics(res.data);
+                }
 
             } catch (error) {
 
-                console.error("Error getting topics:", error);
+                if (!cancelled) {
+                    setError("دریافت تاپیک‌ها انجام نشد");
+                }
 
             } finally {
 
-                setLoading(false);
+                if (!cancelled) {
+                    setLoading(false);
+                }
 
             }
         };
 
-        if (slug) {
-            getTopics();
-        }
+        getTopics();
+
+        return () => {
+            cancelled = true;
+        };
 
     }, [slug]);
 
+    const createTopic = async (
+        e?: React.FormEvent<HTMLFormElement>
+    ) => {
 
-  
-        const createTopic = async (
-            e?: React.FormEvent<HTMLFormElement>
-        ) => {
+        e?.preventDefault();
 
-            e?.preventDefault();
+        const name = topicName.trim();
 
-            const name = topicName.trim();
+        if (!name || creating || !slug) {
+            return;
+        }
 
-            if (!name || creating) {
-                return;
-            }
+        try {
 
-            try {
+            setCreating(true);
+            setError(null);
 
-                setCreating(true);
+            const res = await axios.post<Topic>(
+                `${BASE_URL}/${encodeURIComponent(slug)}/topics/create/`,
+                {
+                    name: name
+                },
+                { withCredentials: true }
+            );
 
-                const res = await axios.post(
-                    `https://massagesbox.ir/massage/${slug}/topics/create/`,
-                    {
-                        name: name
-                    }
-                );
+            setTopicName("");
 
-                setTopics((prev) => [
-                    ...prev,
-                    res.data
-                ]);
+            navigate(
+                `/topics/${slug}/${res.data.slug}`
+            );
 
-                setTopicName("");
+        } catch (error) {
 
-                navigate(
-                    `/topics/${slug}/${res.data.slug}`,
-                    { replace: true }
-                );
+            setError("ساخت تاپیک انجام نشد، دوباره تلاش کن");
 
-            } catch (error) {
+        } finally {
 
-                console.error("Error creating topic:", error);
+            setCreating(false);
 
-            } finally {
-
-                setCreating(false);
-
-            }
-        };
-
+        }
+    };
 
     return (
         <main className="topics-page">
 
             <section className="topics-container">
 
-                {/* Header */}
                 <div className="topics-header">
 
                     <span className="topics-badge">
@@ -120,8 +132,6 @@ const ChooseTopics = () => {
 
                 </div>
 
-
-                {/* ساخت Topic */}
                 <div className="create-topic">
 
                     <label htmlFor="topic">
@@ -130,29 +140,30 @@ const ChooseTopics = () => {
 
                     <div className="topic-input">
 
-                    <form onSubmit={createTopic}>
+                        <form onSubmit={createTopic}>
 
-                        <input
-                            id="topic"
-                            type="text"
-                            value={topicName}
-                            onChange={(e) =>
-                                setTopicName(e.target.value)
-                            }
-                            placeholder="تاپیک خود را بنویسید..."
-                        />
+                            <input
+                                id="topic"
+                                type="text"
+                                value={topicName}
+                                maxLength={100}
+                                onChange={(e) =>
+                                    setTopicName(e.target.value)
+                                }
+                                placeholder="تاپیک خود را بنویسید..."
+                            />
 
-                        <button
-                            type="submit"
-                            disabled={
-                                creating ||
-                                !topicName.trim()
-                            }
-                        >
-                            {creating ? "در حال ساخت..." : "افزودن"}
-                        </button>
+                            <button
+                                type="submit"
+                                disabled={
+                                    creating ||
+                                    !topicName.trim()
+                                }
+                            >
+                                {creating ? "در حال ساخت..." : "افزودن"}
+                            </button>
 
-                    </form>
+                        </form>
 
                     </div>
 
@@ -164,6 +175,11 @@ const ChooseTopics = () => {
                         تاپیک‌های این روم
                     </h2>
 
+                    {error && (
+                        <div className="no-topics">
+                            {error}
+                        </div>
+                    )}
 
                     {loading ? (
 
@@ -171,7 +187,7 @@ const ChooseTopics = () => {
                             در حال دریافت تاپیک‌ها...
                         </div>
 
-                    ) : topics.length === 0 ? (
+                    ) : topics.length === 0 && !error ? (
 
                         <div className="no-topics">
                             هنوز تاپیکی ساخته نشده.

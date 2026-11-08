@@ -7,37 +7,49 @@ import tick from "../public/icons8-check-48.png";
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
+const BASE_URL = "https://massagesbox.ir";
+
+const avatarSrc = (url: string | null | undefined) => {
+    if (!url) return avatar;
+
+    return url.startsWith("http") ? url : `${BASE_URL}${url}`;
+};
+
 const Profile = () => {
 
     const [getKey, setGetKey] = useState<string | null>(null);
     const [isCopied, setIsCopied] = useState(false);
-    const [newPhoto, setNewPhoto] = useState<File | null>(null)
+    const [photoError, setPhotoError] = useState<string | null>(null);
 
     const auth = useContext(authContext);
 
-    const get_primary_key = async () => {
-        try {
-            const res = await axios.get(
-                "https://massagesbox.ir/massage/get_my_key/",
-                {
-                    withCredentials: true,
-                }
-            );
-
-            console.log("Response data:", res.data);
-            console.log("Key:", res.data.key);
-
-            setGetKey(res.data.key);
-
-        } catch (e) {
-            console.log("Get key failed:", e);
-        }
-    };
-
     useEffect(() => {
-        get_primary_key();
-    }, []);
+        let cancelled = false;
 
+        const get_primary_key = async () => {
+            try {
+                const res = await axios.get(
+                    `${BASE_URL}/massage/get_my_key/`,
+                    {
+                        withCredentials: true,
+                    }
+                );
+
+                if (!cancelled) {
+                    setGetKey(res.data.key);
+                }
+
+            } catch (e) {
+                console.log("Get key failed:", e);
+            }
+        };
+
+        get_primary_key();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     const Update_Photo = async (photo: File) => {
         const file = new FormData();
@@ -45,41 +57,47 @@ const Profile = () => {
         file.append("media", photo);
 
         try {
+            setPhotoError(null);
+
             const res = await axios.patch(
-                "https://massagesbox.ir/massage/update_photo/",
+                `${BASE_URL}/massage/update_photo/`,
                 file,
                 {
                     withCredentials: true,
                 }
             );
 
-            auth?.setCurrentuser({
-                ...auth.currentUser,
-                avatar: res.data.mediaUrl,
-            });
+            if (auth) {
+                auth.setCurrentuser({
+                    ...auth.currentUser,
+                    avatar: res.data.mediaUrl,
+                });
+            }
 
         } catch (e) {
-            console.log("Photo update failed:", e);
+            setPhotoError("تغییر عکس انجام نشد، فایل باید تصویر معتبر و کمتر از ۱۰ مگابایت باشد");
         }
     };
-
-
 
     const copyKey = async () => {
 
         if (!getKey) return;
 
-        await navigator.clipboard.writeText(getKey);
+        try {
+            await navigator.clipboard.writeText(getKey);
 
-        setIsCopied(true);
+            setIsCopied(true);
 
-        setTimeout(() => {
-            setIsCopied(false);
-        }, 2000);
+            setTimeout(() => {
+                setIsCopied(false);
+            }, 2000);
+
+        } catch (e) {
+            console.log("Copy failed:", e);
+        }
     };
 
     const online_date = new Date();
-
 
     return (
         <div className="profile-page">
@@ -100,7 +118,6 @@ const Profile = () => {
 
                 </div>
 
-
                 <div className="profile-card">
 
                     <div className="profile-user">
@@ -108,33 +125,30 @@ const Profile = () => {
                         <div className="profile-avatar-wrapper">
 
                             <img
-                                src={auth?.currentUser.avatar || avatar}
+                                src={avatarSrc(auth?.currentUser.avatar)}
                                 alt="profile"
                                 className="profile-avatar"
                             />
 
-                                <label className="avatar-overlay">
-                                     تغییر
+                            <label className="avatar-overlay">
+                                تغییر
                                 <input
-                                        type="file"
-                                        accept="image/*"
-                                        hidden
-                                        onChange={(e) => {
-                                            const photo = e.target.files?.[0];
+                                    type="file"
+                                    accept="image/*"
+                                    hidden
+                                    onChange={(e) => {
+                                        const photo = e.target.files?.[0];
 
-                                            if (photo) {
-                                                Update_Photo(photo);
-                                            }
+                                        if (photo) {
+                                            Update_Photo(photo);
+                                        }
 
-                                            e.target.value = "";
-                                        }}
-                                    />
+                                        e.target.value = "";
+                                    }}
+                                />
                             </label>
 
-
                         </div>
-
-
 
                         <div className="profile-user-info">
 
@@ -147,6 +161,8 @@ const Profile = () => {
                             </h2>
 
                             <p>{auth?.currentUser.bio}</p>
+
+                            {photoError && <p>{photoError}</p>}
 
                             <div className="profile-key">
 
@@ -175,34 +191,32 @@ const Profile = () => {
 
                             </div>
 
-
-                               <span className="profile-status">
-                                    {auth?.currentUser.account_status_online === true
-                                        ? online_date.toLocaleTimeString("fa-IR", {
-                                            hour: "2-digit",
-                                            minute: "2-digit"
-                                        })
-                                        : "بازدید مخفی است"
-                                    }
-                                </span>
+                            <span className="profile-status">
+                                {auth?.currentUser.account_status_online === true
+                                    ? online_date.toLocaleTimeString("fa-IR", {
+                                        hour: "2-digit",
+                                        minute: "2-digit"
+                                    })
+                                    : "بازدید مخفی است"
+                                }
+                            </span>
 
                         </div>
 
                     </div>
 
-
                     <div className="profile-actions">
 
                         <Link className="editpROFLINK" to="/profile/editbox">
-                          <button className="profile-action">
-                            <span className="action-icon">
-                                ✎
-                            </span>
+                            <button className="profile-action">
+                                <span className="action-icon">
+                                    ✎
+                                </span>
 
-                            <span>
-                                ویرایش پروفایل و تنظیمات حساب کاربری
-                            </span>
-                        </button>
+                                <span>
+                                    ویرایش پروفایل و تنظیمات حساب کاربری
+                                </span>
+                            </button>
                         </Link>
 
                     </div>
@@ -228,7 +242,6 @@ const Profile = () => {
                             </span>
 
                         </div>
-
 
                         <div className="profile-info-item">
 

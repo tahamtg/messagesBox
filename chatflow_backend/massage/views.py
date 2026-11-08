@@ -1,126 +1,94 @@
-from django.shortcuts import render
-from .serializers import MassageBoxSerializers
-from .serializers import Authenticate_User
-from rest_framework.decorators import api_view
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.parsers import MultiPartParser, FormParser 
-from rest_framework.decorators import parser_classes
-from rest_framework import status
-from .models import Massage
-from .models import User_Account
-import traceback
-from rest_framework_simplejwt.views import TokenObtainPairView
 from datetime import timedelta
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.permissions import AllowAny
-from rest_framework.decorators import permission_classes
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.pagination import PageNumberPagination
 from django.core.paginator import Paginator
-from .models import Room, Direct, MediaUpload
-from .serializers import UplaodMedia, TopicSerializer
 from django.shortcuts import get_object_or_404
-from django.db.models import Q
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.decorators import parser_classes
+from rest_framework.decorators import permission_classes
+from rest_framework.decorators import authentication_classes
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .models import Massage, User_Account, Room, Direct, Topic
+from .serializers import Authenticate_User, UplaodMedia, TopicSerializer
+
+COOKIE_OPTIONS = {
+    "httponly": True,
+    "secure": True,
+    "samesite": "Lax",
+}
 
 
-#get query from searching
 @api_view(["GET"])
 def get_search(request):
 
-    search = request.query_params.get("search", "")
+    search = request.query_params.get("search", "").strip()
 
-    get_data = Massage.objects.filter(Q(topic__name__icontains=search) | 
-    Q(user__username__icontains=search))
+    if not search:
+        return Response([])
 
-    data = []
+    topics = (
+        Topic.objects.filter(name__icontains=search)
+        .values_list("name", flat=True)
+        .distinct()[:10]
+    )
 
-    for searching in get_data:
-        data.append({
-            "title" : searching.topic.name if searching.topic else searching.user.username,
-        })
-    
+    users = (
+        User_Account.objects.filter(username__icontains=search)
+        .values_list("username", flat=True)[:10]
+    )
+
+    data = [{"title": title} for title in [*topics, *users]]
+
     return Response(data)
 
 
-#For GET ROOMS DATA
 @api_view(["GET"])
 def get_topics(request, slug):
 
-    try:
-        room = get_object_or_404(Room, slug=slug)
+    room = Room.objects.filter(slug=slug).first()
 
-        topics = room.topics.all()
+    if not room:
+        return Response([])
 
-        data = []
+    topics = room.topics.all()
 
-        for topic in topics:
-            data.append({
-                "id": topic.id,
-                "name": topic.name,
-                "slug": topic.slug,
-            })
+    return Response(TopicSerializer(topics, many=True).data)
 
-        return Response(data)
-
-    except Exception as e:
-        traceback.print_exc()
-
-        return Response(
-            {"error": str(e)},
-            status=500
-        )
 
 @api_view(["POST"])
 def create_topic(request, slug):
 
-    try:
+    room, created = Room.objects.get_or_create(
+        slug=slug,
+        defaults={
+            "name": slug
+        }
+    )
 
-        print("SLUG RECEIVED:", slug)
-        print("DATA:", request.data)
-        
-        room, created = Room.objects.get_or_create(
-            slug=slug,
-            defaults={
-                "name": slug
-            }
-        )
+    serializer = TopicSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save(room=room)
 
-        serializer = TopicSerializer(data=request.data)
+    return Response(
+        serializer.data,
+        status=status.HTTP_201_CREATED
+    )
 
-        if serializer.is_valid():
-            serializer.save(room=room)
-
-            return Response(
-                serializer.data,
-                status=201
-            )
-        print("SERIALIZER ERRORS:", serializer.errors)
-        return Response(
-            serializer.errors,
-            status=400
-        )
-
-    except Exception as e:
-        traceback.print_exc()
-
-        return Response(
-            {"error": str(e)},
-            status=500
-        )
 
 @api_view(['GET'])
 def Pagination_data(request):
 
-    model = User_Account.objects.all()
+    model = User_Account.objects.order_by("id")
 
     paginator = Paginator(model, 5)
 
     page = request.GET.get("page_user")
 
     page_obj = paginator.get_page(page)
-    
-    data = Authenticate_User(page_obj ,many=True).data
+
+    data = Authenticate_User(page_obj, many=True).data
 
     return Response({
         "count": paginator.count,
@@ -130,12 +98,9 @@ def Pagination_data(request):
         "resualt": data,
     })
 
+
 @api_view(["GET"])
 def show_another_messages(request, room_slug, topic_slug):
-
-    print("ROOM SLUG RECEIVED:", room_slug)
-    print("TOPIC SLUG RECEIVED:", topic_slug)
-    print("QUERY PARAMS:", request.GET)
 
     room = get_object_or_404(
         Room,
@@ -147,43 +112,47 @@ def show_another_messages(request, room_slug, topic_slug):
         slug=topic_slug
     )
 
-    massages = Massage.objects.filter(
-        room=room,
-        topic=topic
+    massages = (
+        Massage.objects.filter(room=room, topic=topic)
+        .select_related("user", "file")
+        .order_by("publish_date")
     )
 
     data = []
 
     for m in massages:
         data.append({
-            "username": m.user.username,
-            "username_id": m.user.id,
+            "username": m.user.username if m.user else None,
+            "username_id": m.user.id if m.user else None,
+            "username_key": m.user.key if m.user else None,
             "message": m.payam,
             "publish_date": m.publish_date,
             "id": m.id,
-            "media_URL": m.file.media.url if m.file else None,
-            "avatar_user": m.user.avatar.url if m.user.avatar else None,
+            "media_URL": m.file.media.url if m.file and m.file.media else None,
+            "avatar_user": m.user.avatar.url if m.user and m.user.avatar else None,
         })
 
     return Response(data)
 
+
 @api_view(["GET"])
-@permission_classes([IsAuthenticated])
 def get_directs(request):
 
     current_user = request.user
 
-    directs = Direct.objects.filter(
-        user_Direct=current_user
+    directs = (
+        Direct.objects.filter(user_Direct=current_user)
+        .prefetch_related("user_Direct")
     )
 
     data = []
 
     for direct in directs:
 
-        other_user = direct.user_Direct.exclude(
-            id=current_user.id
-        ).first()
+        other_user = next(
+            (u for u in direct.user_Direct.all() if u.id != current_user.id),
+            None
+        )
 
         if not other_user:
             continue
@@ -201,25 +170,20 @@ def get_directs(request):
 
     return Response(data)
 
+
 @api_view(["GET"])
-@permission_classes([IsAuthenticated])
 def get_my_key(request):
 
-    current_user = request.user
-
     return Response({
-        "key": current_user.key
+        "key": request.user.key
     })
 
-#for post user_account and if is unique username
+
 @api_view(['POST'])
+@authentication_classes([])
 @permission_classes([AllowAny])
 @parser_classes([MultiPartParser, FormParser])
 def Sign_Up(request):
-
-    print("REQUEST DATA:", request.data)
-    print("BIO:", request.data.get("bio"))
-    print("FILES:", request.FILES)
 
     get_user = Authenticate_User(data=request.data)
 
@@ -236,26 +200,9 @@ def Sign_Up(request):
     )
 
 
-@api_view(['PATCH'])
-@parser_classes([MultiPartParser])
-def Upload_profile(request):
-
-    auth = Authenticate_User(data= request.data, partial= True)
-    if auth.is_valid():
-        try:
-            auth.save(user= request.user)
-            return Response("profile created!", status= status.HTTP_200_OK)
-        except Exception as e:
-            return Response(str(e), status= status.HTTP_400_BAD_REQUEST)
-    else:
-       return Response({"cant_put_profile" : "profile didnt updated!"})
-
-
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def Check_Auth(request):
-    print("USER:", request.user)
-    print("COOKIES:", request.COOKIES)
+
     return Response({
         "authenticate": True,
         "username": request.user.username,
@@ -265,50 +212,38 @@ def Check_Auth(request):
         "account_status_online": request.user.account_status_online,
     })
 
+
 @api_view(['POST'])
+@authentication_classes([])
+@permission_classes([AllowAny])
 def LogOut(request):
 
     response = Response({
         "massage" : "Logout successful!"
     })
 
-    response.delete_cookie("access")
-    response.delete_cookie("refresh")
+    response.set_cookie("access", "", max_age=0, **COOKIE_OPTIONS)
+    response.set_cookie("refresh", "", max_age=0, **COOKIE_OPTIONS)
 
     return response
+
 
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
 def upload(request):
 
-    try:
-        print("UPLOAD REQUEST:", request.data)
-        print("FILES:", request.FILES)
+    req = UplaodMedia(data=request.data)
 
-        req = UplaodMedia(data=request.data)
+    req.is_valid(raise_exception=True)
 
-        req.is_valid(raise_exception=True)
+    res = req.save()
 
-        res = req.save()
-
-        print("UPLOAD SUCCESS:", res)
-
-        return Response({
-            "message": "Object saved",
-            "data": req.data,
-            "mediaUrl": res.media.url,
-            "mediaUrlid": res.id
-        })
-
-    except Exception as e:
-        print("========== UPLOAD ERROR ==========")
-        traceback.print_exc()
-        print("==================================")
-
-        return Response(
-            {"error": str(e)},
-            status=500
-        )
+    return Response({
+        "message": "Object saved",
+        "data": req.data,
+        "mediaUrl": res.media.url,
+        "mediaUrlid": res.id
+    })
 
 
 @api_view(['PATCH'])
@@ -324,12 +259,19 @@ def Update_Photo(request):
         )
 
     user = request.user
-    user.avatar = photo
-    user.save(update_fields=['avatar'])
+
+    serializer = Authenticate_User(
+        user,
+        data={"avatar": photo},
+        partial=True,
+    )
+
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
 
     return Response({
         "message": "عکس پروفایل با موفقیت تغییر کرد",
-        "mediaUrl": request.build_absolute_uri(user.avatar.url)
+        "mediaUrl": user.avatar.url
     })
 
 
@@ -337,13 +279,13 @@ def Update_Photo(request):
 def Update_Info_User(request):
 
     user = Authenticate_User(
-            request.user,
-            data=request.data,
-            partial=True,
-        )
+        request.user,
+        data=request.data,
+        partial=True,
+    )
 
-    if user.is_valid(raise_exception=True):
-        user.save()
+    user.is_valid(raise_exception=True)
+    user.save()
 
     return Response({
         "update_bio": "bio is update"
@@ -352,14 +294,9 @@ def Update_Info_User(request):
 
 class CreateTokenCookie(TokenObtainPairView):
 
-    
     def post(self, request, *args, **kwargs):
 
-        print("LOGIN DATA:", request.data)
-        
         response = super().post(request, *args, **kwargs)
-
-        print("TOKEN RESPONSE:", response.data)
 
         access_token = response.data["access"]
         refresh_token = response.data["refresh"]
@@ -367,19 +304,17 @@ class CreateTokenCookie(TokenObtainPairView):
         response.set_cookie(
             key="access",
             value=access_token,
-            httponly=True,
-            secure=True,
-            samesite="None",
-            max_age= 86400,
+            max_age=86400,
+            **COOKIE_OPTIONS
         )
 
         response.set_cookie(
             key="refresh",
             value=refresh_token,
-            httponly=True,
-            secure=True,
-            samesite="None",
-            max_age= int(timedelta(days=60).total_seconds()),
+            max_age=int(timedelta(days=60).total_seconds()),
+            **COOKIE_OPTIONS
         )
+
+        response.data = {"detail": "login successful"}
 
         return response

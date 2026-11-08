@@ -1,10 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import "./topics.css";
 
-
-const Topics = () => {
-    const navigate = useNavigate();
-
 const topics = [
     {
         title: "جعبه تاریخ",
@@ -58,65 +54,64 @@ const topics = [
     },
 ];
 
+const Topics = () => {
+    const navigate = useNavigate();
+
     return (
-    <main className="topics-page">
+        <main className="topics-page">
 
-        <div className="topics-header">
-            <span>MESSAGESBOX</span>
+            <div className="topics-header">
+                <span>MESSAGESBOX</span>
 
-            <h1>
-                جعبه‌های گفتگو
-            </h1>
+                <h1>
+                    جعبه‌های گفتگو
+                </h1>
 
-            <p>
-                موضوع مورد علاقه‌ات رو انتخاب کن و وارد گفتگو شو.
-            </p>
-        </div>
+                <p>
+                    موضوع مورد علاقه‌ات رو انتخاب کن و وارد گفتگو شو.
+                </p>
+            </div>
 
-        <nav className="topics">
+            <nav className="topics">
 
-            {topics.map((topic) => (
+                {topics.map((topic) => (
 
-                <button
-                    className="topic"
-                    key={topic.slug}
-                    type="button"
-                    onClick={() =>
-                        navigate(`/topics/${topic.slug}`)
-                    }
-                    style={
-                        topic.image
-                            ? {
-                                backgroundImage: `url("${topic.image}")`
-                            }
-                            : undefined
-                    }
-                >
+                    <button
+                        className="topic"
+                        key={topic.slug}
+                        type="button"
+                        onClick={() =>
+                            navigate(`/topics/${topic.slug}`)
+                        }
+                        style={{
+                            backgroundImage: `url("${topic.image}")`
+                        }}
+                    >
 
-                    <div className="topic-overlay">
+                        <div className="topic-overlay">
 
-                        <span className="topic-icon">
-                            #
-                        </span>
+                            <span className="topic-icon">
+                                #
+                            </span>
 
-                        <span className="topic-title">
-                            {topic.title}
-                        </span>
+                            <span className="topic-title">
+                                {topic.title}
+                            </span>
 
-                        <span className="topic-arrow">
-                            ←
-                        </span>
+                            <span className="topic-arrow">
+                                ←
+                            </span>
 
-                    </div>
+                        </div>
 
-                </button>
+                    </button>
 
-            ))}
+                ))}
 
-        </nav>
+            </nav>
 
-    </main>
-);
+        </main>
+    );
 };
 
 export default Topics;

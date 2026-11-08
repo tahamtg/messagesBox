@@ -8,7 +8,6 @@ def generate_key():
     return secrets.token_hex(10)
 
 class User_Account(AbstractBaseUser, PermissionsMixin):
- 
 
     username = models.CharField(max_length=255, unique=True)
     avatar = models.ImageField(upload_to='media_avatar/', blank=True, null=True)
@@ -16,7 +15,7 @@ class User_Account(AbstractBaseUser, PermissionsMixin):
     bio = models.TextField(blank=True, default="")
 
     account_status_online = models.BooleanField(default=True)
-    
+
     key = models.CharField(
         max_length=20,
         editable=False,
@@ -42,14 +41,16 @@ class Direct(models.Model):
     )
 
 class Room (models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    def __str__(self):
-        return self.name
-    
+    name = models.CharField(max_length=120, unique=True)
+
     slug = models.SlugField(
         max_length=120,
-        unique=False,
+        unique=True,
+        allow_unicode=True,
     )
+
+    def __str__(self):
+        return self.name
 
 
 class Topic(models.Model):
@@ -63,18 +64,33 @@ class Topic(models.Model):
 
     slug = models.SlugField(
         max_length=120,
-        unique=False
+        allow_unicode=True,
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["room", "slug"],
+                name="unique_topic_slug_per_room"
+            )
+        ]
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            base = slugify(self.name, allow_unicode=True) or secrets.token_hex(4)
+            slug = base
+            number = 1
+
+            while Topic.objects.filter(room=self.room, slug=slug).exists():
+                number += 1
+                slug = f"{base}-{number}"
+
+            self.slug = slug
 
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
-
 
 
 class MediaUpload(models.Model):
@@ -95,11 +111,3 @@ class Massage (models.Model):
         blank=True,
         related_name="messages"
     )
-
-
-
-
-
-
-
-    
